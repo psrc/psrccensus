@@ -15,26 +15,6 @@ utils::globalVariables("GEOID")
 #' @return a tibble of decennial estimates by either tracts in a county/counties for selected table codes. Does not include
 #' variable names.
 #'
-#' @examples
-#' Sys.getenv("CENSUS_API_KEY")
-#' tbl_names <- paste0('PCT020', LETTERS[1:6])
-#'
-#' get_decennial_tract_county(geography = 'county', table_codes = tbl_names, year = 2010)
-#'
-#' get_decennial_tract_county(geography = 'county',
-#'                            counties = c('King'),
-#'                            table_codes = tbl_names[1],
-#'                            year = 2010)
-#'
-#' get_decennial_tract_county(geography = 'tract',
-#'                            counties = c('Kitsap', 'Pierce'),
-#'                            table_codes = tbl_names,
-#'                            year = 2010)
-#'
-#' get_decennial_tract_county(geography = 'tract',
-#'                            counties = c('King'),
-#'                            table_codes = tbl_names[1],
-#'                            year = 2010)
 get_decennial_tract_county <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'),
                                        table_codes, year, state = 'WA') {
   get_decennial_geogs <- purrr::partial(tidycensus::get_decennial,
@@ -66,13 +46,6 @@ get_decennial_tract_county <- function(geography, counties = c('King', 'Kitsap',
 #' @return a tibble of decennial estimates by MSA(s) for selected table codes. Does not include
 #' variable names.
 #'
-#' @examples
-#' Sys.getenv("CENSUS_API_KEY")
-#' get_decennial_msa(table_codes = c("H001"), year = 2010)
-#'
-#' get_decennial_msa(table_codes = c("H001", "P001"), year = 2010, fips = c('42660', "28420"))
-#'
-#' get_decennial_msa(table_codes = c("H001"), year = 2010, fips = c('42660'))
 get_decennial_msa <- function(table_codes, year, fips = NULL) {
   msa_geog <- 'metropolitan statistical area/micropolitan statistical area'
 
@@ -103,17 +76,6 @@ get_decennial_msa <- function(table_codes, year, fips = NULL) {
 #' @return a tibble of decennial estimates by place(s) for selected table codes. Does not include
 #' variable names.
 #'
-#' @examples
-#' Sys.getenv("CENSUS_API_KEY")
-#' get_decennial_place(table_codes = 'PCT013', year = 2010)
-#'
-#' get_decennial_place(table_codes = 'PCT013',
-#'                     year = 2010,
-#'                     fips = c("5363000", "5308850"))
-#'
-#' get_decennial_place(table_codes = c('PCT013', 'PCT022'),
-#'                     year = 2010,
-#'                     fips = c("5363000", "5308850"))
 get_decennial_place <- function(table_codes, year, fips = NULL, state = 'WA') {
   dfs <- NULL
   for(table_code in table_codes) {

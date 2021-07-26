@@ -20,14 +20,6 @@ variable names.
 \description{
 Generate decennial estimates for multiple tables by MSA(s).
 }
-\examples{
-Sys.getenv("CENSUS_API_KEY")
-get_decennial_msa(table_codes = c("H001"), year = 2010)
-
-get_decennial_msa(table_codes = c("H001", "P001"), year = 2010, fips = c('42660', "28420"))
-
-get_decennial_msa(table_codes = c("H001"), year = 2010, fips = c('42660'))
-}
 \author{
 Christy Lam
 }

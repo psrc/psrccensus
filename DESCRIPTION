@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: c(
     person("Craig", "Helmann", email = "chelmann@psrc.org", role = "cre"),
     person("Christy", "Lam", email = "clam@psrc.org", role = "aut"),
-    person("Polina", "Butrina", email = "pbutrina@psrc.org", role = "aut")),
+    person("Polina", "Butrina", email = "pbutrina@psrc.org", role = "aut"),
     person("Suzanne", "Childress", email = "schildress@psrc.org", role = "aut"))
 Maintainer: Craig Helmann <chelmann@psrc.org>
 Description: Various functions to pull, process and visualize data for geographies in the Central Puget Sund Region.
@@ -19,6 +19,5 @@ Imports:
     purrr,
     tidycensus,
 	tidyr,
-	rstudioapi,
 	magrittr,
 	rlang

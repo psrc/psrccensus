@@ -30,27 +30,6 @@ variable names.
 \description{
 Generate decennial estimates for multiple tables by multiple tracts and/or counties
 }
-\examples{
-Sys.getenv("CENSUS_API_KEY")
-tbl_names <- paste0('PCT020', LETTERS[1:6])
-
-get_decennial_tract_county(geography = 'county', table_codes = tbl_names, year = 2010)
-
-get_decennial_tract_county(geography = 'county',
-                           counties = c('King'),
-                           table_codes = tbl_names[1],
-                           year = 2010)
-
-get_decennial_tract_county(geography = 'tract',
-                           counties = c('Kitsap', 'Pierce'),
-                           table_codes = tbl_names,
-                           year = 2010)
-
-get_decennial_tract_county(geography = 'tract',
-                           counties = c('King'),
-                           table_codes = tbl_names[1],
-                           year = 2010)
-}
 \author{
 Christy Lam
 }

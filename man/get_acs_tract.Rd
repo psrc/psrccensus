@@ -26,24 +26,6 @@ a tibble of acs estimates by tracts for selected table codes. Includes detailed 
 \description{
 Generate ACS 5yr estimates for multiple tables by Census Tracts in multiple counties
 }
-\examples{
-get_acs_tract(table.names=c('B03002'),
-              years=c(2019))
-
-get_acs_tract(table.names=c('B03002'),
-              counties=c("King","Pierce"),
-              years=c(2015,2019))
-
-get_acs_tract(table.names=c('B03002'),
-              years=c(2015,2017,2019))
-
-get_acs_tract(table.names=c('B03002',"C17002"),
-              counties=c("Kitsap","Snohomish"),
-              years=c(2019))
-
-get_acs_tract(table.names=c('B03002',"C17002"),
-              years=c(2015,2017,2019))
-}
 \author{
 Craig Helmann
 }

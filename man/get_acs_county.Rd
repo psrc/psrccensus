@@ -30,17 +30,6 @@ Includes detailed variable names.
 \description{
 Generate ACS estimates for multiple tables by multiple counties
 }
-\examples{
-Sys.getenv("CENSUS_API_KEY")
-
-get_acs_county(table.names=c('B03002'),years=c(2019),acs.type = 'acs1')
-
-get_acs_county(table.names=c('B03002'),years=c(2015,2017,2019),acs.type = 'acs1')
-
-get_acs_county(table.names=c('B03002',"C17002"),years=c(2019),acs.type = 'acs1')
-
-get_acs_county(table.names=c('B03002',"C17002"),years=c(2015,2019),acs.type = 'acs1')
-}
 \author{
 Craig Helmann
 }

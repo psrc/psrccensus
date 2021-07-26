@@ -36,16 +36,12 @@ a tibble of ACS estimates by selected geography for selected table codes. Includ
 Generate ACS estimates for multiple tables by tracts, counties, MSAs, or places for multiple years.
 }
 \examples{
-get_acs_recs(geography = 'county',
-             table.names = c('B03002',"C17002"),
-             years=c(2019),
-             acs.type = 'acs1')
+Sys.getenv("CENSUS_API_KEY")
 
 get_acs_recs(geography = 'county',
-             table.names = c('B03002'),
-             counties=c("Kitsap"),
-             years=c(2015,2019),
-             acs.type = 'acs5')
+             table.names = c('B03002',"C17002"),
+             years=c(2017,2019),
+             acs.type = 'acs1')
 
 get_acs_recs(geography = 'msa',
              table.names = c('B03002',"C17002"),
@@ -63,19 +59,10 @@ get_acs_recs(geography = 'place',
              years=c(2019),
              acs.type = 'acs5')
 
-get_acs_recs(geography = 'place',
-             table.names = c('B03002',"C17002"),
-             years=c(2018,2019),
-             acs.type = 'acs1')
-
-get_acs_recs(geography = 'tract',
-             table.names = c('B03002',"C17002"),
-             years=c(2018,2019))
-
 get_acs_recs(geography = 'tract',
              counties=c("Pierce"),
-             table.names = c('B03002',"C17002"),
-             years=c(2019))
+             table.names = c('B03002'),
+             years=c(2018,2019))
 
 }
 \author{

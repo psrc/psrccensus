@@ -21,25 +21,6 @@ a tibble of acs estimates by MSA for selected table codes and years. Includes de
 \description{
 Generate ACS estimates for multiple tables by multiple MSA's
 }
-\examples{
-get_acs_msa(table.names=c('B03002'),
-            years=c(2019),
-            acs.type = 'acs1')
-
-get_acs_msa(table.names=c('B03002'),
-            years=c(2015,2017,2019),
-            acs.type = 'acs1',
-            FIPS = c("42660"))
-
-get_acs_msa(table.names=c('B03002',"C17002"),
-            years=c(2019),
-            acs.type = 'acs1')
-
-get_acs_msa(table.names=c('B03002',"C17002"),
-            years=c(2015,2019),
-            acs.type = 'acs1',
-            FIPS = c("14740"))
-}
 \author{
 Craig Helmann
 }

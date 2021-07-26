@@ -21,23 +21,6 @@ a tibble of acs estimates by Place for selected table codes and years. Includes 
 \description{
 Generate ACS estimates for multiple tables by multiple places
 }
-\examples{
-get_acs_place(table.names=c('B03002'),
-              years=c(2019),
-              acs.type = 'acs1')
-
-get_acs_place(table.names=c('B03002'),
-              years=c(2015,2019),
-              acs.type = 'acs5')
-
-get_acs_place(table.names=c('B03002',"C17002"),
-              years=c(2019),
-              acs.type = 'acs5')
-
-get_acs_place(table.names=c('B03002',"C17002"),
-              years=c(2015,2019),
-              acs.type = 'acs1')
-}
 \author{
 Craig Helmann
 }

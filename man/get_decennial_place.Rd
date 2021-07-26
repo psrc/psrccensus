@@ -22,18 +22,6 @@ variable names.
 \description{
 Generate decennial estimates for multiple tables by place(s).
 }
-\examples{
-Sys.getenv("CENSUS_API_KEY")
-get_decennial_place(table_codes = 'PCT013', year = 2010)
-
-get_decennial_place(table_codes = 'PCT013',
-                    year = 2010,
-                    fips = c("5363000", "5308850"))
-
-get_decennial_place(table_codes = c('PCT013', 'PCT022'),
-                    year = 2010,
-                    fips = c("5363000", "5308850"))
-}
 \author{
 Christy Lam
 }

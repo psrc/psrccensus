@@ -13,16 +13,6 @@
 #' @return a tibble of acs estimates by counties for selected table codes and years with a regional aggregation.
 #' Includes detailed variable names.
 #'
-#' @examples
-#' Sys.getenv("CENSUS_API_KEY")
-#'
-#' get_acs_county(table.names=c('B03002'),years=c(2019),acs.type = 'acs1')
-#'
-#' get_acs_county(table.names=c('B03002'),years=c(2015,2017,2019),acs.type = 'acs1')
-#'
-#' get_acs_county(table.names=c('B03002',"C17002"),years=c(2019),acs.type = 'acs1')
-#'
-#' get_acs_county(table.names=c('B03002',"C17002"),years=c(2015,2019),acs.type = 'acs1')
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
 
@@ -86,24 +76,6 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 #'
 #' @return a tibble of acs estimates by MSA for selected table codes and years. Includes detailed variable names.
 #'
-#' @examples
-#' get_acs_msa(table.names=c('B03002'),
-#'             years=c(2019),
-#'             acs.type = 'acs1')
-#'
-#' get_acs_msa(table.names=c('B03002'),
-#'             years=c(2015,2017,2019),
-#'             acs.type = 'acs1',
-#'             FIPS = c("42660"))
-#'
-#' get_acs_msa(table.names=c('B03002',"C17002"),
-#'             years=c(2019),
-#'             acs.type = 'acs1')
-#'
-#' get_acs_msa(table.names=c('B03002',"C17002"),
-#'             years=c(2015,2019),
-#'             acs.type = 'acs1',
-#'             FIPS = c("14740"))
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
 
@@ -157,28 +129,10 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #'
 #' @return a tibble of acs estimates by Place for selected table codes and years. Includes detailed variable names.
 #'
-#' @examples
-#' get_acs_place(table.names=c('B03002'),
-#'               years=c(2019),
-#'               acs.type = 'acs1')
-#'
-#' get_acs_place(table.names=c('B03002'),
-#'               years=c(2015,2019),
-#'               acs.type = 'acs5')
-#'
-#' get_acs_place(table.names=c('B03002',"C17002"),
-#'               years=c(2019),
-#'               acs.type = 'acs5')
-#'
-#' get_acs_place(table.names=c('B03002',"C17002"),
-#'               years=c(2015,2019),
-#'               acs.type = 'acs1')
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
 
 get_acs_place <- function (state="Washington", table.names, years, acs.type) {
-
-  if (acs.type != 'acs5') {rstudioapi::showDialog(title="Note on ACS Data Availability by Place",message="You selected 1 year ACS data for Places. ACS 1 year data is only available for places with at least 65,000 people. If you want all places, please request ACS 5 year data.")}
 
   census.data <- NULL
   for (table in table.names) {
@@ -233,23 +187,6 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type) {
 #'
 #' @return a tibble of acs estimates by tracts for selected table codes. Includes detailed variable names.
 #'
-#' @examples
-#' get_acs_tract(table.names=c('B03002'),
-#'               years=c(2019))
-#'
-#' get_acs_tract(table.names=c('B03002'),
-#'               counties=c("King","Pierce"),
-#'               years=c(2015,2019))
-#'
-#' get_acs_tract(table.names=c('B03002'),
-#'               years=c(2015,2017,2019))
-#'
-#' get_acs_tract(table.names=c('B03002',"C17002"),
-#'               counties=c("Kitsap","Snohomish"),
-#'               years=c(2019))
-#'
-#' get_acs_tract(table.names=c('B03002',"C17002"),
-#'               years=c(2015,2017,2019))
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
 
@@ -311,16 +248,12 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'
 #' @return a tibble of ACS estimates by selected geography for selected table codes. Includes variable names.
 #' @examples
-#' get_acs_recs(geography = 'county',
-#'              table.names = c('B03002',"C17002"),
-#'              years=c(2019),
-#'              acs.type = 'acs1')
+#' Sys.getenv("CENSUS_API_KEY")
 #'
 #' get_acs_recs(geography = 'county',
-#'              table.names = c('B03002'),
-#'              counties=c("Kitsap"),
-#'              years=c(2015,2019),
-#'              acs.type = 'acs5')
+#'              table.names = c('B03002',"C17002"),
+#'              years=c(2017,2019),
+#'              acs.type = 'acs1')
 #'
 #' get_acs_recs(geography = 'msa',
 #'              table.names = c('B03002',"C17002"),
@@ -338,19 +271,10 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'              years=c(2019),
 #'              acs.type = 'acs5')
 #'
-#' get_acs_recs(geography = 'place',
-#'              table.names = c('B03002',"C17002"),
-#'              years=c(2018,2019),
-#'              acs.type = 'acs1')
-#'
-#' get_acs_recs(geography = 'tract',
-#'              table.names = c('B03002',"C17002"),
-#'              years=c(2018,2019))
-#'
 #' get_acs_recs(geography = 'tract',
 #'              counties=c("Pierce"),
-#'              table.names = c('B03002',"C17002"),
-#'              years=c(2019))
+#'              table.names = c('B03002'),
+#'              years=c(2018,2019))
 #'
 #' @export
 get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table.names, years, FIPS = c("14740","42660"), acs.type) {
