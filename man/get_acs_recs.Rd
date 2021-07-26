@@ -43,6 +43,12 @@ get_acs_recs(geography = 'county',
              years=c(2017,2019),
              acs.type = 'acs1')
 
+get_acs_recs(geography = 'county',
+             table.names = c('B03002'),
+             counties=c("Kitsap"),
+             years=c(2019),
+             acs.type = 'acs5')
+
 get_acs_recs(geography = 'msa',
              table.names = c('B03002',"C17002"),
              years=c(2019),

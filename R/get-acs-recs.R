@@ -32,14 +32,17 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       tbl <- tbl %>% tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",")
       tbl$state <- trimws(tbl$state, "l")
 
-      # Create a Total for all counties pulled and join to county table
-      total <- tbl %>%
-        dplyr::select(.data$variable, .data$estimate, .data$moe) %>%
-        dplyr::group_by(.data$variable) %>%
-        dplyr::summarize(sumest = sum(.data$estimate), summoe = tidycensus::moe_sum(.data$moe, .data$estimate)) %>%
-        dplyr::rename(estimate=.data$sumest, moe=.data$summoe) %>%
-        dplyr::mutate(GEOID="REGION", name="Region", state=state)
-      tbl <- dplyr::bind_rows(list(tbl,total))
+      # Create a Total for Region if all 4 PSRC Counties are pulled and then join to county table
+      if (identical(counties, c("King","Kitsap","Pierce","Snohomish"))) {
+
+        total <- tbl %>%
+          dplyr::select(.data$variable, .data$estimate, .data$moe) %>%
+          dplyr::group_by(.data$variable) %>%
+          dplyr::summarize(sumest = sum(.data$estimate), summoe = tidycensus::moe_sum(.data$moe, .data$estimate)) %>%
+          dplyr::rename(estimate=.data$sumest, moe=.data$summoe) %>%
+          dplyr::mutate(GEOID="REGION", name="Region", state=state)
+        tbl <- dplyr::bind_rows(list(tbl,total))
+      }
 
       # Add labels to the data - The labels can differ for each year so loading now
       labels <- tidycensus::load_variables(year=year, dataset=acs.type)
@@ -254,6 +257,12 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'              table.names = c('B03002',"C17002"),
 #'              years=c(2017,2019),
 #'              acs.type = 'acs1')
+#'
+#' get_acs_recs(geography = 'county',
+#'              table.names = c('B03002'),
+#'              counties=c("Kitsap"),
+#'              years=c(2019),
+#'              acs.type = 'acs5')
 #'
 #' get_acs_recs(geography = 'msa',
 #'              table.names = c('B03002',"C17002"),
