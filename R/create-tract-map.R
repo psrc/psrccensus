@@ -39,7 +39,7 @@ create_tract_map<-function(tract.tbl, tract.lyr, tract.var, year, map.lat=47.615
     dplyr::group_by(.data$GEOID) %>%
     dplyr::summarise(Total=sum(.data$estimate))
 
-  c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("geoid10"="GEOID")) %>%
+  c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("GEOID10"="GEOID")) %>%
     sf::st_transform(4326)
 
   # Calculate Bins from Data and create color palette
