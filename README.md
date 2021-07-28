@@ -5,4 +5,4 @@ How to install in R Console:
 
 library(devtools)
 
-devtools:install_github("psrc/psrccneus")
+devtools:install_github("psrc/psrccensus")
