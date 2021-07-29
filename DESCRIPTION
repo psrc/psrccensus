@@ -24,3 +24,7 @@ Imports:
 	sf,
 	leaflet,
 	htmltools
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr

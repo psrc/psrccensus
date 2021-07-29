@@ -1,6 +1,7 @@
 pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2021-07-28T20:10Z
+articles:
+  psrccensus: psrccensus.html
+last_built: 2021-07-29T17:22Z
 
