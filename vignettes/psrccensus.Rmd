@@ -21,6 +21,10 @@ The three most important functions are:
 
 -   get_pums_recs: to be coded later
 
+We have one fancy function that let's create a map of an ACS variable by tract.
+
+-   [create_tract_map( tract.tbl, tract.lyr, map.lat = 47.615, map.lon = -122.257, map.zoom = 8.5, wgs84 = 4326 )](https://psrc.github.io/psrccensus/reference/create_tract_map.html)
+
 To use the library psrccensus, you first will need to get an api key.
 
 ### Set up your API key
@@ -57,6 +61,8 @@ You can also search the api variable lists from ACS and Census.
 
 The functions are documented on: <https://psrc.github.io/psrccensus/reference/index.html>
 
+## Get ACS Data
+
 Suppose you wish to tabulate ACS one year data 2019 data for estimates of total people by race and ethnicity, as provided in table B03002 by county. You would use the following function call.
 
 ```{r acs examples}
@@ -68,6 +74,8 @@ get_acs_recs(geography = 'county',
 
 ```
 
+## Get Census data
+
 To generate Decennial Census tables for housing units and total population by MSA, you would call:
 
 ```{r census examples}
@@ -75,5 +83,23 @@ get_decennial_recs(geography = 'msa',
                    table_codes = c("H001", "P001"),
                    year = 2010,
                    fips = c('42660', "28420"))
+
+```
+
+## Make a map of ACS data by tract
+
+Let's say you want to create a map of the tracts in the region for one variable. You can use the function create_tract_map. Here's any example, mapping non-Hispanic Black or African American population alone by tract:
+
+```{r tract_map example}
+library(sf)
+library(dplyr)
+tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
+tract.tbl<-tract.big.tbl %>% filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
+gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\Sockeye",
+";database=","ElmerGeo",";trusted_connection=yes")
+spn = 2285
+tract_layer_name="dbo.tract2010_nowater"
+tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
+create_tract_map(tract.tbl, tract.lyr)
 
 ```

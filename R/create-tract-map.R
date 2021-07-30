@@ -19,13 +19,16 @@
 #' @examples
 #' library(sf)
 #' Sys.getenv("CENSUS_API_KEY")
-#' tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B02018'),years=c(2019))
+#'library(dplyr)
+#' tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
+#' tract.tbl<-tract.big.tbl %>% filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
 #' gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\Sockeye",
 #' ";database=","ElmerGeo",";trusted_connection=yes")
 #' spn = 2285
 #' tract_layer_name="dbo.tract2010_nowater"
 #' tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
 #' create_tract_map(tract.tbl, tract.lyr)
+
 #' @export
 create_tract_map<-function(tract.tbl, tract.lyr, map.lat=47.615, map.lon=-122.257, map.zoom=8.5, wgs84=4326){
 
