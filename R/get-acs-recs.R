@@ -81,7 +81,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 #'
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
-
+#'@keywords internal
 get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")) {
 
   census.data <- NULL
@@ -134,6 +134,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #'
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
+#' @keywords internal
 
 get_acs_place <- function (state="Washington", table.names, years, acs.type) {
 
@@ -192,7 +193,7 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type) {
 #'
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
-
+#'@keywords internal
 get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years) {
 
   census.data <- NULL

@@ -19,14 +19,9 @@
 #'
 #' @examples
 #' Sys.getenv("CENSUS_API_KEY")
-#'\dontrun{tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
-#'    tract.lyr <- sf::st_read(
-#'    dsn="MSSQL:server=AWS-PROD-SQL\\Sockeye;database=ElmerGeo;trusted_connection=yes",
-#'    layer="dbo.tract2010_nowater", crs=2285)
-#'    create_tract_map<-function(tract.tbl=tract.tbl,
-#'                            tract.lyr=tract.lyr,
-#'                            tract.var=c("Estimate!!Total:!!Not Hispanic or Latino:!!Asian alone"),
-#'                            year=2019)}
+#' tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
+#'
+#'
 #'
 #' @export
 create_tract_map<-function(tract.tbl, tract.lyr, tract.var, year, map.lat=47.615, map.lon=-122.257, map.zoom=8.5){

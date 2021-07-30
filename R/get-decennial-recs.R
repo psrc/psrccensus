@@ -14,7 +14,7 @@ utils::globalVariables("GEOID")
 #'
 #' @return a tibble of decennial estimates by either tracts in a county/counties for selected table codes. Does not include
 #' variable names.
-#'
+#'@keywords internal
 get_decennial_tract_county <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'),
                                        table_codes, year, state = 'WA') {
   get_decennial_geogs <- purrr::partial(tidycensus::get_decennial,
@@ -45,7 +45,7 @@ get_decennial_tract_county <- function(geography, counties = c('King', 'Kitsap',
 #'
 #' @return a tibble of decennial estimates by MSA(s) for selected table codes. Does not include
 #' variable names.
-#'
+#'@keywords internal
 get_decennial_msa <- function(table_codes, year, fips = NULL) {
   msa_geog <- 'metropolitan statistical area/micropolitan statistical area'
 
@@ -75,7 +75,7 @@ get_decennial_msa <- function(table_codes, year, fips = NULL) {
 #'
 #' @return a tibble of decennial estimates by place(s) for selected table codes. Does not include
 #' variable names.
-#'
+#'@keywords internal
 get_decennial_place <- function(table_codes, year, fips = NULL, state = 'WA') {
   dfs <- NULL
   for(table_code in table_codes) {

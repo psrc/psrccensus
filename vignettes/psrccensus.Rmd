@@ -11,55 +11,63 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # psrccensus
 
-These are instructions on how to use the package psrccensus.
+The psrccensus package allows R users at PSRC to download, summarize, and visualize Census, ACS, and PUMS data on common PSRC Census geographies.
 
+The three most important functions are:
 
-```
+-   [get_acs_recs(geography,state,counties,table.names.years, FIPS, acs.type)](https://psrc.github.io/psrccensus/reference/get_acs_recs.html "function for getting ACS tables")
+
+-   [get_decennial_recs(geography, counties, table_codes,year, fips)](https://psrc.github.io/psrccensus/reference/get_decennial_recs.html "functions for getting Census tables")
+
+-   get_pums_recs: to be coded later
+
+To use the library psrccensus, you first will need to get an api key.
 
 ### Set up your API key
 
-The first time you run this code, you will need to set our Census API Key as an environment variable, if you haven't done that before. After that you can just get it.
-This is the website to get a key: https://api.census.gov/data/key_signup.html. Once you run Sys.setenv on the Census API Key you will only need to run Sys.getenv.
-
+The first time you run this code, you will need to set our Census API Key as an environment variable, if you haven't done that before. After that you can just get it. This is the website to get a key: <https://api.census.gov/data/key_signup.html>. Once you run Sys.setenv on the Census API Key you will only need to run Sys.getenv.
 
 ```{r keys, results='hide'}
+library(psrccensus)
 #Sys.setenv(CENSUS_API_KEY = 'PUT YOUR KEY HERE')
 Sys.getenv("CENSUS_API_KEY")
 ```
 
-Next you need to decide what tables you would like to download. This is the hardest part because you have find the correct table code, decide on geography, and which years.
+Next you need to decide what tables you would like to download and summarize. This is the hardest part because you have find the correct table code, decide on geography, and which years.
 
+### 2019 ACS 1-year api Variable List
 
-### 2019 1-year table list
-https://api.census.gov/data/2019/acs/acs1/variables.html
+<https://api.census.gov/data/2019/acs/acs1/variables.html>
 
 ### 2015-2019 5 year- table list
-https://api.census.gov/data/2019/acs/acs5/variables.html
 
-# Get the data  -----------------------------------------------------
-The main function psrc_acs_table has four parameters: tbl_code, geog, yr,acs.
+<https://api.census.gov/data/2019/acs/acs5/variables.html>
 
-* tbl_code is the code of the ACS table list on the Census website, in string format, such as "B02001_005"
+### 2010 Census api variable list
 
-* geog is the geography, currently with the options of "county" or "tract"
+<https://www.census.gov/data/developers/data-sets/decennial-census.html>
 
-* yr is the last numeric year of the data, such as 2019 for 2014-2019 five year, or 2019 for one year
+# Get the data -----------------------------------------------------
 
-* acs is which dataset you are using, such as "acs1" or "acs5"
+The functions are documented on: <https://psrc.github.io/psrccensus/reference/index.html>
 
-You can find the list of ACS datasets available via the api here: https://www.census.gov/data/developers/data-sets.html
+Suppose you wish to tabulate ACS one year data 2019 data for estimates of total people by race and ethnicity, as provided in table B03002 by county. You would use the following function call.
 
-THe function to make a table is defined like this: psrc_table(tbl_code, geog, yr,acs)
+```{r acs examples}
+get_acs_recs(geography = 'county',
+             table.names = c('B03002'),
+             years=c(2019),
+             acs.type = 'acs1')
 
-Here are a few examples of using the function.
-
-
-
-```
-# Map the data  -----------------------------------------------------
-create_tract_map is function in which you send in a data frame by tract, and it makes a map. The parameter is takes in is one ACS variable by tract.
-
-```{r map_data}
 
 ```
 
+To generate Decennial Census tables for housing units and total population by MSA, you would call:
+
+```{r census examples}
+get_decennial_recs(geography = 'msa',
+                   table_codes = c("H001", "P001"),
+                   year = 2010,
+                   fips = c('42660', "28420"))
+
+```

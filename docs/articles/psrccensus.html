@@ -78,22 +78,27 @@
 <div id="psrccensus" class="section level1">
 <h1 class="hasAnchor">
 <a href="#psrccensus" class="anchor"></a>psrccensus</h1>
-<p>These are instructions on how to use the package psrccensus.</p>
-<pre><code>
-### Set up your API key
-
-The first time you run this code, you will need to set our Census API Key as an environment variable, if you haven't done that before. After that you can just get it.
-This is the website to get a key: https://api.census.gov/data/key_signup.html. Once you run Sys.setenv on the Census API Key you will only need to run Sys.getenv.
-
-
-
-```r
-#Sys.setenv(CENSUS_API_KEY = 'PUT YOUR KEY HERE')
-Sys.getenv("CENSUS_API_KEY")</code></pre>
-<p>Next you need to decide what tables you would like to download. This is the hardest part because you have find the correct table code, decide on geography, and which years.</p>
-<div id="year-table-list" class="section level3">
+<p>The psrccensus package allows R users at PSRC to download, summarize, and visualize Census, ACS, and PUMS data on common PSRC Census geographies.</p>
+<p>The three most important functions are:</p>
+<ul>
+<li><p><a href="https://psrc.github.io/psrccensus/reference/get_acs_recs.html" title="function for getting ACS tables">get_acs_recs(geography,state,counties,table.names.years, FIPS, acs.type)</a></p></li>
+<li><p><a href="https://psrc.github.io/psrccensus/reference/get_decennial_recs.html" title="functions for getting Census tables">get_decennial_recs(geography, counties, table_codes,year, fips)</a></p></li>
+<li><p>get_pums_recs: to be coded later</p></li>
+</ul>
+<p>To use the library psrccensus, you first will need to get an api key.</p>
+<div id="set-up-your-api-key" class="section level3">
 <h3 class="hasAnchor">
-<a href="#year-table-list" class="anchor"></a>2019 1-year table list</h3>
+<a href="#set-up-your-api-key" class="anchor"></a>Set up your API key</h3>
+<p>The first time you run this code, you will need to set our Census API Key as an environment variable, if you haven’t done that before. After that you can just get it. This is the website to get a key: <a href="https://api.census.gov/data/key_signup.html" class="uri">https://api.census.gov/data/key_signup.html</a>. Once you run Sys.setenv on the Census API Key you will only need to run Sys.getenv.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">psrccensus</span><span class="op">)</span>
+<span class="co">#Sys.setenv(CENSUS_API_KEY = 'PUT YOUR KEY HERE')</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">"CENSUS_API_KEY"</span><span class="op">)</span></code></pre></div>
+<p>Next you need to decide what tables you would like to download and summarize. This is the hardest part because you have find the correct table code, decide on geography, and which years.</p>
+</div>
+<div id="acs-1-year-api-variable-list" class="section level3">
+<h3 class="hasAnchor">
+<a href="#acs-1-year-api-variable-list" class="anchor"></a>2019 ACS 1-year api Variable List</h3>
 <p><a href="https://api.census.gov/data/2019/acs/acs1/variables.html" class="uri">https://api.census.gov/data/2019/acs/acs1/variables.html</a></p>
 </div>
 <div id="year--table-list" class="section level3">
@@ -101,21 +106,57 @@ Sys.getenv("CENSUS_API_KEY")</code></pre>
 <a href="#year--table-list" class="anchor"></a>2015-2019 5 year- table list</h3>
 <p><a href="https://api.census.gov/data/2019/acs/acs5/variables.html" class="uri">https://api.census.gov/data/2019/acs/acs5/variables.html</a></p>
 </div>
+<div id="census-api-variable-list" class="section level3">
+<h3 class="hasAnchor">
+<a href="#census-api-variable-list" class="anchor"></a>2010 Census api variable list</h3>
+<p><a href="https://www.census.gov/data/developers/data-sets/decennial-census.html" class="uri">https://www.census.gov/data/developers/data-sets/decennial-census.html</a></p>
+</div>
 </div>
 <div id="get-the-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#get-the-data" class="anchor"></a>Get the data —————————————————–</h1>
-<p>The main function psrc_acs_table has four parameters: tbl_code, geog, yr,acs.</p>
-<ul>
-<li><p>tbl_code is the code of the ACS table list on the Census website, in string format, such as “B02001_005”</p></li>
-<li><p>geog is the geography, currently with the options of “county” or “tract”</p></li>
-<li><p>yr is the last numeric year of the data, such as 2019 for 2014-2019 five year, or 2019 for one year</p></li>
-<li><p>acs is which dataset you are using, such as “acs1” or “acs5”</p></li>
-</ul>
-<p>You can find the list of ACS datasets available via the api here: <a href="https://www.census.gov/data/developers/data-sets.html" class="uri">https://www.census.gov/data/developers/data-sets.html</a></p>
-<p>THe function to make a table is defined like this: psrc_table(tbl_code, geog, yr,acs)</p>
-<p>Here are a few examples of using the function.</p>
-<p>``` # Map the data —————————————————– create_tract_map is function in which you send in a data frame by tract, and it makes a map. The parameter is takes in is one ACS variable by tract.</p>
+<p>The functions are documented on: <a href="https://psrc.github.io/psrccensus/reference/index.html" class="uri">https://psrc.github.io/psrccensus/reference/index.html</a></p>
+<p>Suppose you wish to tabulate ACS one year data 2019 data for estimates of total people by race and ethnicity, as provided in table B03002 by county. You would use the following function call.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_acs_recs.html">get_acs_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'county'</span>,
+             table.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'B03002'</span><span class="op">)</span>,
+             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">)</span>,
+             acs.type <span class="op">=</span> <span class="st">'acs1'</span><span class="op">)</span></code></pre></div>
+<pre><code>## The 1-year ACS provides data for geographies with populations of 65,000 and greater.</code></pre>
+<pre><code>## Getting data from the 2019 1-year ACS</code></pre>
+<pre><code>## # A tibble: 105 x 11
+##    GEOID name   state variable estimate   moe label    concept  census_geography
+##    &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;           
+##  1 53033 King ~ Wash~ B03002_~  2252782    NA Estimat~ HISPANI~ County          
+##  2 53033 King ~ Wash~ B03002_~  2030140    NA Estimat~ HISPANI~ County          
+##  3 53033 King ~ Wash~ B03002_~  1302544  3208 Estimat~ HISPANI~ County          
+##  4 53033 King ~ Wash~ B03002_~   147822  4678 Estimat~ HISPANI~ County          
+##  5 53033 King ~ Wash~ B03002_~    13321  1990 Estimat~ HISPANI~ County          
+##  6 53033 King ~ Wash~ B03002_~   424590  7085 Estimat~ HISPANI~ County          
+##  7 53033 King ~ Wash~ B03002_~    15702  1831 Estimat~ HISPANI~ County          
+##  8 53033 King ~ Wash~ B03002_~     6574  3281 Estimat~ HISPANI~ County          
+##  9 53033 King ~ Wash~ B03002_~   119587  8804 Estimat~ HISPANI~ County          
+## 10 53033 King ~ Wash~ B03002_~     2639  1744 Estimat~ HISPANI~ County          
+## # ... with 95 more rows, and 2 more variables: acs_type &lt;chr&gt;, year &lt;dbl&gt;</code></pre>
+<p>To generate Decennial Census tables for housing units and total population by MSA, you would call:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_decennial_recs.html">get_decennial_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'msa'</span>,
+                   table_codes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"H001"</span>, <span class="st">"P001"</span><span class="op">)</span>,
+                   year <span class="op">=</span> <span class="fl">2010</span>,
+                   fips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'42660'</span>, <span class="st">"28420"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Getting data from the 2010 decennial Census</code></pre>
+<pre><code>## Loading SF1 variables for 2010 from table H001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</code></pre>
+<pre><code>## Using Census Summary File 1</code></pre>
+<pre><code>## Getting data from the 2010 decennial Census</code></pre>
+<pre><code>## Loading SF1 variables for 2010 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</code></pre>
+<pre><code>## Using Census Summary File 1</code></pre>
+<pre><code>## # A tibble: 4 x 6
+##   GEOID NAME                               variable   value label concept       
+##   &lt;chr&gt; &lt;chr&gt;                              &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;         
+## 1 28420 Kennewick-Pasco-Richland, WA Metr~ H001001    93041 Total HOUSING UNITS 
+## 2 42660 Seattle-Tacoma-Bellevue, WA Metro~ H001001  1463295 Total HOUSING UNITS 
+## 3 28420 Kennewick-Pasco-Richland, WA Metr~ P001001   253340 Total TOTAL POPULAT~
+## 4 42660 Seattle-Tacoma-Bellevue, WA Metro~ P001001  3439809 Total TOTAL POPULAT~</code></pre>
 </div>
   </div>
 
