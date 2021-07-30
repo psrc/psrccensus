@@ -35,7 +35,9 @@ Generate Census Tract Maps for Census Data
 \examples{
 library(sf)
 Sys.getenv("CENSUS_API_KEY")
-tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B02018'),years=c(2019))
+library(dplyr)
+tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
+tract.tbl<-tract.big.tbl \%>\% filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
 gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\\\Sockeye",
 ";database=","ElmerGeo",";trusted_connection=yes")
 spn = 2285
