@@ -23,3 +23,4 @@ Generate decennial estimates for multiple tables by MSA(s).
 \author{
 Christy Lam
 }
+\keyword{internal}

@@ -35,6 +35,12 @@ Sys.getenv("CENSUS_API_KEY")
 
 Next you need to decide what tables you would like to download and summarize. This is the hardest part because you have find the correct table code, decide on geography, and which years.
 
+## Finding the table ID
+
+One helpful website for finding the tables on a topic from ACS and Census is: <https://censusreporter.org/>
+
+You can also search the api variable lists from ACS and Census.
+
 ### 2019 ACS 1-year api Variable List
 
 <https://api.census.gov/data/2019/acs/acs1/variables.html>

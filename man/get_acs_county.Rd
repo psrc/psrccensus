@@ -29,6 +29,7 @@ Includes detailed variable names.
 }
 \description{
 Generate ACS estimates for multiple tables by multiple counties
+This is a helper function for the main function get_acs_recs.
 }
 \author{
 Craig Helmann

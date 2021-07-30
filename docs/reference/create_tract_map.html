@@ -118,11 +118,10 @@
     <pre class="usage"><span class='fu'>create_tract_map</span><span class='op'>(</span>
   <span class='va'>tract.tbl</span>,
   <span class='va'>tract.lyr</span>,
-  <span class='va'>tract.var</span>,
-  <span class='va'>year</span>,
   map.lat <span class='op'>=</span> <span class='fl'>47.615</span>,
   map.lon <span class='op'>=</span> <span class='op'>-</span><span class='fl'>122.257</span>,
-  map.zoom <span class='op'>=</span> <span class='fl'>8.5</span>
+  map.zoom <span class='op'>=</span> <span class='fl'>8.5</span>,
+  wgs84 <span class='op'>=</span> <span class='fl'>4326</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -137,14 +136,6 @@
       <td><p>A spatial layer of Census Tracts.</p></td>
     </tr>
     <tr>
-      <th>tract.var</th>
-      <td><p>A character string or vector of attributes to map</p></td>
-    </tr>
-    <tr>
-      <th>year</th>
-      <td><p>A numeric value equal or greater than 2010 to the latest ACS available year.</p></td>
-    </tr>
-    <tr>
       <th>map.lat</th>
       <td><p>A numeric value for the latitude of the center point for your map. Defaults to 47.615 (PSRC Region)</p></td>
     </tr>
@@ -156,6 +147,10 @@
       <th>map.zoom</th>
       <td><p>A numeric value for the default zoom level for your map. Defaults to 8.5 (PSRC Region)</p></td>
     </tr>
+    <tr>
+      <th>wgs84</th>
+      <td><p>A code for mapping, this should be pulled out of the function or something</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -166,9 +161,25 @@
     <p>Suzanne Childress</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"CENSUS_API_KEY"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "c4780eb03010d73b7ae4e6894c1592375e545a21"</div><div class='input'><span class='va'>tract.tbl</span> <span class='op'>&lt;-</span> <span class='fu'>psrccensus</span><span class='fu'>::</span><span class='fu'><a href='get_acs_recs.html'>get_acs_recs</a></span><span class='op'>(</span>geography<span class='op'>=</span><span class='st'>'tract'</span>,table.names<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'B03002'</span><span class='op'>)</span>,years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Getting data from the 2015-2019 5-year ACS</span></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: package 'sf' was built under R version 4.0.5</span></div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"CENSUS_API_KEY"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "c4780eb03010d73b7ae4e6894c1592375e545a21"</div><div class='input'><span class='va'>tract.tbl</span> <span class='op'>&lt;-</span> <span class='fu'>psrccensus</span><span class='fu'>::</span><span class='fu'><a href='get_acs_recs.html'>get_acs_recs</a></span><span class='op'>(</span>geography<span class='op'>=</span><span class='st'>'tract'</span>,table.names<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'B02018'</span><span class='op'>)</span>,years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Getting data from the 2015-2019 5-year ACS</span></div><div class='input'><span class='va'>gdb.nm</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"MSSQL:server="</span>,<span class='st'>"AWS-PROD-SQL\\Sockeye"</span>,
+<span class='st'>";database="</span>,<span class='st'>"ElmerGeo"</span>,<span class='st'>";trusted_connection=yes"</span><span class='op'>)</span>
+<span class='va'>spn</span> <span class='op'>=</span> <span class='fl'>2285</span>
+<span class='va'>tract_layer_name</span><span class='op'>=</span><span class='st'>"dbo.tract2010_nowater"</span>
+<span class='va'>tract.lyr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>gdb.nm</span>, <span class='va'>tract_layer_name</span>, crs <span class='op'>=</span> <span class='va'>spn</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Reading layer `dbo.tract2010_nowater' from data source 
+#&gt;   `MSSQL:server=AWS-PROD-SQL\Sockeye;database=ElmerGeo;trusted_connection=yes' 
+#&gt;   using driver `MSSQLSpatial'
+#&gt; Simple feature collection with 773 features and 19 fields
+#&gt; Geometry type: MULTIPOLYGON
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 1099353 ymin: -97548.53 xmax: 1622631 ymax: 477101.5
+#&gt; Projected CRS: NAD83 / Washington North (ftUS)</div><div class='input'><span class='fu'>create_tract_map</span><span class='op'>(</span><span class='va'>tract.tbl</span>, <span class='va'>tract.lyr</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error: Problem with `filter()` input `..1`.</span>
+#&gt; <span class='error'><span style='color: #0000BB;'>i</span> Input `..1` is `.data$label %in% tract.var &amp; .data$year == year`.</span>
+#&gt; <span class='error'><span style='color: #BB0000;'>x</span> argument "tract.var" is missing, with no default</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

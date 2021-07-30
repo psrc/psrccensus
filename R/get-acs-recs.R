@@ -1,7 +1,7 @@
 #' ACS Estimates by County
 #'
 #' Generate ACS estimates for multiple tables by multiple counties
-#'
+#' This is a helper function for the main function get_acs_recs.
 #' @param state A character string state name or abbreviation. Defaults to Washington.
 #' @param counties A character string or vector of counties. Defaults to PSRC counties.
 #' @param table.names A character string or vector of Census table codes.

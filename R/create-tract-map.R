@@ -4,11 +4,10 @@
 #'
 #' @param tract.tbl A data frame of census data by Census Tract to map.
 #' @param tract.lyr A spatial layer of Census Tracts.
-#' @param tract.var A character string or vector of attributes to map
-#' @param year A numeric value equal or greater than 2010 to the latest ACS available year.
 #' @param map.lat A numeric value for the latitude of the center point for your map. Defaults to 47.615 (PSRC Region)
 #' @param map.lon A numeric value for the longitude of the center point for your map. Defaults to -122.257 (PSRC Region)
 #' @param map.zoom A numeric value for the default zoom level for your map. Defaults to 8.5 (PSRC Region)
+#' @param wgs84 A code for mapping, this should be pulled out of the function or something
 #'
 #' @author Suzanne Childress
 #'
@@ -18,24 +17,27 @@
 #' @importFrom rlang .data
 #'
 #' @examples
+#' library(sf)
 #' Sys.getenv("CENSUS_API_KEY")
-#' tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
-#'
-#'
-#'
+#' tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B02018'),years=c(2019))
+#' gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\Sockeye",
+#' ";database=","ElmerGeo",";trusted_connection=yes")
+#' spn = 2285
+#' tract_layer_name="dbo.tract2010_nowater"
+#' tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
+#' create_tract_map(tract.tbl, tract.lyr)
 #' @export
-create_tract_map<-function(tract.tbl, tract.lyr, tract.var, year, map.lat=47.615, map.lon=-122.257, map.zoom=8.5){
+create_tract_map<-function(tract.tbl, tract.lyr, map.lat=47.615, map.lon=-122.257, map.zoom=8.5, wgs84=4326){
 
   # Summarize and Aggregate Tract Data by Year and Attribute to Map and join to tract layer for mapping
   tbl <- tract.tbl %>%
-    dplyr::filter(.data$label %in% tract.var & .data$year == year) %>%
     dplyr::select(.data$GEOID,.data$estimate) %>%
     dplyr::mutate(dplyr::across(c('GEOID'), as.character))%>%
     dplyr::group_by(.data$GEOID) %>%
     dplyr::summarise(Total=sum(.data$estimate))
 
-  c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("GEOID10"="GEOID")) %>%
-    sf::st_transform(4326)
+  c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("geoid10"="GEOID")) %>%
+    sf::st_transform(wgs84)
 
   # Calculate Bins from Data and create color palette
   rng <- range(c.layer$Total)

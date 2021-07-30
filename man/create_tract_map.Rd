@@ -7,11 +7,10 @@
 create_tract_map(
   tract.tbl,
   tract.lyr,
-  tract.var,
-  year,
   map.lat = 47.615,
   map.lon = -122.257,
-  map.zoom = 8.5
+  map.zoom = 8.5,
+  wgs84 = 4326
 )
 }
 \arguments{
@@ -19,15 +18,13 @@ create_tract_map(
 
 \item{tract.lyr}{A spatial layer of Census Tracts.}
 
-\item{tract.var}{A character string or vector of attributes to map}
-
-\item{year}{A numeric value equal or greater than 2010 to the latest ACS available year.}
-
 \item{map.lat}{A numeric value for the latitude of the center point for your map. Defaults to 47.615 (PSRC Region)}
 
 \item{map.lon}{A numeric value for the longitude of the center point for your map. Defaults to -122.257 (PSRC Region)}
 
 \item{map.zoom}{A numeric value for the default zoom level for your map. Defaults to 8.5 (PSRC Region)}
+
+\item{wgs84}{A code for mapping, this should be pulled out of the function or something}
 }
 \value{
 a leaflet map object.
@@ -36,11 +33,16 @@ a leaflet map object.
 Generate Census Tract Maps for Census Data
 }
 \examples{
+library(sf)
 Sys.getenv("CENSUS_API_KEY")
-tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
+tract.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B02018'),years=c(2019))
+gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\\\Sockeye",
+";database=","ElmerGeo",";trusted_connection=yes")
+spn = 2285
+tract_layer_name="dbo.tract2010_nowater"
+tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
+create_tract_map(tract.tbl, tract.lyr)
 }
-
-
 \author{
 Suzanne Childress
 }

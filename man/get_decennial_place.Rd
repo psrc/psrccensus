@@ -25,3 +25,4 @@ Generate decennial estimates for multiple tables by place(s).
 \author{
 Christy Lam
 }
+\keyword{internal}
