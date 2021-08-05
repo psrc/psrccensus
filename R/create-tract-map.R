@@ -6,6 +6,7 @@
 #' @param tract.lyr A spatial layer of Census Tracts.
 #' @param map.title Character. Map title.
 #' @param map.subtitle Character. A map subtitle that will appear below the map title.
+#' @param map.title.position Character. Place the map title and subtitle in 'bottomleft','bottomright', topleft', or 'topright'.
 #' @param legend.title Character. Legend title.
 #' @param legend.subtitle Character. A legend subtitle that will appear below the legend subtitle.
 #' @param map.lat A numeric value for the latitude of the center point for your map. Defaults to 47.615 (PSRC Region)
@@ -30,7 +31,11 @@
 #' tract.tbl <- tract.big.tbl %>%
 #' filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
 #'
-#' gdb.nm <- paste0("MSSQL:server=","AWS-PROD-SQL\\Sockeye",";database=","ElmerGeo",";trusted_connection=yes")
+#' gdb.nm <- paste0("MSSQL:server=",
+#' "AWS-PROD-SQL\\Sockeye",
+#' ";database=",
+#' "ElmerGeo",
+#' ";trusted_connection=yes")
 #'
 #' spn <-  2285
 #'
@@ -40,10 +45,11 @@
 #'
 #' create_tract_map(tract.tbl, tract.lyr)
 #' @export
-create_tract_map<-function(tract.tbl, tract.lyr,
-                           map.title = NULL, map.subtitle = NULL,
-                           legend.title = NULL, legend.subtitle = NULL,
-                           map.lat=47.615, map.lon=-122.257, map.zoom=8.5, wgs84=4326){
+create_tract_map <- function(tract.tbl, tract.lyr,
+                             map.title = NULL, map.subtitle = NULL,
+                             map.title.position = NULL,
+                             legend.title = NULL, legend.subtitle = NULL,
+                             map.lat=47.615, map.lon=-122.257, map.zoom=8.5, wgs84=4326){
 
   # Summarize and Aggregate Tract Data by Year and Attribute to Map and join to tract layer for mapping
   tbl <- tract.tbl %>%
@@ -107,7 +113,7 @@ create_tract_map<-function(tract.tbl, tract.lyr,
                        title = paste(legend.title, '<br>', legend.subtitle)) %>%
 
     leaflet::addControl(html = paste(map.title, '<br>', map.subtitle),
-                        position = c("topleft"),
+                        position = map.title.position,
                         layerId = 'mapTitle') %>%
 
     leaflet::addLayersControl(baseGroups = "CartoDB.VoyagerNoLabels",
