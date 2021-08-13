@@ -1,5 +1,3 @@
-context("get-acs-recs")
-
 test_that('get-acs-recs returns a df with correctly specified inputs',
           {expect_s3_class(get_acs_recs(geography = 'county',
                                         table.names = c('B03002',"C17002"),
