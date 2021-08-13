@@ -24,8 +24,9 @@
 #' @examples
 #' library(sf)
 #' library(dplyr)
-#'
+#' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")
+#' }
 #'
 #' tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
 #' tract.tbl <- tract.big.tbl %>%
@@ -43,7 +44,11 @@
 #'
 #' tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
 #'
-#' create_tract_map(tract.tbl, tract.lyr)
+#' create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,
+#' map.title='Black, non-Hispanic Population',
+#',map.title.position='topleft', legend.title='Black, Non-Hispanic Population',
+#' legend.subtitle='by Census Tract')
+
 #' @export
 create_tract_map <- function(tract.tbl, tract.lyr,
                              map.title = NULL, map.subtitle = NULL,
