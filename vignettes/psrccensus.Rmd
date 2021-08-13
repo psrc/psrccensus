@@ -57,6 +57,9 @@ You can also search the api variable lists from ACS and Census.
 
 <https://www.census.gov/data/developers/data-sets/decennial-census.html>
 
+### Which variables are available in which year in ACS and Census?
+Generally, ACS 1-year data are available down for geographies with populations of 65,000 or more. So you can easily get 1-year data for counties or the region, for example.  Once you want to go down to the tract-level, 5-year ACS data is more appropriate. Decennial Census data is available down to the block level.
+
 # Get the data -----------------------------------------------------
 
 The functions are documented on: <https://psrc.github.io/psrccensus/reference/index.html>
