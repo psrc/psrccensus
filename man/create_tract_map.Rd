@@ -7,6 +7,11 @@
 create_tract_map(
   tract.tbl,
   tract.lyr,
+  map.title = NULL,
+  map.subtitle = NULL,
+  map.title.position = NULL,
+  legend.title = NULL,
+  legend.subtitle = NULL,
   map.lat = 47.615,
   map.lon = -122.257,
   map.zoom = 8.5,
@@ -17,6 +22,16 @@ create_tract_map(
 \item{tract.tbl}{A data frame of census data by Census Tract to map.}
 
 \item{tract.lyr}{A spatial layer of Census Tracts.}
+
+\item{map.title}{Character. Map title.}
+
+\item{map.subtitle}{Character. A map subtitle that will appear below the map title.}
+
+\item{map.title.position}{Character. Place the map title and subtitle in 'bottomleft','bottomright', topleft', or 'topright'.}
+
+\item{legend.title}{Character. Legend title.}
+
+\item{legend.subtitle}{Character. A legend subtitle that will appear below the legend subtitle.}
 
 \item{map.lat}{A numeric value for the latitude of the center point for your map. Defaults to 47.615 (PSRC Region)}
 
@@ -34,15 +49,26 @@ Generate Census Tract Maps for Census Data
 }
 \examples{
 library(sf)
-Sys.getenv("CENSUS_API_KEY")
 library(dplyr)
+
+Sys.getenv("CENSUS_API_KEY")
+
 tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
-tract.tbl<-tract.big.tbl \%>\% filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
-gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\\\Sockeye",
-";database=","ElmerGeo",";trusted_connection=yes")
-spn = 2285
-tract_layer_name="dbo.tract2010_nowater"
+tract.tbl <- tract.big.tbl \%>\%
+filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
+
+gdb.nm <- paste0("MSSQL:server=",
+"AWS-PROD-SQL\\\\Sockeye",
+";database=",
+"ElmerGeo",
+";trusted_connection=yes")
+
+spn <-  2285
+
+tract_layer_name <- "dbo.tract2010_nowater"
+
 tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
+
 create_tract_map(tract.tbl, tract.lyr)
 }
 \author{
