@@ -5,7 +5,7 @@ How to install in R Console:
 
 library(devtools)
 
-devtools:install_github("psrc/psrccensus")
+devtools::install_github("psrc/psrccensus")
 
 
 Documentation is available here: https://psrc.github.io/psrccensus/
