@@ -7,5 +7,7 @@ library(devtools)
 
 devtools::install_github("psrc/psrccensus")
 
+You may be prompted to install some dependency libraries after that; you can install all libraries by selecting option 0.
+
 
 Documentation is available here: https://psrc.github.io/psrccensus/
