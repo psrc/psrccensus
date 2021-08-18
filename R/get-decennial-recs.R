@@ -93,10 +93,11 @@ get_decennial_place <- function(table_codes, year, fips = NULL, state = 'WA') {
 #' Decennial Estimates
 #'
 #' Generate decennial estimates for multiple tables by tracts, counties, MSAs, or places.
-#'
+#' Currently only working for SF1 tables.
 #' @param geography A character string as either 'tract', 'county', 'msa', or 'place'.
 #' @param counties A character string or vector of counties. Defaults to PSRC counties.
-#' @param table_codes A character string or vector of Census table codes.
+#' @param table_codes A character string or vector of Census table codes,
+#' the table code will be padded with 0s such as "H001", as opposed to "H1
 #' @param year Numeric. A decennial year equal or greater than 2010.
 #' @param fips Character. Single code or vector of either MSA or place fips codes.
 #'

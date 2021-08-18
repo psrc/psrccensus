@@ -17,7 +17,8 @@ get_decennial_recs(
 
 \item{counties}{A character string or vector of counties. Defaults to PSRC counties.}
 
-\item{table_codes}{A character string or vector of Census table codes.}
+\item{table_codes}{A character string or vector of Census table codes,
+the table code will be padded with 0s such as "H001", as opposed to "H1}
 
 \item{year}{Numeric. A decennial year equal or greater than 2010.}
 
@@ -28,6 +29,7 @@ a tibble of decennial estimates by selected geography for selected table codes. 
 }
 \description{
 Generate decennial estimates for multiple tables by tracts, counties, MSAs, or places.
+Currently only working for SF1 tables.
 }
 \examples{
 \dontrun{
