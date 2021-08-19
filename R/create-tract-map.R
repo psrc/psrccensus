@@ -48,7 +48,11 @@
 #' map.title='Black, non-Hispanic Population',
 #',map.title.position='topleft', legend.title='Black, Non-Hispanic Population',
 #' legend.subtitle='by Census Tract')
-
+#' tract.big.tbl <- psrccensus::get_decennial_recs(geography='tract',table_codes=c('P005'),year=c(2010))
+#' tract.tbl <- tract.big.tbl %>%
+#'  filter(label=='Total!!Hispanic or Latino')
+#' m2<-create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,
+#'                    legend.title='Hispanic Population', legend.subtitle='by Census Tract')
 #' @export
 create_tract_map <- function(tract.tbl, tract.lyr,
                              map.title = NULL, map.subtitle = NULL,
@@ -56,8 +60,11 @@ create_tract_map <- function(tract.tbl, tract.lyr,
                              legend.title = NULL, legend.subtitle = NULL,
                              map.lat=47.615, map.lon=-122.257, map.zoom=8.5, wgs84=4326){
 
+
   # Summarize and Aggregate Tract Data by Year and Attribute to Map and join to tract layer for mapping
+  # rename census value column to estimate to match ACS
   tbl <- tract.tbl %>%
+    dplyr::rename_at(vars(matches("value")),function(x) "estimate") %>%
     dplyr::select(.data$GEOID,.data$estimate) %>%
     dplyr::mutate(dplyr::across(c('GEOID'), as.character))%>%
     dplyr::group_by(.data$GEOID) %>%
