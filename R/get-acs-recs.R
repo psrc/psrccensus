@@ -38,6 +38,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
         total <- tbl %>%
           dplyr::select(.data$variable, .data$estimate, .data$moe) %>%
           dplyr::group_by(.data$variable) %>%
+          dplyr::mutate(.data$estimate =replace_na(.data$estimate,0))%>%
           dplyr::summarize(sumest = sum(.data$estimate), summoe = tidycensus::moe_sum(.data$moe, .data$estimate)) %>%
           dplyr::rename(estimate=.data$sumest, moe=.data$summoe) %>%
           dplyr::mutate(GEOID="REGION", name="Region", state=state)
