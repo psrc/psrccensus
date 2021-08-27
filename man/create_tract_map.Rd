@@ -74,11 +74,7 @@ create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,
 map.title='Black, non-Hispanic Population',
 ,map.title.position='topleft', legend.title='Black, Non-Hispanic Population',
 legend.subtitle='by Census Tract')
-tract.big.tbl <- psrccensus::get_decennial_recs(geography='tract',table_codes=c('P005'),year=c(2010))
-tract.tbl <- tract.big.tbl \%>\%
- filter(label=='Total!!Hispanic or Latino')
-m2<-create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,
-                   legend.title='Hispanic Population', legend.subtitle='by Census Tract')
+
 }
 \author{
 Suzanne Childress

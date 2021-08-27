@@ -28,8 +28,11 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, geography='county', county=counties, year=year, survey=acs.type, table=table)
 
+
       # Split County Name for County and State
-      tbl <- tbl %>% tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",")
+      tbl <- tbl %>% tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",") %>%
+                     dplyr::mutate(estimate =tidyr::replace_na(.data$estimate,0))
+
       tbl$state <- trimws(tbl$state, "l")
 
       # Create a Total for Region if all 4 PSRC Counties are pulled and then join to county table
@@ -37,6 +40,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 
         total <- tbl %>%
           dplyr::select(.data$variable, .data$estimate, .data$moe) %>%
+          dplyr::mutate(estimate =tidyr::replace_na(.data$estimate,0))%>%
           dplyr::group_by(.data$variable) %>%
           dplyr::summarize(sumest = sum(.data$estimate), summoe = tidycensus::moe_sum(.data$moe, .data$estimate)) %>%
           dplyr::rename(estimate=.data$sumest, moe=.data$summoe) %>%
