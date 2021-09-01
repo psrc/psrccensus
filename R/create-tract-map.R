@@ -60,7 +60,7 @@ create_tract_map <- function(tract.tbl, tract.lyr,
   # Summarize and Aggregate Tract Data by Year and Attribute to Map and join to tract layer for mapping
   # rename census value column to estimate to match ACS
   tbl <- tract.tbl %>%
-    dplyr::rename_at(vars(matches("value")),function(x) "estimate") %>%
+    dplyr::rename_at(dplyr::vars(matches("value")),function(x) "estimate") %>%
     dplyr::select(.data$GEOID,.data$estimate) %>%
     dplyr::mutate(dplyr::across(c('GEOID'), as.character))%>%
     dplyr::group_by(.data$GEOID) %>%
