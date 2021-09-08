@@ -69,15 +69,8 @@ create_tract_map <- function(tract.tbl, tract.lyr,
   c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("geoid10"="GEOID")) %>%
     sf::st_transform(wgs84)
 
-  # Calculate Bins from Data and create color palette
-  rng <- range(c.layer$Total)
-  max_bin <- max(abs(rng))
-  round_to <- 10^floor(log10(max_bin))
-  max_bin <- ceiling(max_bin/round_to)*round_to
-  breaks <- (sqrt(max_bin)*c(0.1, 0.2,0.4, 0.6, 0.8, 1))^2
-  bins <- c(0, breaks)
+  pal <- leaflet::colorNumeric(palette="Purples", domain = c.layer$Total)
 
-  pal <- leaflet::colorBin("YlOrRd", domain = c.layer$Total, bins = bins)
 
   labels <- paste0("Census Tract: ", c.layer$geoidstr, '<p></p>',
                    'Total: ', prettyNum(round(c.layer$Total, -1), big.mark = ",")) %>% lapply(htmltools::HTML)
@@ -97,10 +90,11 @@ create_tract_map <- function(tract.tbl, tract.lyr,
     leaflet::addPolygons(data=c.layer,
                          fillOpacity = 0.7,
                          fillColor = pal(c.layer$Total),
-                         opacity = 0.7,
                          weight = 0.7,
                          color = "#BCBEC0",
                          group="Population",
+                         opacity = 0,
+                         stroke=FALSE,
                          options = leaflet::leafletOptions(pane = "polygons"),
                          dashArray = "",
                          highlight = leaflet::highlightOptions(
@@ -116,7 +110,7 @@ create_tract_map <- function(tract.tbl, tract.lyr,
                            direction = "auto")) %>%
 
     leaflet::addLegend(pal = pal,
-                       values = c.layer$estimate,
+                       values = c.layer$Total,
                        position = "bottomright",
                        title = paste(legend.title, '<br>', legend.subtitle)) %>%
 
