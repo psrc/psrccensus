@@ -5,6 +5,10 @@ reference:
   - get_acs_recs
   - get_decennial_recs
   - create_tract_map
+- subtitle: Formatting functions
+  desc: Functions to better format the data
+  contents:
+  - format_estimates
 - subtitle: Helper functions
   desc: Helper functions to clean up the code
   contents:

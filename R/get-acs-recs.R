@@ -240,6 +240,8 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
   return(census.data)
 }
 
+
+
 #' ACS Estimates
 #'
 #' Generate ACS estimates for multiple tables by tracts, counties, MSAs, or places for multiple years.
