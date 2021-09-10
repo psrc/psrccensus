@@ -1,16 +1,30 @@
-library(magrittr)
-
-Sys.getenv("CENSUS_API_KEY")
-
-# format_estimates() takes three arguments, two of which have defaults.
-# 'type' can be 'total' or 'share'. 'moe' can be TRUE or FALSE.
-# test <- format_estimates(mydf, type = 'share', moe = FALSE)
-
-mydf <- psrccensus::get_acs_recs(geography = 'county',
-                                 table.names = c('B03002'),
-                                 years=c(2019),
-                                 acs.type = 'acs1')
-
+#' Format Estimates
+#'
+#' Format estimates of a county summary table with the option to include shares and share margins of error.
+#'
+#' @param table A data frame/tibble from `get_acs_recs()` for a single table and time period.
+#' @param type A character, select either 'total' or 'share'.
+#' @param moe A logical value, TRUE or FALSE to include or exclude margins of error.
+#'
+#' @author Christy Lam
+#'
+#' @return A data frame of ACS estimates by PSRC counties and region of either total estimates or proportions, with or without margins of
+#' error.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
+#'
+#' @examples
+#' Sys.getenv("CENSUS_API_KEY")
+#' df <- psrccensus::get_acs_recs(geography = 'county',
+#'                                table.names = c('B03002'),
+#'                                years=c(2019),
+#'                                acs.type = 'acs1')
+#'
+#' format_estimates(df)
+#'
+#' format_estimates(df, type = 'share', moe = FALSE)
+#' @export
 format_estimates <- function(table, type = 'total', moe = TRUE){
 
   # replace_na moe with 0s
