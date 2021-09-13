@@ -23,7 +23,8 @@ Imports:
 	rlang,
 	sf,
 	leaflet,
-	htmltools
+	htmltools,
+	stringr
 Suggests: 
     rmarkdown,
     knitr,
