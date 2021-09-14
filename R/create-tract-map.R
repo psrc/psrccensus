@@ -66,13 +66,18 @@ create_tract_map <- function(tract.tbl, tract.lyr,
     dplyr::group_by(.data$GEOID) %>%
     dplyr::summarise(Total=sum(.data$estimate))
 
-  c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("geoid10"="GEOID")) %>%
+    tract.lyr<-tract.lyr%>%
+    # make geo names across 2010 and 2020
+    dplyr::rename_at(dplyr::vars(matches("geoid10")),function(x) "geoid") %>%
+    dplyr::rename_at(dplyr::vars(matches("geoid20")),function(x) "geoid")
+
+  c.layer <- dplyr::left_join(tract.lyr,tbl, by = c("geoid"="GEOID")) %>%
     sf::st_transform(wgs84)
 
   pal <- leaflet::colorNumeric(palette="Purples", domain = c.layer$Total)
 
 
-  labels <- paste0("Census Tract: ", c.layer$geoidstr, '<p></p>',
+  labels <- paste0("Census Tract: ", c.layer$geoid, '<p></p>',
                    'Total: ', prettyNum(round(c.layer$Total, -1), big.mark = ",")) %>% lapply(htmltools::HTML)
 
   m <- leaflet::leaflet() %>%
