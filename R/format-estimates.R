@@ -18,12 +18,19 @@
 #' Sys.getenv("CENSUS_API_KEY")
 #' df <- psrccensus::get_acs_recs(geography = 'county',
 #'                                table.names = c('B03002'),
-#'                                years=c(2019),
+#'                                years = c(2019),
 #'                                acs.type = 'acs1')
 #'
 #' format_estimates(df)
-#'
 #' format_estimates(df, type = 'share', moe = FALSE)
+#'
+#' t <- get_acs_recs(geography = 'county',
+#'                   counties = c("King", "Kitsap"),
+#'                   table.names = c('B03002'),
+#'                   years = c(2019),
+#'                   acs.type = 'acs1')
+#'
+#' format_estimates(t, type = 'share', moe = TRUE)
 #' @export
 format_estimates <- function(table, type = 'total', moe = TRUE){
 
@@ -74,8 +81,14 @@ format_estimates <- function(table, type = 'total', moe = TRUE){
   sort.cols <- setdiff(colnames(adf), c('variable', 'label', 'concept', 'acs_type', 'year'))
   new.col.order <- c(c('variable', 'label', 'concept', 'acs_type', 'year'), sort(sort.cols))
   adf <- adf %>%
-    dplyr::select(dplyr::all_of(new.col.order)) %>%
+    dplyr::select(dplyr::all_of(new.col.order))
+
+  region.col <- stringr::str_subset(colnames(adf), "^Region")
+
+  if(!is.null(region.col)) {
+  adf <- adf %>%
     dplyr::relocate(dplyr::starts_with('Region'), .after = dplyr::last_col())
+  }
 
   return(adf)
 }
