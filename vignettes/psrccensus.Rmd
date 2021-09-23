@@ -1,7 +1,5 @@
 ---
 title: "Getting Started"
-author: "Data Science"
-date: "`r format(Sys.time(), '%B %Y')`"
 output: html_document
 ---
 
@@ -9,113 +7,77 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# psrccensus
-
-The psrccensus package allows R users at PSRC to download, summarize, and visualize Census, ACS, and PUMS data on common PSRC Census geographies.
+The `psrccensus` package allows R users at PSRC to download, summarize, and visualize Census, ACS, and PUMS data on common PSRC Census geographies.
 
 Some of the Census, ACS, and PUMS data can be found in our Elmer database: [see the internal wiki for more information](http://aws-linux/mediawiki/index.php/Elmer).
 
-You would want to use this psrccensus R library as opposed to Elmer if: you are working in R, you need a table not in Elmer, and/or you would like a formatted table or map to be produced.
+You would want to use `psrccensus` as opposed to Elmer if: you are working in R, you need a table not in Elmer, and/or you would like a formatted table or map to be produced.
+
+## Primary Functions
 
 The three most important functions are:
 
--   [get_acs_recs(geography,state,counties,table.names.years, FIPS, acs.type)](https://psrc.github.io/psrccensus/reference/get_acs_recs.html "function for getting ACS tables")
+-   [`get_acs_recs()`](https://psrc.github.io/psrccensus/reference/get_acs_recs.html "function for getting ACS tables")
 
--   [get_decennial_recs(geography, counties, table_codes,year, fips)](https://psrc.github.io/psrccensus/reference/get_decennial_recs.html "functions for getting Census tables")
+-   [`get_decennial_recs()`](https://psrc.github.io/psrccensus/reference/get_decennial_recs.html "functions for getting Census tables")
 
--   get_pums_recs: to be coded later
+-   `get_pums_recs()`: TBA
 
-We have one fancy function that let's create a map of an ACS variable by tract.
+We have one fancy function that lets us create a map of an ACS variable by tract.
 
--   [create_tract_map( tract.tbl, tract.lyr, map.lat = 47.615, map.lon = -122.257, map.zoom = 8.5, wgs84 = 4326 )](https://psrc.github.io/psrccensus/reference/create_tract_map.html)
+-   [`create_tract_map()`](https://psrc.github.io/psrccensus/reference/create_tract_map.html)
 
-To use the library psrccensus, you first will need to get an api key.
+To use `psrccensus`, you first will need to get an API key.
 
-### Set up your API key
+## Set up your API Key
 
-The first time you run this code, you will need to set our Census API Key as an environment variable, if you haven't done that before. After that you can just get it. This is the website to get a key: <https://api.census.gov/data/key_signup.html>. Once you run Sys.setenv on the Census API Key you will only need to run Sys.getenv.
+A key is required to access the Census API. If you haven't done this before, you should set your Census API Key as an environment variable or store it in your .Renviron file. 
 
-```{r keys, results='hide'}
-library(psrccensus)
-#Sys.setenv(CENSUS_API_KEY = 'PUT YOUR KEY HERE')
-Sys.getenv("CENSUS_API_KEY")
-```
+Obtain a Census API key here: <https://api.census.gov/data/key_signup.html>.
 
-Next you need to decide what tables you would like to download and summarize. This is the hardest part because you have find the correct table code, decide on geography, and which years.
+There are two methods to set your key:
 
-## Finding the table ID
+1.  Once you run `Sys.setenv()` on the Census API Key you will only need to run `Sys.getenv()`.
+    ```{r keys, results='hide'}
+    library(psrccensus)
+    #Sys.setenv(CENSUS_API_KEY = 'PUT YOUR KEY HERE')
+    Sys.getenv("CENSUS_API_KEY")
+    ```
 
-One helpful website for finding the tables on a topic from ACS and Census is: <https://censusreporter.org/>
+2.  An alternative method is to install the key in your .Renviron File for repeated use. This is done via the `tidycensus` package. The benefit is that you would not have to call `Sys.getenv()` everytime you run your script or other scripts using `psrccensus` or `tidycensus`.
 
-Many of our frequently used Census/ACS/PUMS tables are nicely described in our wiki. Note that Census table names in Elmer are given a two character code such as H2.  In the R library, to be consistent with tidycensus the codes are padded with zeroes such as H002.
+    ```{r keys2, eval=FALSE, results='hide'}
+    # first time, run once in console. Then restart R
+    tidycensus::census_api_key('your api key', install = TRUE)
+    ```
 
-[2010 Census Table Names](http://aws-linux/mediawiki/index.php/2010_Decennial_Summary_Census_Datasets_in_Elmer)
+Next you need to decide what tables you would like to download and summarize. This is the hardest part because you have to find the correct table code, decide on geography, and which years.
 
+## Finding Tables and their Variables
 
-[2019 ACS Table Names](http://aws-linux/mediawiki/index.php/Census-Year_2019_Summary_Datasets_in_Elmer)
+One helpful website for finding the tables on a topic from the ACS and Census is: <https://censusreporter.org/>
 
-You can also search the api variable lists from ACS and Census.
+Many of our frequently used Census/ACS/PUMS tables are nicely described in our wiki. Note that Census table names in Elmer are given a two character code such as "H2". In `psrccensus`, to be consistent with the `tidycensus` package, codes must be padded with zeroes so that "H2" becomes "H002".
 
-### 2019 ACS 1-year api Variable List
+-   [2010 Census Table Names](http://aws-linux/mediawiki/index.php/2010_Decennial_Summary_Census_Datasets_in_Elmer)
+-   [2019 ACS Table Names](http://aws-linux/mediawiki/index.php/Census-Year_2019_Summary_Datasets_in_Elmer)
 
-<https://api.census.gov/data/2019/acs/acs1/variables.html>
+### Variable Lists
 
-### 2015-2019 5 year- table list
+You can also search the API variable lists from ACS and Census.
 
-<https://api.census.gov/data/2019/acs/acs5/variables.html>
+-   **2019 ACS 1-year**: <https://api.census.gov/data/2019/acs/acs1/variables.html>
 
-### 2010 Census api variable list
+-   **2015-2019 ACS 5-year**: <https://api.census.gov/data/2019/acs/acs5/variables.html>
 
-<https://www.census.gov/data/developers/data-sets/decennial-census.html>
+-   **2010 Census**: <https://www.census.gov/data/developers/data-sets/decennial-census.html>
 
 ### Which variables are available in which year in ACS and Census?
-Generally, ACS 1-year data are available down for geographies with populations of 65,000 or more. So you can easily get 1-year data for counties or the region, for example.  Once you want to go down to the tract-level, 5-year ACS data is more appropriate. Decennial Census data is available down to the block level.
 
-# Get the data -----------------------------------------------------
+Generally, ACS 1-year data are available down for geographies with populations of 65,000 or more, so you can easily get 1-year data for counties or the region, for example. Once you want to go down to the tract-level, 5-year ACS data is more appropriate. Decennial Census data is available down to the block level.
 
-The functions are documented on: <https://psrc.github.io/psrccensus/reference/index.html>
+Functions currently in `psrccensus` will only return data in **Washington State** at the **county, tract, MSA, and place** levels. To access other geographies, consider using `tidycensus` directly.
 
-## Get ACS Data
+## Get Data
 
-Suppose you wish to tabulate ACS one year data 2019 data for estimates of total people by race and ethnicity, as provided in table B03002 by county. You would use the following function call.
-
-```{r acs examples}
-get_acs_recs(geography = 'county',
-             table.names = c('B03002'),
-             years=c(2019),
-             acs.type = 'acs1')
-
-
-```
-
-## Get Census data
-
-To generate Decennial Census tables for housing units and total population by MSA, you would call the following. Note: the table names are padded with 0s, so you call "H001" as opposed to "H1" as you would in Elmer.  Only SF1 tables are currently implemented.
-
-```{r census examples}
-get_decennial_recs(geography = 'msa',
-                   table_codes = c("H001", "P001"),
-                   year = 2010,
-                   fips = c('42660', "28420"))
-
-```
-
-## Make a map of ACS data by tract
-
-Let's say you want to create a map of the tracts in the region for one variable. You can use the function create_tract_map. Here's any example, mapping non-Hispanic Black or African American population alone by tract:
-
-```{r tract_map example}
-library(sf)
-library(dplyr)
-tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
-tract.tbl<-tract.big.tbl %>% filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
-gdb.nm = paste0("MSSQL:server=","AWS-PROD-SQL\\Sockeye",
-";database=","ElmerGeo",";trusted_connection=yes")
-spn = 2285
-tract_layer_name="dbo.tract2010_nowater"
-tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn)
-create_tract_map(tract.tbl, tract.lyr, map.title='Black, non-Hispanic Population',
-map.title.position='topleft', legend.title='Black, Non-Hispanic Population',
-legend.subtitle='by Census Tract')
-
-```
+View the [Get Data](https://psrc.github.io/psrccensus/articles/get-data.html) vignette (under Articles) on how to use the primary functions.

@@ -1,7 +1,8 @@
-pandoc: 2.11.4
+pandoc: 2.11.2
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  get-data: get-data.html
   psrccensus: psrccensus.html
-last_built: 2021-09-14T16:54Z
+last_built: 2021-09-23T00:39Z
 

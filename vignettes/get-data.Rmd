@@ -1,0 +1,75 @@
+---
+title: "Get Data"
+description: >
+  Learn how to get started with the primary functions.
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{Get Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(psrccensus)
+```
+
+## Get ACS data
+
+Suppose you wish to tabulate ACS one-year 2019 data for estimates of total people by race and ethnicity, as provided in table B03002 by PSRC counties. You would use the following function call:
+
+```{r acs examples, message=FALSE}
+get_acs_recs(geography = 'county',
+             table.names = 'B03002',
+             years = 2019,
+             acs.type = 'acs1')
+```
+
+### Default and custom arguments
+
+By default, without specifying any counties, the jurisdictions returned will be King, Kitsap, Pierce, and Snohomish Counties. Use `?get_acs_recs()` for other default values implemented in this function.
+
+To retrieve non-PSRC counties or a subset of the default counties, use the `counties` argument and provide a vector of counties (e.g. `counties = c("King", "Thurston")`). Do not use the `fips` argument as that is reserved for MSA or place geographies.
+
+## Get Census data
+
+The `get_decennial_recs()` to generate Decennial Census tables operates similarly to the `get_acs_recs()`. If you wanted to retrieve housing units and total population by MSA, you would call the following:
+
+```{r census examples, message=FALSE}
+get_decennial_recs(geography = 'msa',
+                   table_codes = c("H001", "P001"),
+                   year = 2010,
+                   fips = c('42660', "28420"))
+
+```
+
+Note: the table names are padded with 0s, so you call "H001" as opposed to "H1" as you would in Elmer. Only SF1 tables are currently implemented.
+
+## Make a map of ACS data by tract
+
+Let's say you want to create a map of the tracts in the region for one variable. You can use the function `create_tract_map()`. Here's an example, mapping non-Hispanic Black or African American population alone by tract:
+
+```{r tract_map example, message=FALSE}
+library(sf)
+library(dplyr)
+
+tract.big.tbl <- get_acs_recs(geography ='tract', 
+                              table.names = 'B03002',
+                              years = 2019)
+
+tract.tbl <- tract.big.tbl %>% 
+  filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
+
+gdb.nm <- "MSSQL:server=AWS-PROD-SQL\\Sockeye; database=ElmerGeo; trusted_connection=yes"
+spn <-  2285
+tract_layer_name <- "dbo.tract2010_nowater"
+tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn, quiet = TRUE)
+
+create_tract_map(tract.tbl, 
+                 tract.lyr, 
+                 map.title='Black, non-Hispanic Population',
+                 map.title.position='topleft', 
+                 legend.title='Black, Non-Hispanic Population',
+                 legend.subtitle='by Census Tract')
+
+```
