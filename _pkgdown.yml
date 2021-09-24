@@ -9,6 +9,7 @@ reference:
   desc: Functions to better format the data
   contents:
   - format_estimates
+  - group_recs
 - subtitle: Helper functions
   desc: Internal, intermediate functions not for end-users' use
   contents:
