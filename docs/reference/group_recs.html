@@ -127,7 +127,7 @@
     <p>Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: variables_groupings.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>tbl</span>, <span class='va'>variables_groupings</span>, <span class='va'>group_name</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>tbl</span>, <span class='va'>group_name</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,12 +137,12 @@
       <td><p>A data frame of census or acs data</p></td>
     </tr>
     <tr>
-      <th>variables_groupings</th>
-      <td><p>A data frame that provides look-ups between the variables and their categories</p></td>
-    </tr>
-    <tr>
       <th>group_name</th>
       <td><p>A character string that describes the grouping of the data. Should match the group_name in the variables_cats table</p></td>
+    </tr>
+    <tr>
+      <th>variables_groupings</th>
+      <td><p>A data frame that provides look-ups between the variables and their categories</p></td>
     </tr>
     </table>
 
@@ -156,7 +156,7 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"CENSUS_API_KEY"</span><span class='op'>)</span><span class='op'>}</span>
-<span class='va'>variables_groupings</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>'extdata'</span>, <span class='st'>'variables_groupings.csv'</span>, package<span class='op'>=</span><span class='st'>'psrccensus'</span><span class='op'>)</span>
+
 <span class='va'>age_sex_acs</span><span class='op'>&lt;-</span><span class='fu'><a href='get_acs_recs.html'>get_acs_recs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>'county'</span>,
                      table.names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'B01001'</span><span class='op'>)</span>,
                      years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span>,
@@ -166,7 +166,7 @@
                                   table_codes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'P012'</span><span class='op'>)</span>,
                                   year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Getting data from the 2010 decennial Census</span></div><div class='output co'>#&gt; <span class='message'>Loading SF1 variables for 2010 from table P012. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Getting data from the 2010 decennial Census</span></div><div class='output co'>#&gt; <span class='message'>Loading SF1 variables for 2010 from table P012. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Getting data from the 2010 decennial Census</span></div><div class='output co'>#&gt; <span class='message'>Loading SF1 variables for 2010 from table P012. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Getting data from the 2010 decennial Census</span></div><div class='output co'>#&gt; <span class='message'>Loading SF1 variables for 2010 from table P012. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='output co'>#&gt; <span class='message'>Using Census Summary File 1</span></div><div class='input'>
-<span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>sex_age_census</span>, <span class='va'>variables_groupings</span>,<span class='st'>'Broad Age'</span><span class='op'>)</span>
+<span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>sex_age_census</span>, <span class='st'>'Broad Age'</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 4 x 5</span>
 #&gt; <span style='color: #949494;'># Groups:   GEOID, NAME, concept [4]</span>
 #&gt;   GEOID NAME                         concept    y                          value
@@ -179,7 +179,7 @@
 table.names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'B19001'</span><span class='op'>)</span>,
 years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span>,
 acs.type <span class='op'>=</span> <span class='st'>'acs1'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>The 1-year ACS provides data for geographies with populations of 65,000 and greater.</span></div><div class='output co'>#&gt; <span class='message'>Getting data from the 2019 1-year ACS</span></div><div class='input'><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>income_acs</span>, <span class='va'>variables_groupings</span>,<span class='st'>'Broad Income'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>The 1-year ACS provides data for geographies with populations of 65,000 and greater.</span></div><div class='output co'>#&gt; <span class='message'>Getting data from the 2019 1-year ACS</span></div><div class='input'><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>income_acs</span>, <span class='st'>'Broad Income'</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 5 x 10</span>
 #&gt; <span style='color: #949494;'># Groups:   GEOID, name, state, concept, census_geography, acs_type, year [5]</span>
 #&gt;   GEOID  name   state concept   census_geography acs_type  year y       estimate

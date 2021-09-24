@@ -4,14 +4,14 @@
 \alias{group_recs}
 \title{Group ACS or Census Data}
 \usage{
-group_recs(tbl, variables_groupings, group_name)
+group_recs(tbl, group_name)
 }
 \arguments{
 \item{tbl}{A data frame of census or acs data}
 
-\item{variables_groupings}{A data frame that provides look-ups between the variables and their categories}
-
 \item{group_name}{A character string that describes the grouping of the data. Should match the group_name in the variables_cats table}
+
+\item{variables_groupings}{A data frame that provides look-ups between the variables and their categories}
 }
 \value{
 a tibble of grouped ACS or Census estimates
@@ -22,7 +22,7 @@ Group ACS to Census Data into pre-defined commonly used groupings, stored in the
 \examples{
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
-variables_groupings<-system.file('extdata', 'variables_groupings.csv', package='psrccensus')
+
 age_sex_acs<-get_acs_recs(geography = 'county',
                      table.names = c('B01001'),
                      years=c(2019),
@@ -32,13 +32,13 @@ sex_age_census<-get_decennial_recs(geography = 'county',
                                   table_codes = c('P012'),
                                   year=2010)
 
-group_recs(sex_age_census, variables_groupings,'Broad Age')
+group_recs(sex_age_census, 'Broad Age')
 
 income_acs<-get_acs_recs(geography = 'county',
 table.names = c('B19001'),
 years=c(2019),
 acs.type = 'acs1')
-group_recs(income_acs, variables_groupings,'Broad Income')
+group_recs(income_acs, 'Broad Income')
 
 }
 \author{

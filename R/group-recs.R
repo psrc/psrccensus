@@ -12,28 +12,29 @@
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-#' variables_groupings<-system.file('extdata', 'variables_groupings.csv', package='psrccensus')
+#'
 #' age_sex_acs<-get_acs_recs(geography = 'county',
 #'                      table.names = c('B01001'),
 #'                      years=c(2019),
 #'                      acs.type = 'acs1')
-#  group_recs(age_sex_acs, variables_groupings,'Broad Age')
+#  group_recs(age_sex_acs, 'Broad Age')
 #'
 #' sex_age_census<-get_decennial_recs(geography = 'county',
 #'                                   table_codes = c('P012'),
 #'                                   year=2010)
 #'
-#' group_recs(sex_age_census, variables_groupings,'Broad Age')
+#' group_recs(sex_age_census, 'Broad Age')
 
 #'
 #' income_acs<-get_acs_recs(geography = 'county',
 #' table.names = c('B19001'),
 #' years=c(2019),
 #' acs.type = 'acs1')
-#' group_recs(income_acs, variables_groupings,'Broad Income')
+#' group_recs(income_acs, 'Broad Income')
 #'
 #' @export
-group_recs <- function(tbl, variables_groupings, group_name){
+group_recs <- function(tbl, group_name){
+  variables_groupings<-system.file('extdata', 'variables_groupings.csv', package='psrccensus')
   tbl_w_cats<-merge(tbl, variables_groupings)
 
   #the column names between acs and census are slightly different
