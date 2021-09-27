@@ -10,14 +10,12 @@ group_recs(tbl, group_name)
 \item{tbl}{A data frame of census or acs data}
 
 \item{group_name}{A character string that describes the grouping of the data. Should match the group_name in the variables_cats table}
-
-\item{variables_groupings}{A data frame that provides look-ups between the variables and their categories}
 }
 \value{
 a tibble of grouped ACS or Census estimates
 }
 \description{
-Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: variables_groupings.
+Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: inst/extdata/variables_groupings.
 }
 \examples{
 \dontrun{
