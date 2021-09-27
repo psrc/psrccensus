@@ -1,9 +1,8 @@
 #' Group ACS or Census Data
 #'
-#' Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: variables_groupings.
+#' Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: inst/extdata/variables_groupings.
 #'
 #' @param tbl A data frame of census or acs data
-#' @param variables_groupings A data frame that provides look-ups between the variables and their categories
 #' @param group_name A character string that describes the grouping of the data. Should match the group_name in the variables_cats table
 #'
 #' @author Suzanne Childress
@@ -34,7 +33,8 @@
 #'
 #' @export
 group_recs <- function(tbl, group_name){
-  variables_groupings<-system.file('extdata', 'variables_groupings.csv', package='psrccensus')
+  # this is kind of a hard code for the file name and location, may want to revisit
+  variables_groupings<-read.csv(system.file('extdata', 'variables_groupings.csv', package='psrccensus'))
   tbl_w_cats<-merge(tbl, variables_groupings)
 
   #the column names between acs and census are slightly different

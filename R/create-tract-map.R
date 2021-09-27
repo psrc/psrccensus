@@ -117,8 +117,7 @@ create_tract_map <- function(tract.tbl, tract.lyr,
     leaflet::addLegend(pal = pal,
                        values = c.layer$Total,
                        position = "bottomright",
-                       title = paste(legend.title, '<br>', legend.subtitle,
-                                     )) %>%
+                       title = paste(legend.title, '<br>', legend.subtitle)) %>%
 
     leaflet::addControl(html = paste(map.title, '<br>', map.subtitle),
                         position = map.title.position,
