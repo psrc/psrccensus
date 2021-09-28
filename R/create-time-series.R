@@ -23,7 +23,7 @@
 #' library(stringr)
 #' library(psrccensus)
 #' 
-#' \dontrun{
+#' {
 #' Sys.getenv("CENSUS_API_KEY")
 #' }
 #'
@@ -35,19 +35,11 @@
 #'
 #' @export
 
-library(devtools)
-library(psrccensus)
-library(rlang)
-library(tidyverse)
-library(scales)
-library(stringr)
-
-
 get_time_series  = function(table,
                             variable,
                             ts.title = NULL,
                             print.table = FALSE) {
-  variable = enquo(variable)
+  variable = rlang::enquo(variable)
   
   df_for_plot = table %>%
     dplyr::rename_at(dplyr::vars(matches("value")), function(x)
@@ -62,13 +54,13 @@ get_time_series  = function(table,
   }
   
   if (missing(ts.title)) {
-    ts.title = str_replace_all(df_for_plot$label[1], "[!:]", " ")
-    ts.title = str_replace_all(ts.title, "   ", " ")
+    ts.title = stringr::str_replace_all(df_for_plot$label[1], "[!:]", " ")
+    ts.title = stringr::str_replace_all(ts.title, "   ", " ")
   }
   
   legend.title = df_for_plot$census_geography[1]
   
-  m = ggplot(df_for_plot, aes(
+  m = ggplot2::ggplot(df_for_plot, aes(
     x = year,
     y = estimate,
     group = name,
