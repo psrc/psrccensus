@@ -28,6 +28,7 @@ library(rlang)
 library(scales)
 library(stringr)
 library(psrccensus)
+library(ggplot2)
 
 {
 Sys.getenv("CENSUS_API_KEY")
