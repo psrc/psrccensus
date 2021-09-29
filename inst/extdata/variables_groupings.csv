@@ -1,116 +1,74 @@
 variable,concept,label,group_name,grouping
-B01001_001,SEX BY AGE,Estimate!!Total:,Broad Age,Total
-B01001_002,SEX BY AGE,Estimate!!Total:!!Male:,Broad Age,Total Male
-B01001_003,SEX BY AGE,Estimate!!Total:!!Male:!!Under 5 years,Broad Age,Under 18 years
-B01001_004,SEX BY AGE,Estimate!!Total:!!Male:!!5 to 9 years,Broad Age,Under 18 years
-B01001_005,SEX BY AGE,Estimate!!Total:!!Male:!!10 to 14 years,Broad Age,Under 18 years
-B01001_006,SEX BY AGE,Estimate!!Total:!!Male:!!15 to 17 years,Broad Age,Under 18 years
-B01001_007,SEX BY AGE,Estimate!!Total:!!Male:!!18 and 19 years,Broad Age,18 to 64 years
-B01001_008,SEX BY AGE,Estimate!!Total:!!Male:!!20 years,Broad Age,18 to 64 years
-B01001_009,SEX BY AGE,Estimate!!Total:!!Male:!!21 years,Broad Age,18 to 64 years
-B01001_010,SEX BY AGE,Estimate!!Total:!!Male:!!22 to 24 years,Broad Age,18 to 64 years
-B01001_011,SEX BY AGE,Estimate!!Total:!!Male:!!25 to 29 years,Broad Age,18 to 64 years
-B01001_012,SEX BY AGE,Estimate!!Total:!!Male:!!30 to 34 years,Broad Age,18 to 64 years
-B01001_013,SEX BY AGE,Estimate!!Total:!!Male:!!35 to 39 years,Broad Age,18 to 64 years
-B01001_014,SEX BY AGE,Estimate!!Total:!!Male:!!40 to 44 years,Broad Age,18 to 64 years
-B01001_015,SEX BY AGE,Estimate!!Total:!!Male:!!45 to 49 years,Broad Age,18 to 64 years
-B01001_016,SEX BY AGE,Estimate!!Total:!!Male:!!50 to 54 years,Broad Age,18 to 64 years
-B01001_017,SEX BY AGE,Estimate!!Total:!!Male:!!55 to 59 years,Broad Age,18 to 64 years
-B01001_018,SEX BY AGE,Estimate!!Total:!!Male:!!60 and 61 years,Broad Age,18 to 64 years
-B01001_019,SEX BY AGE,Estimate!!Total:!!Male:!!62 to 64 years,Broad Age,18 to 64 years
-B01001_020,SEX BY AGE,Estimate!!Total:!!Male:!!65 and 66 years,Broad Age,Over 65 years
-B01001_021,SEX BY AGE,Estimate!!Total:!!Male:!!67 to 69 years,Broad Age,Over 65 years
-B01001_022,SEX BY AGE,Estimate!!Total:!!Male:!!70 to 74 years,Broad Age,Over 65 years
-B01001_023,SEX BY AGE,Estimate!!Total:!!Male:!!75 to 79 years,Broad Age,Over 65 years
-B01001_024,SEX BY AGE,Estimate!!Total:!!Male:!!80 to 84 years,Broad Age,Over 65 years
-B01001_025,SEX BY AGE,Estimate!!Total:!!Male:!!85 years and over,Broad Age,Over 65 years
-B01001_026,SEX BY AGE,Estimate!!Total:!!Female:,Broad Age,Total Female
-B01001_027,SEX BY AGE,Estimate!!Total:!!Female:!!Under 5 years,Broad Age,Under 18 years
-B01001_028,SEX BY AGE,Estimate!!Total:!!Female:!!5 to 9 years,Broad Age,Under 18 years
-B01001_029,SEX BY AGE,Estimate!!Total:!!Female:!!10 to 14 years,Broad Age,Under 18 years
-B01001_030,SEX BY AGE,Estimate!!Total:!!Female:!!15 to 17 years,Broad Age,Under 18 years
-B01001_031,SEX BY AGE,Estimate!!Total:!!Female:!!18 and 19 years,Broad Age,18 to 64 years
-B01001_032,SEX BY AGE,Estimate!!Total:!!Female:!!20 years,Broad Age,18 to 64 years
-B01001_033,SEX BY AGE,Estimate!!Total:!!Female:!!21 years,Broad Age,18 to 64 years
-B01001_034,SEX BY AGE,Estimate!!Total:!!Female:!!22 to 24 years,Broad Age,18 to 64 years
-B01001_035,SEX BY AGE,Estimate!!Total:!!Female:!!25 to 29 years,Broad Age,18 to 64 years
-B01001_036,SEX BY AGE,Estimate!!Total:!!Female:!!30 to 34 years,Broad Age,18 to 64 years
-B01001_037,SEX BY AGE,Estimate!!Total:!!Female:!!35 to 39 years,Broad Age,18 to 64 years
-B01001_038,SEX BY AGE,Estimate!!Total:!!Female:!!40 to 44 years,Broad Age,18 to 64 years
-B01001_039,SEX BY AGE,Estimate!!Total:!!Female:!!45 to 49 years,Broad Age,18 to 64 years
-B01001_040,SEX BY AGE,Estimate!!Total:!!Female:!!50 to 54 years,Broad Age,18 to 64 years
-B01001_041,SEX BY AGE,Estimate!!Total:!!Female:!!55 to 59 years,Broad Age,18 to 64 years
-B01001_042,SEX BY AGE,Estimate!!Total:!!Female:!!60 and 61 years,Broad Age,18 to 64 years
-B01001_043,SEX BY AGE,Estimate!!Total:!!Female:!!62 to 64 years,Broad Age,18 to 64 years
-B01001_044,SEX BY AGE,Estimate!!Total:!!Female:!!65 and 66 years,Broad Age,Over 65 years
-B01001_045,SEX BY AGE,Estimate!!Total:!!Female:!!67 to 69 years,Broad Age,Over 65 years
-B01001_046,SEX BY AGE,Estimate!!Total:!!Female:!!70 to 74 years,Broad Age,Over 65 years
-B01001_047,SEX BY AGE,Estimate!!Total:!!Female:!!75 to 79 years,Broad Age,Over 65 years
-B01001_048,SEX BY AGE,Estimate!!Total:!!Female:!!80 to 84 years,Broad Age,Over 65 years
-B01001_049,SEX BY AGE,Estimate!!Total:!!Female:!!85 years and over,Broad Age,Over 65 years
-B19001_001,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),Estimate!!Total:,Broad Income,Total
-B19001_002,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!Less than $10,000",Broad Income,"Less than $25,000"
-B19001_003,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$10,000 to $14,999",Broad Income,"Less than $25,000"
-B19001_004,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$15,000 to $19,999",Broad Income,"Less than $25,000"
-B19001_005,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$20,000 to $24,999",Broad Income,"Less than $25,000"
-B19001_006,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$25,000 to $29,999",Broad Income,"$25,000-$50,000"
-B19001_007,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$30,000 to $34,999",Broad Income,"$25,000-$50,000"
-B19001_008,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$35,000 to $39,999",Broad Income,"$25,000-$50,000"
-B19001_009,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$40,000 to $44,999",Broad Income,"$25,000-$50,000"
-B19001_010,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$45,000 to $49,999",Broad Income,"$25,000-$50,000"
-B19001_011,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$50,000 to $59,999",Broad Income,"$50,000-$100,000"
-B19001_012,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$60,000 to $74,999",Broad Income,"$50,000-$100,000"
-B19001_013,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$75,000 to $99,999",Broad Income,"$50,000-$100,000"
-B19001_014,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$100,000 to $124,999",Broad Income,"$100,000-$200,000"
-B19001_015,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$125,000 to $149,999",Broad Income,"$100,000-$200,000"
-B19001_016,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$150,000 to $199,999",Broad Income,"$100,000-$200,000"
-B19001_017,HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS),"Estimate!!Total:!!$200,000 or more",Broad Income,"More than $200,000"
-P012001,SEX BY AGE,Total,Broad Age,Total
-P012002,SEX BY AGE,Total!!Male,Broad Age,Total Male
-P012003,SEX BY AGE,Total!!Male!!Under 5 years,Broad Age,Under 18 years
-P012004,SEX BY AGE,Total!!Male!!5 to 9 years,Broad Age,Under 18 years
-P012005,SEX BY AGE,Total!!Male!!10 to 14 years,Broad Age,Under 18 years
-P012006,SEX BY AGE,Total!!Male!!15 to 17 years,Broad Age,Under 18 years
-P012007,SEX BY AGE,Total!!Male!!18 and 19 years,Broad Age,18 to 64 years
-P012008,SEX BY AGE,Total!!Male!!20 years,Broad Age,18 to 64 years
-P012009,SEX BY AGE,Total!!Male!!21 years,Broad Age,18 to 64 years
-P012010,SEX BY AGE,Total!!Male!!22 to 24 years,Broad Age,18 to 64 years
-P012011,SEX BY AGE,Total!!Male!!25 to 29 years,Broad Age,18 to 64 years
-P012012,SEX BY AGE,Total!!Male!!30 to 34 years,Broad Age,18 to 64 years
-P012013,SEX BY AGE,Total!!Male!!35 to 39 years,Broad Age,18 to 64 years
-P012014,SEX BY AGE,Total!!Male!!40 to 44 years,Broad Age,18 to 64 years
-P012015,SEX BY AGE,Total!!Male!!45 to 49 years,Broad Age,18 to 64 years
-P012016,SEX BY AGE,Total!!Male!!50 to 54 years,Broad Age,18 to 64 years
-P012017,SEX BY AGE,Total!!Male!!55 to 59 years,Broad Age,18 to 64 years
-P012018,SEX BY AGE,Total!!Male!!60 and 61 years,Broad Age,18 to 64 years
-P012019,SEX BY AGE,Total!!Male!!62 to 64 years,Broad Age,18 to 64 years
-P012020,SEX BY AGE,Total!!Male!!65 and 66 years,Broad Age,Over 65 years
-P012021,SEX BY AGE,Total!!Male!!67 to 69 years,Broad Age,Over 65 years
-P012022,SEX BY AGE,Total!!Male!!70 to 74 years,Broad Age,Over 65 years
-P012023,SEX BY AGE,Total!!Male!!75 to 79 years,Broad Age,Over 65 years
-P012024,SEX BY AGE,Total!!Male!!80 to 84 years,Broad Age,Over 65 years
-P012025,SEX BY AGE,Total!!Male!!85 years and over,Broad Age,Over 65 years
-P012026,SEX BY AGE,Total!!Female,Broad Age,Total Female
-P012027,SEX BY AGE,Total!!Female!!Under 5 years,Broad Age,Under 18 years
-P012028,SEX BY AGE,Total!!Female!!5 to 9 years,Broad Age,Under 18 years
-P012029,SEX BY AGE,Total!!Female!!10 to 14 years,Broad Age,Under 18 years
-P012030,SEX BY AGE,Total!!Female!!15 to 17 years,Broad Age,Under 18 years
-P012031,SEX BY AGE,Total!!Female!!18 and 19 years,Broad Age,18 to 64 years
-P012032,SEX BY AGE,Total!!Female!!20 years,Broad Age,18 to 64 years
-P012033,SEX BY AGE,Total!!Female!!21 years,Broad Age,18 to 64 years
-P012034,SEX BY AGE,Total!!Female!!22 to 24 years,Broad Age,18 to 64 years
-P012035,SEX BY AGE,Total!!Female!!25 to 29 years,Broad Age,18 to 64 years
-P012036,SEX BY AGE,Total!!Female!!30 to 34 years,Broad Age,18 to 64 years
-P012037,SEX BY AGE,Total!!Female!!35 to 39 years,Broad Age,18 to 64 years
-P012038,SEX BY AGE,Total!!Female!!40 to 44 years,Broad Age,18 to 64 years
-P012039,SEX BY AGE,Total!!Female!!45 to 49 years,Broad Age,18 to 64 years
-P012040,SEX BY AGE,Total!!Female!!50 to 54 years,Broad Age,18 to 64 years
-P012041,SEX BY AGE,Total!!Female!!55 to 59 years,Broad Age,18 to 64 years
-P012042,SEX BY AGE,Total!!Female!!60 and 61 years,Broad Age,18 to 64 years
-P012043,SEX BY AGE,Total!!Female!!62 to 64 years,Broad Age,18 to 64 years
-P012044,SEX BY AGE,Total!!Female!!65 and 66 years,Broad Age,Over 65 years
-P012045,SEX BY AGE,Total!!Female!!67 to 69 years,Broad Age,Over 65 years
-P012046,SEX BY AGE,Total!!Female!!70 to 74 years,Broad Age,Over 65 years
-P012047,SEX BY AGE,Total!!Female!!75 to 79 years,Broad Age,Over 65 years
-P012048,SEX BY AGE,Total!!Female!!80 to 84 years,Broad Age,Over 65 years
-P012049,SEX BY AGE,Total!!Female!!85 years and over,Broad Age,Over 65 years
+B01001_001,SEX BY AGE,Estimate!!Total:,Age Group,Total
+B01001_002,SEX BY AGE,Estimate!!Total:!!Male:,Age Group,Total Male
+B01001_003,SEX BY AGE,Estimate!!Total:!!Male:!!Under 5 years,Age Group,0 to 4 years
+B01001_004,SEX BY AGE,Estimate!!Total:!!Male:!!5 to 9 years,Age Group,5 to 17 years
+B01001_005,SEX BY AGE,Estimate!!Total:!!Male:!!10 to 14 years,Age Group,5 to 17 years
+B01001_006,SEX BY AGE,Estimate!!Total:!!Male:!!15 to 17 years,Age Group,5 to 17 years
+B01001_007,SEX BY AGE,Estimate!!Total:!!Male:!!18 and 19 years,Age Group,18 to 64 years
+B01001_008,SEX BY AGE,Estimate!!Total:!!Male:!!20 years,Age Group,18 to 64 years
+B01001_009,SEX BY AGE,Estimate!!Total:!!Male:!!21 years,Age Group,18 to 64 years
+B01001_010,SEX BY AGE,Estimate!!Total:!!Male:!!22 to 24 years,Age Group,18 to 64 years
+B01001_011,SEX BY AGE,Estimate!!Total:!!Male:!!25 to 29 years,Age Group,18 to 64 years
+B01001_012,SEX BY AGE,Estimate!!Total:!!Male:!!30 to 34 years,Age Group,18 to 64 years
+B01001_013,SEX BY AGE,Estimate!!Total:!!Male:!!35 to 39 years,Age Group,18 to 64 years
+B01001_014,SEX BY AGE,Estimate!!Total:!!Male:!!40 to 44 years,Age Group,18 to 64 years
+B01001_015,SEX BY AGE,Estimate!!Total:!!Male:!!45 to 49 years,Age Group,18 to 64 years
+B01001_016,SEX BY AGE,Estimate!!Total:!!Male:!!50 to 54 years,Age Group,18 to 64 years
+B01001_017,SEX BY AGE,Estimate!!Total:!!Male:!!55 to 59 years,Age Group,18 to 64 years
+B01001_018,SEX BY AGE,Estimate!!Total:!!Male:!!60 and 61 years,Age Group,18 to 64 years
+B01001_019,SEX BY AGE,Estimate!!Total:!!Male:!!62 to 64 years,Age Group,18 to 64 years
+B01001_020,SEX BY AGE,Estimate!!Total:!!Male:!!65 and 66 years,Age Group,65 to 84 years
+B01001_021,SEX BY AGE,Estimate!!Total:!!Male:!!67 to 69 years,Age Group,65 to 84 years
+B01001_022,SEX BY AGE,Estimate!!Total:!!Male:!!70 to 74 years,Age Group,65 to 84 years
+B01001_023,SEX BY AGE,Estimate!!Total:!!Male:!!75 to 79 years,Age Group,65 to 84 years
+B01001_024,SEX BY AGE,Estimate!!Total:!!Male:!!80 to 84 years,Age Group,65 to 84 years
+B01001_025,SEX BY AGE,Estimate!!Total:!!Male:!!85 years and over,Age Group,85 years and over
+B01001_026,SEX BY AGE,Estimate!!Total:!!Female:,Age Group,Total Female
+B01001_027,SEX BY AGE,Estimate!!Total:!!Female:!!Under 5 years,Age Group,0-4 years
+B01001_028,SEX BY AGE,Estimate!!Total:!!Female:!!5 to 9 years,Age Group,5 to 17 years
+B01001_029,SEX BY AGE,Estimate!!Total:!!Female:!!10 to 14 years,Age Group,5 to 17 years
+B01001_030,SEX BY AGE,Estimate!!Total:!!Female:!!15 to 17 years,Age Group,5 to 17 years
+B01001_031,SEX BY AGE,Estimate!!Total:!!Female:!!18 and 19 years,Age Group,18 to 64 years
+B01001_032,SEX BY AGE,Estimate!!Total:!!Female:!!20 years,Age Group,18 to 64 years
+B01001_033,SEX BY AGE,Estimate!!Total:!!Female:!!21 years,Age Group,18 to 64 years
+B01001_034,SEX BY AGE,Estimate!!Total:!!Female:!!22 to 24 years,Age Group,18 to 64 years
+B01001_035,SEX BY AGE,Estimate!!Total:!!Female:!!25 to 29 years,Age Group,18 to 64 years
+B01001_036,SEX BY AGE,Estimate!!Total:!!Female:!!30 to 34 years,Age Group,18 to 64 years
+B01001_037,SEX BY AGE,Estimate!!Total:!!Female:!!35 to 39 years,Age Group,18 to 64 years
+B01001_038,SEX BY AGE,Estimate!!Total:!!Female:!!40 to 44 years,Age Group,18 to 64 years
+B01001_039,SEX BY AGE,Estimate!!Total:!!Female:!!45 to 49 years,Age Group,18 to 64 years
+B01001_040,SEX BY AGE,Estimate!!Total:!!Female:!!50 to 54 years,Age Group,18 to 64 years
+B01001_041,SEX BY AGE,Estimate!!Total:!!Female:!!55 to 59 years,Age Group,18 to 64 years
+B01001_042,SEX BY AGE,Estimate!!Total:!!Female:!!60 and 61 years,Age Group,18 to 64 years
+B01001_043,SEX BY AGE,Estimate!!Total:!!Female:!!62 to 64 years,Age Group,18 to 64 years
+B01001_044,SEX BY AGE,Estimate!!Total:!!Female:!!65 and 66 years,Age Group,65 to 84 years
+B01001_045,SEX BY AGE,Estimate!!Total:!!Female:!!67 to 69 years,Age Group,65 to 84 years
+B01001_046,SEX BY AGE,Estimate!!Total:!!Female:!!70 to 74 years,Age Group,65 to 84 years
+B01001_047,SEX BY AGE,Estimate!!Total:!!Female:!!75 to 79 years,Age Group,65 to 84 years
+B01001_048,SEX BY AGE,Estimate!!Total:!!Female:!!80 to 84 years,Age Group,65 to 84 years
+B01001_049,SEX BY AGE,Estimate!!Total:!!Female:!!85 years and over,Age Group,85 years and over
+C17002_001,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:,Poverty Group 100 Percent,Total
+C17002_002,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!Under .50,Poverty Group 100 Percent,Under 100%
+C17002_003,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!.50 to .99,Poverty Group 100 Percent,Under 100%
+C17002_004,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.00 to 1.24,Poverty Group 100 Percent,Over 100%
+C17002_005,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.25 to 1.49,Poverty Group 100 Percent,Over 100%
+C17002_006,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.50 to 1.84,Poverty Group 100 Percent,Over 100%
+C17002_007,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.85 to 1.99,Poverty Group 100 Percent,Over 100%
+C17002_008,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!2.00 and over,Poverty Group 100 Percent,Over 100%
+C17002_001,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:,Poverty Group 150 Percent,Total
+C17002_002,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!Under .50,Poverty Group 150 Percent,Under 150%
+C17002_003,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!.50 to .99,Poverty Group 150 Percent,Under 150%
+C17002_004,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.00 to 1.24,Poverty Group 150 Percent,Under 150%
+C17002_005,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.25 to 1.49,Poverty Group 150 Percent,Under 150%
+C17002_006,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.50 to 1.84,Poverty Group 150 Percent,Over 150%
+C17002_007,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.85 to 1.99,Poverty Group 150 Percent,Over 150%
+C17002_008,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!2.00 and over,Poverty Group 150 Percent,Over 150%
+C17002_001,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:,Poverty Group 200 Percent,Total
+C17002_002,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!Under .50,Poverty Group 200 Percent,Under 200%
+C17002_003,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!.50 to .99,Poverty Group 200 Percent,Under 200%
+C17002_004,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.00 to 1.24,Poverty Group 200 Percent,Under 200%
+C17002_005,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.25 to 1.49,Poverty Group 200 Percent,Under 200%
+C17002_006,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.50 to 1.84,Poverty Group 200 Percent,Under 200%
+C17002_007,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!1.85 to 1.99,Poverty Group 200 Percent,Under 200%
+C17002_008,RATIO OF INCOME TO POVERTY LEVEL IN THE PAST 12 MONTHS,Estimate!!Total:!!2.00 and over,Poverty Group 200 Percent,Over 200%
