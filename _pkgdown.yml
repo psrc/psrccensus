@@ -5,6 +5,7 @@ reference:
   - get_acs_recs
   - get_decennial_recs
   - create_tract_map
+  - get_time_series
 - subtitle: Formatting functions
   desc: Functions to better format the data
   contents:

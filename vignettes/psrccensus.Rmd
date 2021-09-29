@@ -1,6 +1,12 @@
 ---
-title: "Getting Started"
-output: html_document
+title: "Getting started with psrccensus"
+description: >
+  Learn what psrccensus is for and how to get set up for it
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
