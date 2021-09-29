@@ -7,7 +7,7 @@
 get_time_series(table, variable, ts.title = NULL, print.table = FALSE)
 }
 \arguments{
-\item{table}{Data frame of census or ACS data by Counties or Region.}
+\item{table}{Data frame of census data by Counties or Region.}
 
 \item{variable}{Character string as Census code for a variable to plot.}
 
@@ -19,7 +19,7 @@ get_time_series(table, variable, ts.title = NULL, print.table = FALSE)
 a time series chart or table.
 }
 \description{
-Generate Time Series Charts for Census or ACS Data
+Generate Time Series Charts for Census Data
 }
 \examples{
 library(rlang)
@@ -29,7 +29,7 @@ library(scales)
 library(stringr)
 library(psrccensus)
 
-\dontrun{
+{
 Sys.getenv("CENSUS_API_KEY")
 }
 
