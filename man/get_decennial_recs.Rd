@@ -8,19 +8,19 @@ get_decennial_recs(
   geography,
   counties = c("King", "Kitsap", "Pierce", "Snohomish"),
   table_codes,
-  year,
+  years,
   fips = NULL
 )
 }
 \arguments{
-\item{geography}{A character string as either 'tract', 'county', 'msa', or 'place'.}
+\item{geography}{A character string as either 'tract', 'county', 'block group', 'msa', or 'place'.}
 
 \item{counties}{A character string or vector of counties. Defaults to PSRC counties.}
 
 \item{table_codes}{A character string or vector of Census table codes,
 the table code will be padded with 0s such as "H001", as opposed to "H1}
 
-\item{year}{Numeric. A decennial year equal or greater than 2010.}
+\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2010.}
 
 \item{fips}{Character. Single code or vector of either MSA or place fips codes.}
 }
@@ -32,22 +32,26 @@ Generate decennial estimates for multiple tables by tracts, counties, MSAs, or p
 Currently only working for SF1 tables.
 }
 \examples{
-\dontrun{
-Sys.getenv("CENSUS_API_KEY")}
-tbl_names <- paste0('PCT020', LETTERS[1:6])
-get_decennial_recs(geography = 'county', table_codes = tbl_names, year = 2010)
 
-get_decennial_recs(geography = 'tract', table_codes = tbl_names, year = 2010)
+Sys.getenv("CENSUS_API_KEY")
+tbl_names <- paste0('PCT020', LETTERS[1:6])
+get_decennial_recs(geography = 'county', table_codes = tbl_names, years = 2010)
+
+get_decennial_recs(geography = 'tract', table_codes = tbl_names, years = 2010)
 
 get_decennial_recs(geography = 'place',
                    table_codes = 'PCT013',
-                   year = 2010,
+                   years = 2010,
                    fips = c("5363000", "5308850"))
 
 get_decennial_recs(geography = 'msa',
                    table_codes = c("H001", "P001"),
-                   year = 2010,
+                   years = 2010,
                    fips = c('42660', "28420"))
+
+get_decennial_recs(geography = 'block group',
+                   table_codes = c('H001', 'H006'),
+                   years = 2010)
 }
 \author{
 Christy Lam
