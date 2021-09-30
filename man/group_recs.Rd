@@ -26,17 +26,7 @@ age_sex_acs<-get_acs_recs(geography = 'county',
                      years=c(2019),
                      acs.type = 'acs1')
 
-sex_age_census<-get_decennial_recs(geography = 'county',
-                                  table_codes = c('P012'),
-                                  year=2010)
-
-group_recs(sex_age_census, 'Broad Age')
-
-income_acs<-get_acs_recs(geography = 'county',
-table.names = c('B19001'),
-years=c(2019),
-acs.type = 'acs1')
-group_recs(income_acs, 'Broad Income')
+ group_recs(age_sex_acs, 'Age Group')
 
 }
 \author{

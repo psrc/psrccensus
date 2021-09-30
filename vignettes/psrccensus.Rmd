@@ -1,5 +1,5 @@
 ---
-title: "Getting started with psrccensus"
+title: "Getting Started"
 description: >
   Learn what psrccensus is for and how to get set up for it
 output: html_vignette
