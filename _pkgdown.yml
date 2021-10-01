@@ -19,4 +19,4 @@ reference:
   - get_acs_tract
   - get_decennial_msa
   - get_decennial_place
-  - get_decennial_tract_county
+  - get_decennial_tract_county_bg

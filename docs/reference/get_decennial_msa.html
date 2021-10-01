@@ -127,7 +127,7 @@
     <p>Generate decennial estimates for multiple tables by MSA(s).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_decennial_msa</span><span class='op'>(</span><span class='va'>table_codes</span>, <span class='va'>year</span>, fips <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_decennial_msa</span><span class='op'>(</span><span class='va'>table_codes</span>, <span class='va'>years</span>, fips <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,8 +137,8 @@
       <td><p>A character string or vector of Census table codes.</p></td>
     </tr>
     <tr>
-      <th>year</th>
-      <td><p>Numeric value. A decennial year equal or greater than 2010</p></td>
+      <th>years</th>
+      <td><p>Numeric or a vector of numeric years. A decennial year or years equal or greater than 2010.</p></td>
     </tr>
     <tr>
       <th>fips</th>

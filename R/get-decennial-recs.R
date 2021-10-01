@@ -115,8 +115,8 @@ get_decennial_place <- function(table_codes, year, fips = NULL, state = 'WA') {
 #'
 #' @return a tibble of decennial estimates by selected geography for selected table codes. Includes variable names.
 #' @examples
-#'
-#' Sys.getenv("CENSUS_API_KEY")
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
 #' tbl_names <- paste0('PCT020', LETTERS[1:6])
 #' get_decennial_recs(geography = 'county', table_codes = tbl_names, years = 2010)
 #'

@@ -38,7 +38,7 @@ The `get_decennial_recs()` to generate Decennial Census tables operates similarl
 ```{r census examples, message=FALSE}
 get_decennial_recs(geography = 'msa',
                    table_codes = c("H001", "P001"),
-                   year = 2010,
+                   years = c(2010),
                    fips = c('42660', "28420"))
 
 ```
