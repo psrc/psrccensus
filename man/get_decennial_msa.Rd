@@ -4,12 +4,12 @@
 \alias{get_decennial_msa}
 \title{Decennial Estimates by MSA}
 \usage{
-get_decennial_msa(table_codes, year, fips = NULL)
+get_decennial_msa(table_codes, years, fips = NULL)
 }
 \arguments{
 \item{table_codes}{A character string or vector of Census table codes.}
 
-\item{year}{Numeric value. A decennial year equal or greater than 2010}
+\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2010.}
 
 \item{fips}{Character value. Single code or vector of MSA fips codes.}
 }
