@@ -7,10 +7,11 @@ reference:
   - create_tract_map
   - get_time_series
 - subtitle: Formatting functions
-  desc: Functions to better format the data
+  desc: Functions to better format the data and ease data access
   contents:
   - format_estimates
   - group_recs
+  - get_equity_geographies
 - subtitle: Helper functions
   desc: Internal, intermediate functions not for end-users' use
   contents:

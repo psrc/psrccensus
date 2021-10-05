@@ -59,8 +59,11 @@ create_tract_map <- function(tract.tbl, tract.lyr,
 
   # Summarize and Aggregate Tract Data by Year and Attribute to Map and join to tract layer for mapping
   # rename census value column to estimate to match ACS
+  # also allow for the easy mapping of equity geographies
   tbl <- tract.tbl %>%
     dplyr::rename_at(dplyr::vars(matches("value")),function(x) "estimate") %>%
+    dplyr::rename_at(dplyr::vars(matches("equity_geog_vs_50_percent")),function(x) "estimate") %>%
+    dplyr::rename_at(dplyr::vars(matches('equity_geog_vs_reg_total')),function(x) "estimate") %>%
     dplyr::select(.data$GEOID,.data$estimate) %>%
     dplyr::mutate(dplyr::across(c('GEOID'), as.character))%>%
     dplyr::group_by(.data$GEOID) %>%
