@@ -34,15 +34,14 @@ library(dplyr)
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")
 }
-elmer_connection <- DBI::dbConnect(odbc::odbc(),
+elmer_connection <- dbConnect(odbc::odbc(),
                              driver = "SQL Server",
                              server = "AWS-PROD-SQL\\\\Sockeye",
                              database = "Elmer",
                              trusted_connection = "yes")
 
 poverty_tracts<-get_equity_geographies(elmer_connection, 'equity_geog_vs_reg_total', 'poverty_equity_geographies','2018')
-means_transport<-get_acs_recs('tract',table.names=c('S0801_C01'),   years=c(2019),
-                             acs.type = 'acs1')
+head(poverty_tracts)
 tot_workers<-means_transport\%>\%filter(variable=='S0801_C01_001')
 transit<-means_transport\%>\%filter(variable=='S0801_C01_009')
 poverty_wrkrs<-merge(poverty_tracts, tot_workers, by.x='geoid', by.y='GEOID')
