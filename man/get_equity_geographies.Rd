@@ -42,16 +42,6 @@ elmer_connection <- dbConnect(odbc::odbc(),
 
 poverty_tracts<-get_equity_geographies(elmer_connection, 'equity_geog_vs_reg_total', 'poverty_equity_geographies','2018')
 head(poverty_tracts)
-tot_workers<-means_transport\%>\%filter(variable=='S0801_C01_001')
-transit<-means_transport\%>\%filter(variable=='S0801_C01_009')
-poverty_wrkrs<-merge(poverty_tracts, tot_workers, by.x='geoid', by.y='GEOID')
-poverty_transit<-merge(poverty_wrkrs, transit, by.x='geoid', by.y='GEOID')
-poverty_transit_calcs<-poverty_transit\%>\%mutate(transit=estimate.x*estimate.y/100)\%>\%
-mutate(workers=estimate.x)\%>\%select('geoid', 'transit', 'workers', 'equity_geog_vs_reg_total')
-poverty_transit_summary<-poverty_transit_calcs\%>\%group_by(equity_geog_vs_reg_total)\%>\%
-summarise(sum_workers=sum(workers), sum_transit=sum(transit, na.rm=TRUE))\%>\%
-mutate(transit_share=sum_transit/sum_workers)
-poverty_transit_summary
 }
 \author{
 Suzanne Childress
