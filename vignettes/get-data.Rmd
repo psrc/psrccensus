@@ -60,10 +60,9 @@ tract.big.tbl <- get_acs_recs(geography ='tract',
 tract.tbl <- tract.big.tbl %>% 
   filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
 
-gdb.nm <- "MSSQL:server=AWS-PROD-SQL\\Sockeye; database=ElmerGeo; trusted_connection=yes"
-spn <-  2285
-tract_layer_name <- "dbo.tract2010_nowater"
-tract.lyr <- st_read(gdb.nm, tract_layer_name, crs = spn, quiet = TRUE)
+tract.url <- "https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/tract2010_nowater/FeatureServer/0/query?where=0=0&outFields=*&f=pgeojson"
+#'
+tract.lyr<-st_read(tract.url)
 
 create_tract_map(tract.tbl, 
                  tract.lyr, 

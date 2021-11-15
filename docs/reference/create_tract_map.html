@@ -199,7 +199,7 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: package 'sf' was built under R version 4.0.5</span></div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: package 'sf' was built under R version 4.0.5</span></div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: package 'dplyr' was built under R version 4.0.5</span></div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Attaching package: 'dplyr'</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from 'package:stats':</span>
 #&gt; <span class='message'></span>
@@ -213,26 +213,17 @@
 </div><div class='output co'>#&gt; <span class='message'>Getting data from the 2015-2019 5-year ACS</span></div><div class='input'><span class='va'>tract.tbl</span> <span class='op'>&lt;-</span> <span class='va'>tract.big.tbl</span> <span class='op'>%&gt;%</span>
 <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>label</span><span class='op'>==</span><span class='st'>'Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone'</span><span class='op'>)</span>
 
-<span class='va'>gdb.nm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"MSSQL:server="</span>,
-<span class='st'>"AWS-PROD-SQL\\Sockeye"</span>,
-<span class='st'>";database="</span>,
-<span class='st'>"ElmerGeo"</span>,
-<span class='st'>";trusted_connection=yes"</span><span class='op'>)</span>
+<span class='va'>tract.url</span> <span class='op'>&lt;-</span> <span class='st'>"https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/tract2010_nowater/FeatureServer/0/query?where=0=0&amp;outFields=*&amp;f=pgeojson"</span>
 
-<span class='va'>spn</span> <span class='op'>&lt;-</span>  <span class='fl'>2285</span>
-
-<span class='va'>tract_layer_name</span> <span class='op'>&lt;-</span> <span class='st'>"dbo.tract2010_nowater"</span>
-
-<span class='va'>tract.lyr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>gdb.nm</span>, <span class='va'>tract_layer_name</span>, crs <span class='op'>=</span> <span class='va'>spn</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Reading layer `dbo.tract2010_nowater' from data source 
-#&gt;   `MSSQL:server=AWS-PROD-SQL\Sockeye;database=ElmerGeo;trusted_connection=yes' 
-#&gt;   using driver `MSSQLSpatial'
-#&gt; Simple feature collection with 773 features and 19 fields
+<span class='va'>tract.lyr</span><span class='op'>&lt;-</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>tract.url</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Reading layer `OGRGeoJSON' from data source 
+#&gt;   `https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/tract2010_nowater/FeatureServer/0/query?where=0=0&amp;outFields=*&amp;f=pgeojson' 
+#&gt;   using driver `GeoJSON'
+#&gt; Simple feature collection with 773 features and 21 fields
 #&gt; Geometry type: MULTIPOLYGON
 #&gt; Dimension:     XY
-#&gt; Bounding box:  xmin: 1099353 ymin: -97548.53 xmax: 1622631 ymax: 477101.5
-#&gt; Projected CRS: NAD83 / Washington North (ftUS)</div><div class='input'>
-<span class='fu'>create_tract_map</span><span class='op'>(</span>tract.tbl<span class='op'>=</span><span class='va'>tract.tbl</span>, tract.lyr<span class='op'>=</span><span class='va'>tract.lyr</span>,
+#&gt; Bounding box:  xmin: -123.0234 ymin: 46.72799 xmax: -120.9062 ymax: 48.29924
+#&gt; Geodetic CRS:  WGS 84</div><div class='input'><span class='fu'>create_tract_map</span><span class='op'>(</span>tract.tbl<span class='op'>=</span><span class='va'>tract.tbl</span>, tract.lyr<span class='op'>=</span><span class='va'>tract.lyr</span>,
 map.title<span class='op'>=</span><span class='st'>'Black, non-Hispanic Population'</span>,
 ,map.title.position<span class='op'>=</span><span class='st'>'topleft'</span>, legend.title<span class='op'>=</span><span class='st'>'Black, Non-Hispanic Population'</span>,
 legend.subtitle<span class='op'>=</span><span class='st'>'by Census Tract'</span><span class='op'>)</span>
