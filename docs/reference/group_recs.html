@@ -127,7 +127,7 @@
     <p>Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: inst/extdata/variables_groupings.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>tbl</span>, <span class='va'>group_name</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>tbl</span>, <span class='va'>this_group_name</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -153,29 +153,32 @@
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"CENSUS_API_KEY"</span><span class='op'>)</span><span class='op'>}</span>
 
-<span class='va'>age_sex_acs</span><span class='op'>&lt;-</span><span class='fu'><a href='get_acs_recs.html'>get_acs_recs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>'county'</span>,
-                     table.names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'B01001'</span><span class='op'>)</span>,
-                     years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span>,
-                     acs.type <span class='op'>=</span> <span class='st'>'acs1'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>The 1-year ACS provides data for geographies with populations of 65,000 and greater.</span></div><div class='output co'>#&gt; <span class='message'>Getting data from the 2019 1-year ACS</span></div><div class='input'>
- <span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>age_sex_acs</span>, <span class='st'>'Age Group'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 45 x 11</span>
+<span class='va'>inc_poverty</span><span class='op'>&lt;-</span><span class='fu'><a href='get_acs_recs.html'>get_acs_recs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>'county'</span>,
+                         table.names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'C17002'</span><span class='op'>)</span>,
+                         years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span>,
+                         acs.type <span class='op'>=</span> <span class='st'>'acs5'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Getting data from the 2015-2019 5-year ACS</span></div><div class='input'><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>inc_poverty</span>, <span class='st'>'Poverty Group 100 Percent'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 15 x 11</span>
 #&gt; <span style='color: #949494;'># Groups:   concept, GEOID, name, state, census_geography, acs_type, year,
 #&gt; #   group_name [5]</span>
-#&gt;    concept    GEOID name  state census_geography acs_type  year group_name grouping
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   
-#&gt; <span style='color: #BCBCBC;'> 1</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  0-4 yea~
-#&gt; <span style='color: #BCBCBC;'> 2</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  0 to 4 ~
-#&gt; <span style='color: #BCBCBC;'> 3</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  18 to 6~
-#&gt; <span style='color: #BCBCBC;'> 4</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  5 to 17~
-#&gt; <span style='color: #BCBCBC;'> 5</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  65 to 8~
-#&gt; <span style='color: #BCBCBC;'> 6</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  85 year~
-#&gt; <span style='color: #BCBCBC;'> 7</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  Total   
-#&gt; <span style='color: #BCBCBC;'> 8</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  Total F~
-#&gt; <span style='color: #BCBCBC;'> 9</span> SEX BY AGE 53033 King~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  Total M~
-#&gt; <span style='color: #BCBCBC;'>10</span> SEX BY AGE 53035 Kits~ Wash~ County           acs1      <span style='text-decoration: underline;'>2</span>019 Age Group  0-4 yea~
-#&gt; <span style='color: #949494;'># ... with 35 more rows, and 2 more variables: estimate &lt;dbl&gt;, moe &lt;dbl&gt;</span></div><div class='input'>
-</div></pre>
+#&gt;    concept GEOID name  state census_geography acs_type  year group_name grouping
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   
+#&gt; <span style='color: #BCBCBC;'> 1</span> RATIO ~ 53033 King~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
+#&gt; <span style='color: #BCBCBC;'> 2</span> RATIO ~ 53033 King~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
+#&gt; <span style='color: #BCBCBC;'> 3</span> RATIO ~ 53033 King~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
+#&gt; <span style='color: #BCBCBC;'> 4</span> RATIO ~ 53035 Kits~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
+#&gt; <span style='color: #BCBCBC;'> 5</span> RATIO ~ 53035 Kits~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
+#&gt; <span style='color: #BCBCBC;'> 6</span> RATIO ~ 53035 Kits~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
+#&gt; <span style='color: #BCBCBC;'> 7</span> RATIO ~ 53053 Pier~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
+#&gt; <span style='color: #BCBCBC;'> 8</span> RATIO ~ 53053 Pier~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
+#&gt; <span style='color: #BCBCBC;'> 9</span> RATIO ~ 53053 Pier~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
+#&gt; <span style='color: #BCBCBC;'>10</span> RATIO ~ 53061 Snoh~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
+#&gt; <span style='color: #BCBCBC;'>11</span> RATIO ~ 53061 Snoh~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
+#&gt; <span style='color: #BCBCBC;'>12</span> RATIO ~ 53061 Snoh~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
+#&gt; <span style='color: #BCBCBC;'>13</span> RATIO ~ REGI~ Regi~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
+#&gt; <span style='color: #BCBCBC;'>14</span> RATIO ~ REGI~ Regi~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
+#&gt; <span style='color: #BCBCBC;'>15</span> RATIO ~ REGI~ Regi~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
+#&gt; <span style='color: #949494;'># ... with 2 more variables: estimate &lt;dbl&gt;, moe &lt;dbl&gt;</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

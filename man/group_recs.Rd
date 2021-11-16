@@ -4,7 +4,7 @@
 \alias{group_recs}
 \title{Group ACS or Census Data}
 \usage{
-group_recs(tbl, group_name)
+group_recs(tbl, this_group_name)
 }
 \arguments{
 \item{tbl}{A data frame of census or acs data}
@@ -21,13 +21,11 @@ Group ACS to Census Data into pre-defined commonly used groupings, stored in the
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
 
-age_sex_acs<-get_acs_recs(geography = 'county',
-                     table.names = c('B01001'),
-                     years=c(2019),
-                     acs.type = 'acs1')
-
- group_recs(age_sex_acs, 'Age Group')
-
+inc_poverty<-get_acs_recs(geography = 'county',
+                         table.names = c('C17002'),
+                         years=c(2019),
+                         acs.type = 'acs5')
+group_recs(inc_poverty, 'Poverty Group 100 Percent')
 }
 \author{
 Suzanne Childress

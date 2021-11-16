@@ -12,19 +12,18 @@
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 #'
-#' age_sex_acs<-get_acs_recs(geography = 'county',
-#'                      table.names = c('B01001'),
-#'                      years=c(2019),
-#'                      acs.type = 'acs1')
-#'
-#'  group_recs(age_sex_acs, 'Age Group')
-#'
-
+#' inc_poverty<-get_acs_recs(geography = 'county',
+#'                          table.names = c('C17002'),
+#'                          years=c(2019),
+#'                          acs.type = 'acs5')
+#' group_recs(inc_poverty, 'Poverty Group 100 Percent')
 #' @export
-group_recs <- function(tbl, group_name){
+group_recs <- function(tbl, this_group_name){
   # this is kind of a hard code for the file name and location, may want to revisit
   variables_groupings<-read.csv(system.file('extdata', 'variables_groupings.csv', package='psrccensus'))
-  tbl_w_cats<-merge(tbl, variables_groupings)
+  this_variable_grouping<- variables_groupings%>%filter(group_name==!!this_group_name)
+
+  tbl_w_cats<-merge(tbl, this_variable_grouping)
 
   #the column names between acs and census are slightly different
   # for acs:
