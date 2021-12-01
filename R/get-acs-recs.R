@@ -34,9 +34,9 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
                      dplyr::mutate(estimate =tidyr::replace_na(.data$estimate,0))
 
       tbl$state <- trimws(tbl$state, "l")
-
+      print(tbl)
       # Create a Total for Region if all 4 PSRC Counties are pulled and then join to county table
-      if (identical(counties, c("King","Kitsap","Pierce","Snohomish"))) {
+      if (identical(counties, c("King","Kitsap","Pierce","Snohomish"))){
 
         total <- tbl %>%
           dplyr::select(.data$variable, .data$estimate, .data$moe) %>%
@@ -52,10 +52,13 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       labels <- tidycensus::load_variables(year=year, dataset=acs.type)
       labels <- dplyr::rename(.data=labels, variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
-
       # Add column for Census Geography, Type and Year of Data
       tbl <- tbl %>%
         dplyr::mutate(census_geography="County", acs_type = acs.type, year=year)
+
+      # Median and average calculations are more complicated, may need PUMS, filter out for now:
+      tbl  <- tbl %>% filter(name !='Region' |
+                               (!(stringr::str_detect(label, 'Median'))&(stringr::str_detect(label, 'Average'))))
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -69,6 +72,8 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 
   return(census.data)
 }
+
+
 
 #' ACS Estimates by MSA
 #'
