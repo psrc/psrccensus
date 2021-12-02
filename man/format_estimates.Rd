@@ -22,7 +22,7 @@ Format estimates of a county summary table with the option to include shares and
 }
 \examples{
 Sys.getenv("CENSUS_API_KEY")
-df <- psrccensus::get_acs_recs(geography = 'county',
+df <-get_acs_recs(geography = 'county',
                                table.names = c('B03002'),
                                years = c(2019),
                                acs.type = 'acs1')

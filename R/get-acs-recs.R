@@ -57,7 +57,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
         dplyr::mutate(census_geography="County", acs_type = acs.type, year=year)
 
       # Median and average calculations are more complicated, may need PUMS, filter out for now:
-      tbl  <- tbl %>% filter(.data$name !='Region' |
+      tbl  <- tbl %>% dplyr::filter(.data$name !='Region' |
                                (!(stringr::str_detect(.data$label, 'Median'))&!(stringr::str_detect(.data$label, 'Average'))))
 
       # Store yearly data into final yearly data for current table - append if a year already exists

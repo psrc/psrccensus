@@ -21,7 +21,7 @@
 group_recs <- function(tbl, this_group_name){
   # this is kind of a hard code for the file name and location, may want to revisit
   variables_groupings<-read.csv(system.file('extdata', 'variables_groupings.csv', package='psrccensus'))
-  this_variable_grouping<- variables_groupings%>%filter(group_name==!!this_group_name)
+  this_variable_grouping<- variables_groupings%>%dplyr::filter(.data$group_name==!!this_group_name)
 
   tbl_w_cats<-merge(tbl, this_variable_grouping)
 
