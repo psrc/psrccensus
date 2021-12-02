@@ -12,6 +12,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(psrccensus)
+library(dplyr)
 ```
 
 ## Get ACS data
@@ -19,11 +20,11 @@ library(psrccensus)
 Suppose you wish to tabulate ACS one-year 2019 data for estimates of total people by race and ethnicity, as provided in table B03002 by PSRC counties. You would use the following function call:
 
 ```{r acs examples, message=FALSE}
-tbl<-psrccensus::get_acs_recs(geography = 'county',
+get_acs_recs(geography = 'county',
              table.names = 'B03002',
              years = 2019,
              acs.type = 'acs1')
-tbl
+
 ```
 
 ### Default and custom arguments
