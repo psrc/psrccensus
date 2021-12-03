@@ -3,7 +3,7 @@
 #' Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: inst/extdata/variables_groupings.
 #'
 #' @param tbl A data frame of census or acs data
-#' @param group_name A character string that describes the grouping of the data. Should match the group_name in the variables_cats table
+#' @param this_group_name A character string that describes the grouping of the data. Should match the group_name in the variables_cats table
 #'
 #' @author Suzanne Childress
 #'

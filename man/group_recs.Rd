@@ -9,7 +9,7 @@ group_recs(tbl, this_group_name)
 \arguments{
 \item{tbl}{A data frame of census or acs data}
 
-\item{group_name}{A character string that describes the grouping of the data. Should match the group_name in the variables_cats table}
+\item{this_group_name}{A character string that describes the grouping of the data. Should match the group_name in the variables_cats table}
 }
 \value{
 a tibble of grouped ACS or Census estimates
