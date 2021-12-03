@@ -15,6 +15,7 @@
 #'
 #'@importFrom magrittr %>%
 #'@importFrom rlang .data
+#'@importFrom dplyr filter
 
 get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years, acs.type) {
 
