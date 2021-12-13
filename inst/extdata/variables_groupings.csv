@@ -1,4 +1,4 @@
-variable,concept,label,group_name,grouping
+variable,concept_2019,label_2019,group_name,grouping
 B01001_001,SEX BY AGE,Estimate!!Total:,Age Group,Total
 B01001_002,SEX BY AGE,Estimate!!Total:!!Male:,Age Group,Total Male
 B01001_003,SEX BY AGE,Estimate!!Total:!!Male:!!Under 5 years,Age Group,0 to 4 years
