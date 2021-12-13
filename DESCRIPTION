@@ -28,7 +28,11 @@ Imports:
     scales,
     ggplot2,
     DBI,
-    odbc
+    odbc,
+    data.table,
+    magrittr,
+    survey,
+    srvyr
 Suggests: 
     rmarkdown,
     knitr,
