@@ -101,13 +101,13 @@ add_county <- function(dt){
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
-psrc_pums_groupvar <- function(span, dyear, group_var, bin_defs=NULL){
+psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs=NULL){
   dt   <- tidycensus::get_pums(variables=c(group_var,"PUMA","ADJINC","ADJHSG"), state="WA",
                    survey=paste0("acs", span), year=dyear, recode=if(dyear>2016){TRUE}else{FALSE}) %>% # Recode isn't available prior to 2017
-    data.table::setDT() %>% clip2region() %>% adjust_dollars(group_var) %>% data.table::setkey(SERIALNO)
-  if(exists("df$SPORDER")){
-    dt %<>% .[SPORDER==1] %>% .[, SPORDER:=NULL]                                                   # If a persons attribute, filters for householder
-  }
+    data.table::setDT() %>% clip2region() %>% adjust_dollars(group_var)
+  if(exists("df$SPORDER") & tbl_ref!="person"){
+    dt %<>% .[SPORDER==1] %>% .[, SPORDER:=NULL]                                                   # If target variable is household and group variable is person,
+  }                                                                                                # uses 'householder' attributes, per convention (albeit odd)
 #  if(!is.null(bin_defs) & length(bin_defs)>1){
 #    dt %<>% .[, (group_var):=cut(group_var, breaks=bin_defs, right=T, labels=F)]                  # Manual grouping categories
 #  }else if(!is.null(bin_defs) & length(bin_defs)==1){
@@ -172,7 +172,8 @@ get_psrc_pums <- function(geo_scale, span, dyear, target_var, group_var=NULL, bi
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
     varlist %<>% c(groupvar_label)
-    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, bin_defs=NULL)                      # Grouping variable via API\
+    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs=NULL) %>%         # Grouping variable via API\
+      data.table::setkeyv(dt_key)
     dt %<>% .[group_var_dt, (groupvar_label):=get(groupvar_label), on=key(.)]                      # Link data tables
   }
   dt %<>% data.table::setDF() %>%
