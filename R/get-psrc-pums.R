@@ -145,7 +145,6 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #'
 #' This is the main assembly function.
 #' It draws from psrc_pums_targetvar and psrc_pums_groupvar and feeds the specific summary stat calls.
-#' @param geo_scale Either "county" or "region"
 #' @param span Either 1 for acs1 or 5 for acs5
 #' @param dyear The data year
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
@@ -162,7 +161,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' Sys.getenv("CENSUS_API_KEY")}
 # get_psrc_pums("region", 1, 2019, "AGEP", "SEX")
 
-get_psrc_pums <- function(geo_scale, span, dyear, target_var, group_var=NULL, bin_defs=NULL){
+get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var)
   pums_vars     <- tidycensus::pums_variables %>% data.table::setDT() %>% .[year==dyear & survey==paste0("acs", span)]     # Retrieve variable definitions
   tbl_ref       <- pums_vars[var_code==target_var, unique(level)]                                  # Table corresponding to unit of analysis (for rep weights)
@@ -189,8 +188,6 @@ get_psrc_pums <- function(geo_scale, span, dyear, target_var, group_var=NULL, bi
                   type="other",
                   scale=4/80,
                   rscale=length(all_of(rw)))
-  if(!is.null(group_var)){dt %<>% dplyr::group_by(!!as.name(groupvar_label))}
-  if(geo_scale=="county"){dt %<>% dplyr::group_by(COUNTY, .add=TRUE)}
   return(dt)
 }
 
@@ -218,7 +215,9 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   srvyrf_name <- as.name(paste0("srvyr::survey_",stat_type))
   se_name     <- paste0(stat_type,"_se")
   moe_name    <- paste0(stat_type,"_moe")
-  df <- get_psrc_pums(geo_scale, span, dyear, target_var, group_var, bin_defs)
+  df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
+  if(!is.null(group_var) & stat_type!="ratio"){dt %<>% dplyr::group_by(!!as.name(groupvar_label))}
+  if(geo_scale=="county"){df %<>% dplyr::group_by(COUNTY, .add=TRUE)}
   rs <- dplyr::summarize(df, !!result_name:=(as.function(!!srvyrf_name)(
                   !!as.name(target_var), vartype="se", level=0.95))) %>%                           # Generate the weighted statistic
     dplyr::mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% data.table::setDT() %>%             # Margin of Error using standard error
@@ -329,6 +328,31 @@ psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NUL
   return(rs)
 }
 
+#' Regional PUMS ratio
+#'
+#' This function uses psrc_pums_stat specific to the regional mean.
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param numerator The exact PUMS target variable intended as numerator, as a string in UPPERCASE
+#' @param denominator The exact PUMS variable intended as denominator, as a string in UPPERCASE
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the variable names, regional mean, and margin of error
+#'
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+# psrc_pums_ratio(1, 2019, "AGEP", "SEX")
+
+psrc_pums_ratio <- function(span, dyear, numerator, denominator){
+  rs <- psrc_pums_stat("ratio", "region", span, dyear, numerator, denominator)
+  return(rs)
+}
+
 #' County PUMS totals
 #'
 #' This function uses psrc_pums_stat specific to county totals.
@@ -430,5 +454,30 @@ county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs
 
 county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs)
+  return(rs)
+}
+
+#' County PUMS ratio
+#'
+#' This function uses psrc_pums_stat specific to county ratios.
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param numerator The exact PUMS target variable intended as numerator, as a string in UPPERCASE
+#' @param denominator The exact PUMS variable intended as denominator, as a string in UPPERCASE
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the variable names, county ratios, and margin of error
+#'
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+# psrc_pums_ratio(1, 2019, "AGEP", "SEX")
+
+psrc_pums_ratio <- function(span, dyear, numerator, denominator){
+  rs <- psrc_pums_stat("ratio", "region", span, dyear, numerator, denominator)
   return(rs)
 }
