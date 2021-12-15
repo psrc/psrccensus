@@ -21,6 +21,8 @@ Along with publishing summary statistics from the diennial Census or American Co
 
 PUMS data include sampling weights in order to be extrapolated to a larger population, and 80 replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data.
 
+## Ongoing issues with the PUMS API
+
 **Warning**: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages:
   *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 
 -or- 
@@ -31,14 +33,14 @@ In light of this, we suggest scheduling work with PUMS earlier in the workday, o
 
 The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole, using the following functions, specific to geography and the desired statistic:
 
-      Regional             County     
-------------------- -------------------
-psrc_pums_total()   county_pums_total()
-psrc_pums_count()   county_pums_count()
-psrc_pums_median()  county_pums_median()
-psrc_pums_mean()    county_pums_mean()
-psrc_pums_ratio()   county_pums_ratio()
-------------------- -------------------
+      Regional               County     
+-------------------- --------------------
+psrc_pums_total()    county_pums_total()
+psrc_pums_count()    county_pums_count()
+psrc_pums_median()   county_pums_median()
+psrc_pums_mean()     county_pums_mean()
+psrc_pums_ratio()    county_pums_ratio()
+-------------------- --------------------
 
 Each function requires three arguments: the first two denote the dataset involved; the third is the PUMS variable name you wish to summarize. To separate that statistic for subgroups of the population, use the optional fourth argument (for the ratio statistic, this serves as the denominator instead). You must enter the exact target variable or grouping variable name (in uppercase), and since these names vary from the diennial or acs naming, it may be useful to reference the data dictionaries the Census Bureau provides specific to each data year, [2020 as an example]( https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html).
 
@@ -66,7 +68,7 @@ Development is underway to enable custom grouping categories using the same func
 
 ## Complete microdata series via psrccensus
 
-The functions above provide the most accessible way to develop county and regional estimates, but when you need the underlying microdata, psrccensus provides that option via the get_psrc_pums() function. psrccensus uses the [srvyr package](http://gdfe.co/srvyr/) for PUMS analysis, and get_psrc_pums() returns a srvyr object that has the sampling and replication weights included and specified, and all the inflation adjustments applied. Specific srvyr methods are necessary to analyze srvyr objects, but they are generally analogous to base R equivalents and can be manipulated using dplyr commands.
+The functions above provide the most accessible way to develop county and regional estimates, but when you need the underlying microdata, psrccensus provides that option via the get_psrc_pums() function. psrccensus uses the [srvyr package](http://gdfe.co/srvyr/) for PUMS analysis, and get_psrc_pums() returns a srvyr object specific to the PSRC region with sampling and replication weights built in and all the inflation adjustments already applied. Specific srvyr methods are necessary to analyze srvyr objects, but they are generally analogous to base R equivalents and can be manipulated using dplyr commands. (If the object is converted to a dataframe, the weights will be lost.)
 
 The syntax for get_psrc_pums() is the same as the functions listed above:
 
@@ -74,5 +76,6 @@ get_psrc_pums(span = 1,
               dyear= 2019, 
               target_var = "HINCP", 
               group_var = "RAC1P")
-
+              
+Along with the target variable and optional grouping variable, get_psrc_pums() also returns the unit identifier (SERIALNO for household; SERIALNO and SPORDER for person), county name and PUMA code. 
 
