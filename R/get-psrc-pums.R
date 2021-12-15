@@ -229,6 +229,56 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   return(rs)
 }
 
+#' Regional PUMS total
+#'
+#' This function uses psrc_pums_stat specific to the regional total.
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
+#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the variable names, regional total, and margin of error
+#'
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' @export
+#' Sys.getenv("CENSUS_API_KEY")}
+# psrc_pums_total(1, 2019, "AGEP", "SEX")
+
+psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
+  rs <- psrc_pums_stat(stat_type="total", geo_scale="region", span, dyear, target_var, group_var, bin_defs)
+  return(rs)
+}
+
+#' Regional PUMS count
+#'
+#' This function uses psrc_pums_stat specific to the regional count.
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
+#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the variable names, regional count (i.e. tally), and margin of error
+#'
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+# psrc_pums_count(1, 2019, "AGEP", "SEX")
+
+psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
+  rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs)
+  return(rs)
+}
+
 #' Regional PUMS median
 #'
 #' This function uses psrc_pums_stat specific to the regional median.
@@ -276,6 +326,58 @@ psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=N
 
 psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs)
+  return(rs)
+}
+
+#' County PUMS totals
+#'
+#' This function uses psrc_pums_stat specific to county totals.
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
+#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the variable names, PSRC county totals, and margin of error
+#'
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+# county_pums_total(1, 2019, "AGEP", "SEX")
+
+county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
+  rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs)
+  return(rs)
+}
+
+#' County PUMS count
+#'
+#' This function uses psrc_pums_stat specific to county unit counts.
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
+#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the variable names, PSRC county unit counts (i.e. tallies), and margin of error
+#'
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+# county_pums_count(1, 2019, "AGEP", "SEX")
+
+county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
+  rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
