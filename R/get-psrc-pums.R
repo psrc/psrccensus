@@ -164,7 +164,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 
 get_psrc_pums <- function(geo_scale, span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var)
-  pums_vars     <- pums_variables %>% data.table::setDT() %>% .[year==dyear & survey==paste0("acs", span)]     # Retrieve variable definitions
+  pums_vars     <- tidycensus::pums_variables %>% data.table::setDT() %>% .[year==dyear & survey==paste0("acs", span)]     # Retrieve variable definitions
   tbl_ref       <- pums_vars[var_code==target_var, unique(level)]                                  # Table corresponding to unit of analysis (for rep weights)
   key_ref       <- pums_vars[var_code==group_var, unique(level)]                                   # Table corresponding to grouping variable (for join)
   dt_key        <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
