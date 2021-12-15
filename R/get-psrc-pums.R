@@ -92,6 +92,7 @@ add_county <- function(dt){
 #' @param span Either 1 for acs1 or 5 for acs5
 #' @param dyear The data year
 #' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
+#' @param tbl_ref Either "person" or "housing", as determined by the get_psrc_pums function
 #' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
 #'
 #' @author Michael Jensen
