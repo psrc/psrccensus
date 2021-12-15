@@ -154,13 +154,12 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' @author Michael Jensen
 #'
 #' @return A srvyr object ready for summation.
-#'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
+#' @examples
 #' Sys.getenv("CENSUS_API_KEY")}
 # get_psrc_pums("region", 1, 2019, "AGEP", "SEX")
-
+#' @export
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var)
   pums_vars     <- tidycensus::pums_variables %>% data.table::setDT() %>% .[year==dyear & survey==paste0("acs", span)]     # Retrieve variable definitions
@@ -243,10 +242,10 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
+#' @examples
 #' Sys.getenv("CENSUS_API_KEY")}
 # psrc_pums_total(1, 2019, "AGEP", "SEX")
-
+#' @export
 psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat(stat_type="total", geo_scale="region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -267,12 +266,11 @@ psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 # psrc_pums_count(1, 2019, "AGEP", "SEX")
-
+#' @export
 psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -293,10 +291,10 @@ psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
+#' @examples
 #' Sys.getenv("CENSUS_API_KEY")}
 # psrc_pums_median(1, 2019, "AGEP", "SEX")
-
+#' @export
 psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat(stat_type="median", geo_scale="region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -317,12 +315,11 @@ psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=N
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 # psrc_pums_mean(1, 2019, "AGEP", "SEX")
-
+#' @export
 psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -342,12 +339,11 @@ psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NUL
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-# psrc_pums_ratio(1, 2019, "AGEP", "SEX")
-
+# psrc_pums_ratio(1, 2019, "RNTP", "HINCP")
+#' @export
 psrc_pums_ratio <- function(span, dyear, numerator, denominator){
   rs <- psrc_pums_stat("ratio", "region", span, dyear, numerator, denominator)
   return(rs)
@@ -368,12 +364,11 @@ psrc_pums_ratio <- function(span, dyear, numerator, denominator){
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 # county_pums_total(1, 2019, "AGEP", "SEX")
-
+#' @export
 county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -394,12 +389,11 @@ county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 # county_pums_count(1, 2019, "AGEP", "SEX")
-
+#' @export
 county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -420,12 +414,11 @@ county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 # county_pums_median(1, 2019, "AGEP", "SEX")
-
+#' @export
 county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -446,12 +439,11 @@ county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 # county_pums_mean(1, 2019, "AGEP", "SEX")
-
+#' @export
 county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
@@ -471,12 +463,11 @@ county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=N
 #'
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
-#' @export
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-# psrc_pums_ratio(1, 2019, "AGEP", "SEX")
-
+# psrc_pums_ratio(1, 2019, "RNTP", "HINCP")
+#' @export
 psrc_pums_ratio <- function(span, dyear, numerator, denominator){
   rs <- psrc_pums_stat("ratio", "region", span, dyear, numerator, denominator)
   return(rs)
