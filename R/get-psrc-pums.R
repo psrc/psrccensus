@@ -11,6 +11,7 @@
 #'
 #' @return the data.table with the input variable adjusted
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
@@ -30,6 +31,7 @@ adjust_inflation <-function(dt, dollar_var, adj_var){
 #'
 #' @return the data.table with dollar value adjusted
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
@@ -54,6 +56,7 @@ adjust_dollars <- function(dt, dollar_var){
 #'
 #' @return the filtered data.table
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
@@ -73,6 +76,7 @@ clip2region <- function(dt){
 #'
 #' @return the filtered data.table
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
@@ -99,6 +103,7 @@ add_county <- function(dt){
 #'
 #' @return the filtered data.table
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
@@ -130,6 +135,7 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs=NULL){
 #'
 #' @return the filtered data.table
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
@@ -154,6 +160,8 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' @author Michael Jensen
 #'
 #' @return A srvyr object ready for summation.
+#'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 #' @examples
@@ -168,15 +176,14 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   dt_key        <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
                     }else{"SERIALNO"}                                                              # To match join
   rwgt_ref      <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
-  dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county() %>%                 # Target variable via API
-    data.table::setkeyv(dt_key)
+  dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
     varlist %<>% c(groupvar_label)
     group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs=NULL) %>%         # Grouping variable via API\
       data.table::setkeyv(dt_key)
-    dt %<>% .[group_var_dt, (groupvar_label):=get(groupvar_label), on=key(.)]                      # Link data tables
+    dt %<>% data.table::setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=get(groupvar_label), on=key(.)] # Link data tables
   }
   dt %<>% data.table::setDF() %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
@@ -206,6 +213,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #'
 #' @return A table with the variable names, desired statistic, and margin of error
 #'
+#' @import(data.table)
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
