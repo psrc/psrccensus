@@ -21,14 +21,6 @@ Along with publishing summary statistics from the diennial Census or American Co
 
 PUMS data include sampling weights in order to be extrapolated to a larger population, and 80 replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data.
 
-## Ongoing issues with the PUMS API
-
-**Warning**: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages:
-  *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 
--or- 
-  *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*
-In light of this, we suggest scheduling work with PUMS earlier in the workday, or waiting until the API has been restored. (PUMS data can still be downloaded from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/), but without the tools available via psrccensus.)
-
 ## Summary statistics via psrccensus
 
 The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole, using the following functions, specific to geography and the desired statistic:
@@ -65,6 +57,14 @@ psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
 Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.
 
 Development is underway to enable custom grouping categories using the same functions.
+
+## Considerations with the PUMS API
+
+Due to the volume of data being transferred via API (particularly the replication weights), a PUMS function call may take around a full minute to execute. The functions still represent a time savings over manual calculations, so feel free to get a snack or stretch while the function runs. 8^)
+
+**Please notice**: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages:
+*Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* -or-   *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*
+In light of this, we suggest scheduling work with PUMS earlier in the workday, or waiting until the API has been restored. (PUMS data can still be downloaded from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/), but without the automation included in psrccensus.)
 
 ## Complete microdata series via psrccensus
 
