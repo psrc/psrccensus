@@ -211,6 +211,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @import(data.table)
 #' @import(srvyr)
 #' @import(dplyr)
+#' @importFrom rlang sym
 #' @importFrom magrittr %<>%
 #' @importFrom magrittr %>%
 
