@@ -21,6 +21,8 @@ Along with publishing summary statistics from the diennial Census or American Co
 
 PUMS data include sampling weights in order to be extrapolated to a larger population, and 80 replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data.
 
+See ["What PUMS users need to know"](https://www.census.gov/content/dam/Census/library/publications/2021/acs/acs_pums_handbook_2021.pdf) from the Census Bureau.
+
 ## Summary statistics via psrccensus
 
 The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole, using the following functions, specific to geography and the desired statistic:
@@ -34,7 +36,7 @@ psrc_pums_mean()     county_pums_mean()
 psrc_pums_ratio()    county_pums_ratio()
 -------------------- --------------------
 
-Each function requires three arguments: the first two denote the dataset involved; the third is the PUMS variable name you wish to summarize. To separate that statistic for subgroups of the population, use the optional fourth argument (for the ratio statistic, this serves as the denominator instead). You must enter the exact target variable or grouping variable name (in uppercase), and since these names vary from the diennial or acs naming, it may be useful to reference the data dictionaries the Census Bureau provides specific to each data year, [2020 as an example]( https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html).
+Each function requires three arguments: the first two denote the dataset involved; the third is the PUMS variable name you wish to summarize. To separate that statistic for subgroups of the population, use the optional fourth argument (for the ratio statistic, this serves as the denominator instead). You must enter the exact target variable or grouping variable name (in uppercase), and since these names vary from the diennial or acs naming, it may be useful to reference the data dictionaries the Census Bureau provides specific to each data year, [2020 as an example](https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html).
 
 The functions handle extrapolation to the wider population (via sampling weights) and calculation of margins of error (via replication weights) internally. Additionally, they also apply inflation adjustments to variables measured in dollar values: since the survey is collected on a rolling basis, nominal income components or costs would not otherwise be directly comparable between households.
 
