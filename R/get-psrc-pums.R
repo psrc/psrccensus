@@ -226,9 +226,13 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
                   !!as.name(target_var), vartype="se", level=0.95))) %>%                           # Generate the weighted statistic
     mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% setDT() %>%                                # Margin of Error using standard error
     setnames(grep("_label", colnames(.)), c("group_label")) %>%                                    # For clarity in multi-call datasets
-    .[, target_var:=as.character(target_var)] %>% .[, group_var:=as.character(group_var)] %>%
-    .[, (se_name):=NULL] %>%
+    .[, target_var:=as.character(target_var)] %>% .[, (se_name):=NULL]
+  if(!is.null(group_var)){
+    rs %<>% .[, group_var:=as.character(group_var)] %>%
     setcolorder(c("target_var", "group_var", "group_label", as.character(result_name), as.character(moe_name)))
+  }else{
+    rs %<>% setcolorder(c("target_var", as.character(result_name), as.character(moe_name)))
+  }
   return(rs)
 }
 
