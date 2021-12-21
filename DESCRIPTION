@@ -3,10 +3,10 @@ Type: Package
 Title: Summarize Census Data for use at PSRC
 Version: 0.1.0
 Authors@R: c(
-    person("Craig", "Helmann", email = "chelmann@psrc.org", role = "cre"),
+    person("Craig", "Helmann", email = "chelmann@psrc.org", role = "aut"),
     person("Christy", "Lam", email = "clam@psrc.org", role = "aut"),
     person("Polina", "Butrina", email = "pbutrina@psrc.org", role = "aut"),
-    person("Suzanne", "Childress", email = "schildress@psrc.org", role = "aut")),
+    person("Suzanne", "Childress", email = "schildress@psrc.org", role = "cre"),
     person("Michael", "Jensen", email = "mjensen@psrc.org", role = "aut"))
 Maintainer: Suzanne Childress <schildress@psrc.org>
 Description: Various functions to pull, process and visualize Census data for geographies in the Central Puget Sund Region.
@@ -19,6 +19,7 @@ Imports:
     dplyr,
     purrr,
     tidycensus,
+    tidyverse,
     tidyr,
     magrittr,
     rlang,

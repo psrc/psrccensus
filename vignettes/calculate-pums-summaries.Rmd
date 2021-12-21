@@ -13,6 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 library(psrccensus)
 library(dplyr)
+library(srvyr)
 ```
 
 ## What is Census microdata?
@@ -35,20 +36,51 @@ Each function requires three arguments: the first two denote the dataset involve
 The functions handle extrapolation to the wider population (via sampling weights) and calculation of margins of error (via replication weights) internally. Additionally, they also apply inflation adjustments to variables measured in dollar values: since the survey is collected on a rolling basis, nominal income components or costs would not otherwise be directly comparable between households.
 
 To calculate the regional median household income for 2019, for example, you would use the following function call:
-```{r acs examples, message=FALSE}
-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
+```{r, include=FALSE}
+psrc_pums_median_inc<-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
                  target_var = "HINCP")      # The PUMS variable name for Household Income
 
 ```
 
-To calculate regional median household income by detailed racial group, the call would look like this:
-```{r acs examples, message=FALSE}
-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
+
+```{r acs examples, message=FALSE, eval=FALSE}
+psrc_pums_median_inc<-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
+                 dyear = 2019,
+                 target_var = "HINCP")      # The PUMS variable name for Household Income
+
+
+```
+```{r}
+psrc_pums_median_inc
+```
+
+To calculate regional median household income by couple type (1	Opposite-sex husband/wife/spouse household
+2	Same-sex husband/wife/spouse/household
+3	Opposite-sex unmarried partner household
+4	Same-sex unmarried partner household
+), the call would look like this:
+
+```{r, include=FALSE}
+median_income_couple_type<-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
                  target_var = "HINCP",      # The PUMS variable name for Household Income
-                 group_var = "RAC1P")       # The higher-level race category available in PUMS   
+                 group_var = "CPLT")       # Couple Type
+
 ```
+
+```{r acs examples 2, message=FALSE, eval=FALSE}
+median_income_couple_type<-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
+                 dyear = 2019,
+                 target_var = "HINCP",      # The PUMS variable name for Household Income
+                 group_var = "CPLT")       # Couple Type
+
+```
+
+```{r}
+median_income_couple_type
+```
+
 
 Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.
 

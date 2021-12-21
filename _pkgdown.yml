@@ -6,6 +6,11 @@ reference:
   - get_decennial_recs
   - create_tract_map
   - get_time_series
+  - get_psrc_pums
+  - psrc_pums_median
+  - psrc_pums_median
+  - county_pums_mean
+  - county_pums_mean
 - subtitle: Formatting functions
   desc: Functions to better format the data and ease data access
   contents:
@@ -21,3 +26,10 @@ reference:
   - get_decennial_msa
   - get_decennial_place
   - get_decennial_tract_county_bg
+  - adjust_inflation
+  - adjust_dollars
+  - clip2region
+  - add_county
+  - psrc_pums_groupvar
+  - psrc_pums_targetvar
+  - psrc_pums_stat

@@ -2,7 +2,8 @@ pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  calculate-pums-summaries: calculate-pums-summaries.html
   get-data: get-data.html
   psrccensus: psrccensus.html
-last_built: 2021-12-03T18:31Z
+last_built: 2021-12-20T23:20Z
 
