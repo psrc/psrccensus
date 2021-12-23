@@ -36,14 +36,14 @@ Each function requires three arguments: the first two denote the dataset involve
 The functions handle extrapolation to the wider population (via sampling weights) and calculation of margins of error (via replication weights) internally. Additionally, they also apply inflation adjustments to variables measured in dollar values: since the survey is collected on a rolling basis, nominal income components or costs would not otherwise be directly comparable between households.
 
 To calculate the regional median household income for 2019, for example, you would use the following function call:
-```{r pums examples, message=FALSE}
+```{r regional median, message=FALSE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
                  target_var = "HINCP")      # The PUMS variable name for Household Income
 ```
 
 To calculate by a subgroup category (here, tenure--e.g. own vs. rent), use the optional grouping variable argument:
-```{r pums examples, message=FALSE}
+```{r regional median by category, message=FALSE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
                  target_var = "HINCP",      # The PUMS variable name for Household Income
@@ -51,7 +51,7 @@ psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
 ```
 
 For the equivalent calculation by county, use the county-specific function:
-```{r pums examples, message=FALSE}
+```{r county median by category, message=FALSE}
 county_pums_median(span = 1,                # Denoting ACS 1-year estimates
                    dyear = 2019,
                    target_var = "HINCP",    # The PUMS variable name for Household Income
