@@ -74,7 +74,7 @@ clip2region <- function(dt){
 
 add_county <- function(dt){
   county_lookup <- data.frame(PUMA3=c(115,116,117,118),
-                              COUNTY=c("Pierce","King","Snohomish","Kitsap")) %>%
+                              COUNTY=as.factor(c("Pierce","King","Snohomish","Kitsap"))) %>%
     setDT() %>% setkey(PUMA3)
   dt %<>% .[, PUMA3:=(as.integer(PUMA) %/% 100)] %>%
     .[county_lookup, COUNTY:=COUNTY, on=.(PUMA3=PUMA3)]
@@ -152,7 +152,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' get_psrc_pums("region", 1, 2019, "AGEP", "SEX")
 #' @export
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  varlist       <- c(target_var)
+  varlist       <- c(target_var,"COUNTY")
   pums_vars     <- tidycensus::pums_variables %>% setDT() %>% .[year==dyear & survey==paste0("acs", span)] # Retrieve variable definitions
   tbl_ref       <- pums_vars[var_code==target_var, unique(level)]                                  # Table corresponding to unit of analysis (for rep weights)
   key_ref       <- if(!is.null(group_var)){
@@ -200,7 +200,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @return A table with the variable names, desired statistic, and margin of error
 #'
 #' @importFrom rlang sym
-#' @importFrom dplyr group_by mutate select
+#' @importFrom dplyr group_by mutate select relocate arrange
 #' @importFrom srvyr summarise survey_total survey_tally survey_median survey_mean
 psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
   result_name <- sym(stat_type)                                                                    # i.e. total, tally, median or mean
@@ -210,13 +210,18 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
-    df %<>% group_by(!!as.name(groupvar_label))
+    df %<>% group_by(as.factor(!!as.name(groupvar_label)))
     }
   if(geo_scale=="county"){
     df %<>% group_by(COUNTY, .add=TRUE)
     }
   rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), vartype="se", level=0.95))) %>%
     mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% select(-se_name)
+  if(geo_scale=="county"){
+    rs %<>% relocate(COUNTY) %>% arrange(COUNTY,!!sym(groupvar_label))
+  }else{
+  rs %<>% arrange(!!sym(groupvar_label))
+  }
   return(rs)
 }
 
@@ -230,11 +235,6 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
 #' @author Michael Jensen
 #'
 #' @return A table with the variable names and labels, summary statistic and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' psrc_pums_median(1, 2019, "AGEP", "SEX")
 NULL
 
 #' @rdname regional_pums_stat
@@ -255,6 +255,12 @@ psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS median
+#'
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+#' psrc_pums_median(1, 2019, "AGEP", "SEX")
+#'
 #' @export
 psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "region", span, dyear, target_var, group_var, bin_defs)
@@ -279,11 +285,6 @@ psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NUL
 #' @author Michael Jensen
 #'
 #' @return A table with the counties, variable names and labels, summary statistic, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' county_pums_median(1, 2019, "AGEP", "SEX")
 NULL
 
 #' @rdname county_pums_stat
@@ -304,6 +305,12 @@ county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 
 #' @rdname county_pums_stat
 #' @title Generate PUMS medians by county
+#'
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+#' county_pums_median(1, 2019, "AGEP", "SEX")
+#'
 #' @export
 county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs)

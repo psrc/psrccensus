@@ -37,6 +37,7 @@ Separate function for total, count, median, or mean
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
 county_pums_median(1, 2019, "AGEP", "SEX")
+
 }
 \author{
 Michael Jensen

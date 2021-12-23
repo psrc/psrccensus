@@ -9,8 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(psrccensus)
 library(dplyr)
 library(srvyr)
@@ -42,9 +42,23 @@ psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  target_var = "HINCP")      # The PUMS variable name for Household Income
 ```
 
-Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.
+To calculate by a subgroup category (here, tenure--e.g. own vs. rent), use the optional grouping variable argument:
+```{r pums examples, message=FALSE}
+psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
+                 dyear = 2019,
+                 target_var = "HINCP",      # The PUMS variable name for Household Income
+                 group_var = "TEN")         # The PUMS variable name for Tenure
+```
 
-Development is underway to enable custom grouping categories using the same functions.
+For the equivalent calculation by county, use the county-specific function:
+```{r pums examples, message=FALSE}
+county_pums_median(span = 1,                # Denoting ACS 1-year estimates
+                   dyear = 2019,
+                   target_var = "HINCP",    # The PUMS variable name for Household Income
+                   group_var = "TEN")       # The PUMS variable name for Tenure
+```
+
+Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.
 
 **Warning**: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages:
   *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 
