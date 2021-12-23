@@ -137,7 +137,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #'
 #' The main PUMS assembly function.
 #' Combines data from \code{\link{psrc_pums_targetvar}} and \code{\link{psrc_pums_groupvar}} to feed specific summary stat calls.
-#' @inheritParams pums_stats
+#' @inheritParams psrc_pums_stat
 #'
 #' @author Michael Jensen
 #'
@@ -188,7 +188,11 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' Fed from \code{\link{get_psrc_pums}}
 #' @param stat_type Desired survey statistic
 #' @param geo_scale Either "county" or "region"
-#' @inheritParams pums_stats
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
+#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
 #'
 #' @author Michael Jensen
 #'
@@ -215,83 +219,98 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   return(rs)
 }
 
-#' PUMS summary statistics
+#' Regional PUMS summary statistics
 #'
-#' Called specific to statistic - total/count/median/mean - and to scale - region/counties
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#' Separate function for total, count, median, or mean
+#'
+#' @inheritParams psrc_pums_stat
+#' @name regional_pums_stat
 #'
 #' @author Michael Jensen
 #'
-#' @return A table with the variable names, summary statistic and margin of error
+#' @return A table with the variable names and labels, summary statistic and margin of error
 #'
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-#' psrc_pums_total(1, 2019, "AGEP", "SEX")
-#' county_pums_median(1, 2019, "AGEP", "SEX")
-#'
-#' @describeIn pums_stats Generate regional PUMS totals
-#'
+#' psrc_pums_median(1, 2019, "AGEP", "SEX")
+NULL
+
+#' @rdname regional_pums_stat
+#' @title Generate regional PUMS totals
 #' @export
 psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("total", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate regional PUMS count
-#'
+#' @rdname regional_pums_stat
+#' @title Generate regional PUMS count
 #' @export
 psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate regional PUMS median
-#'
+#' @rdname regional_pums_stat
+#' @title Generate regional PUMS median
 #' @export
 psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate regional PUMS mean
-#'
+#' @rdname regional_pums_stat
+#' @title Generate regional PUMS mean
 #' @export
 psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate PUMS totals by county
+#' PUMS summary statistics by county
 #'
+#' Separate function for total, count, median, or mean
+#'
+#' @inheritParams psrc_pums_stat
+#' @name county_pums_stat
+#'
+#' @author Michael Jensen
+#'
+#' @return A table with the counties, variable names and labels, summary statistic, and margin of error
+#'
+#' @examples
+#' \dontrun{
+#' Sys.getenv("CENSUS_API_KEY")}
+#' county_pums_median(1, 2019, "AGEP", "SEX")
+NULL
+
+#' @rdname county_pums_stat
+#' @title Generate PUMS totals by county
 #' @export
 county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate PUMS counts <tally> by county
-#'
+#' @rdname county_pums_stat
+#' @title Generate PUMS counts <tally> by county
 #' @export
 county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate PUMS medians by county
-#'
+#' @rdname county_pums_stat
+#' @title Generate PUMS medians by county
 #' @export
 county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' @describeIn pums_stats Generate PUMS averages <mean> by county
-#'
+#' @rdname county_pums_stat
+#' @title Generate PUMS averages <mean> by county
 #' @export
 county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs)

@@ -6,6 +6,17 @@
 \usage{
 get_psrc_pums(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
 }
+\arguments{
+\item{span}{Either 1 for acs1 or 5 for acs5}
+
+\item{dyear}{The data year}
+
+\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
+
+\item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
+
+\item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
+}
 \value{
 A srvyr object, absent grouping but otherwise ready for summation.
 }
