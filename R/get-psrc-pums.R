@@ -144,6 +144,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' @return A srvyr object, absent grouping but otherwise ready for summation.
 #'
 #' @import data.table
+#' @importFrom tidyselect all_of
 #'
 #' @examples
 #' \dontrun{
@@ -184,7 +185,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 
 #' Generic call for PUMS summary statistics
 #'
-#' Given specific form by related total/count/median/mean x region/county \code{\link{pumstat}} functions.
+#' Given specific form by related \code{\link{regional_pums_stat}} and \code{\link{county_pums_stat}} functions.
 #' Fed from \code{\link{get_psrc_pums}}
 #' @param stat_type Desired survey statistic
 #' @param geo_scale Either "county" or "region"
