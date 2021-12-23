@@ -210,7 +210,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
-    dt %<>% group_by(!!as.name(groupvar_label))
+    df %<>% group_by(!!as.name(groupvar_label))
     }
   if(geo_scale=="county"){
     df %<>% group_by(COUNTY, .add=TRUE)
