@@ -33,7 +33,8 @@ Imports:
     odbc,
     data.table,
     survey,
-    srvyr
+    srvyr,
+    tidyselect
 Suggests: 
     rmarkdown,
     knitr,
