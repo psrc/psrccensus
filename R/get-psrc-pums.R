@@ -212,16 +212,11 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
     groupvar_label <- paste0(group_var,"_label")
     df %<>% group_by(as.factor(!!as.name(groupvar_label)))
     }
-  if(geo_scale=="county"){
-    df %<>% group_by(COUNTY, .add=TRUE)
-    }
+  if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
   rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), vartype="se", level=0.95))) %>%
     mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% select(-se_name)
-  if(geo_scale=="county"){
-    rs %<>% relocate(COUNTY) %>% arrange(COUNTY,!!sym(groupvar_label))
-  }else{
-  rs %<>% arrange(!!sym(groupvar_label))
-  }
+  if(!is.null(group_var)){rs %<>% arrange(!!sym(groupvar_label))}
+  if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
   return(rs)
 }
 
