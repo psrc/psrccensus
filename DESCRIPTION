@@ -32,7 +32,6 @@ Imports:
     DBI,
     odbc,
     data.table,
-    magrittr,
     survey,
     srvyr
 Suggests: 
