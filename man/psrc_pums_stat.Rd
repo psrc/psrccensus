@@ -33,7 +33,7 @@ psrc_pums_stat(
 A table with the variable names, desired statistic, and margin of error
 }
 \description{
-Given specific form by related total/count/median/mean x region/county \code{\link{pumstat}} functions.
+Given specific form by related \code{\link{regional_pums_stat}} and \code{\link{county_pums_stat}} functions.
 Fed from \code{\link{get_psrc_pums}}
 }
 \author{
