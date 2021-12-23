@@ -7,14 +7,14 @@
 add_county(dt)
 }
 \arguments{
-\item{dt}{The data table}
+\item{dt}{PSRC data.table}
 }
 \value{
-the filtered data.table
+PSRC data.table with county names
 }
 \description{
-This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-It attaches the county name.
+Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+Attaches county name.
 }
 \author{
 Michael Jensen

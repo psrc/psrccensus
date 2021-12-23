@@ -7,14 +7,14 @@
 clip2region(dt)
 }
 \arguments{
-\item{dt}{The data table}
+\item{dt}{Washington State PUMS data.table}
 }
 \value{
-the filtered data.table
+PSRC data.table
 }
 \description{
-This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-It filters the Washington State API pull to the PSRC region and removes State/label columns
+Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+Filters the Washington State API pull to the PSRC region and removes State/State_label columns.
 }
 \author{
 Michael Jensen

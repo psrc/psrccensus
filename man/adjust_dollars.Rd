@@ -7,16 +7,16 @@
 adjust_dollars(dt, dollar_var)
 }
 \arguments{
-\item{dt}{The data table}
+\item{dt}{The data.table}
 
-\item{dollar_var}{The reported PUMS variable to adjust}
+\item{dollar_var}{PUMS variable to adjust}
 }
 \value{
-the data.table with dollar value adjusted
+full input data.table with all dollar values adjusted
 }
 \description{
-This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-It matches the corresponding adjustment factor with the appropriate PUMS variable and applies the adjust_inflation function.
+Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
 }
 \author{
 Michael Jensen

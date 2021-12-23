@@ -7,17 +7,17 @@
 adjust_inflation(dt, dollar_var, adj_var)
 }
 \arguments{
-\item{dt}{The data table as conditioned by adjust_dollars function}
+\item{dt}{The data.table}
 
-\item{dollar_var}{The reported PUMS variable to adjust}
+\item{dollar_var}{PUMS variable to adjust}
 
-\item{adj_var}{The PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost}
+\item{adj_var}{PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost}
 }
 \value{
-the data.table with the input variable adjusted
+filtered input data.table with input variable adjusted
 }
 \description{
-This is a helper function for the adjust_dollars function
+Helper to the \code{\link{adjust_dollars}} function
 }
 \author{
 Michael Jensen

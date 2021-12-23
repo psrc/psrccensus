@@ -4,7 +4,7 @@
 \alias{psrc_pums_groupvar}
 \title{Process the PUMS Grouping Variable}
 \usage{
-psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs = NULL)
+psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -21,8 +21,8 @@ psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs = NULL)
 the filtered data.table
 }
 \description{
-This is one of two primary helper functions to the get_psrc_pums data assembly function.
-It calls the Census API to process the optional grouping variable.
+One of two primary helpers to the \code{\link{get_psrc_pums}} data assembly function.
+Calls the Census API to process the optional grouping variable.
 }
 \author{
 Michael Jensen

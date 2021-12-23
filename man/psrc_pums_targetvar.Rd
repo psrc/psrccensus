@@ -13,14 +13,14 @@ psrc_pums_targetvar(span, dyear, target_var, tbl_ref)
 
 \item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
-\item{tbl_ref}{Either "person" or "housing", as determined by the get_psrc_pums function}
+\item{tbl_ref}{Either "person" or "housing", as determined by the \code{\link{get_psrc_pums}} function}
 }
 \value{
 the filtered data.table
 }
 \description{
-This is one of two primary helper functions to the get_psrc_pums data assembly function.
-It calls the Census API to process the primary variable used for summarization.
+One of two primary helpers to the \code{\link{get_psrc_pums}} data assembly function.
+Calls the Census API to process the primary variable used for summarization.
 }
 \author{
 Michael Jensen

@@ -6,30 +6,16 @@
 \usage{
 get_psrc_pums(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
 }
-\arguments{
-\item{span}{Either 1 for acs1 or 5 for acs5}
-
-\item{dyear}{The data year}
-
-\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
-
-\item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
-
-\item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
-}
 \value{
-A srvyr object ready for summation.
+A srvyr object, absent grouping but otherwise ready for summation.
 }
 \description{
-This is the main assembly function.
-It draws from psrc_pums_targetvar and psrc_pums_groupvar and feeds the specific summary stat calls.
+The main PUMS assembly function.
+Combines data from \code{\link{psrc_pums_targetvar}} and \code{\link{psrc_pums_groupvar}} to feed specific summary stat calls.
 }
 \examples{
-library(dplyr)
-library(srvyr)
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
-
 get_psrc_pums("region", 1, 2019, "AGEP", "SEX")
 }
 \author{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-psrc-pums.R
 \name{psrc_pums_stat}
 \alias{psrc_pums_stat}
-\title{Genericized Call for PUMS Summary Statistics}
+\title{Generic call for PUMS summary statistics}
 \usage{
 psrc_pums_stat(
   stat_type,
@@ -10,31 +10,21 @@ psrc_pums_stat(
   span,
   dyear,
   target_var,
-  group_var = NULL,
-  bin_defs = NULL
+  group_var,
+  bin_defs
 )
 }
 \arguments{
 \item{stat_type}{Desired survey statistic}
 
 \item{geo_scale}{Either "county" or "region"}
-
-\item{span}{Either 1 for acs1 or 5 for acs5}
-
-\item{dyear}{The data year}
-
-\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
-
-\item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
-
-\item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
 }
 \value{
 A table with the variable names, desired statistic, and margin of error
 }
 \description{
-This function is given specific form by related median/mean region/county functions.
-It draws from get_psrc_pums.
+Given specific form by related total/count/median/mean x region/county \code{\link{pumstat}} functions.
+Fed from \code{\link{get_psrc_pums}}
 }
 \author{
 Michael Jensen
