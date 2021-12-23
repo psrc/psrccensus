@@ -1,15 +1,16 @@
+#' @importFrom magrittr %<>% %>%
+NULL
+
 #' Inflation adjustment for PUMS
 #'
-#' This is a helper function for the adjust_dollars function
-#' @param dt The data table as conditioned by adjust_dollars function
-#' @param dollar_var The reported PUMS variable to adjust
-#' @param adj_var The PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost
+#' Helper to the \code{\link{adjust_dollars}} function
+#' @inheritParams adjust_dollars
+#' @param adj_var PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost
 #'
 #' @author Michael Jensen
 #'
-#' @return the data.table with the input variable adjusted
+#' @return filtered input data.table with input variable adjusted
 #'
-#' @importFrom magrittr %<>% %>%
 #' @import data.table
 
 adjust_inflation <-function(dt, dollar_var, adj_var){
@@ -19,16 +20,15 @@ adjust_inflation <-function(dt, dollar_var, adj_var){
 
 #' Dollar variable adjustment for PUMS
 #'
-#' This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-#' It matches the corresponding adjustment factor with the appropriate PUMS variable and applies the adjust_inflation function.
-#' @param dt The data table
-#' @param dollar_var The reported PUMS variable to adjust
+#' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+#' Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
+#' @param dt The data.table
+#' @param dollar_var PUMS variable to adjust
 #'
 #' @author Michael Jensen
 #'
-#' @return the data.table with dollar value adjusted
+#' @return full input data.table with all dollar values adjusted
 #'
-#' @importFrom magrittr %<>% %>%
 #' @import data.table
 
 adjust_dollars <- function(dt, dollar_var){
@@ -44,15 +44,14 @@ adjust_dollars <- function(dt, dollar_var){
 
 #' Restrict PUMS API pull to PSRC region
 #'
-#' This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-#' It filters the Washington State API pull to the PSRC region and removes State/label columns
-#' @param dt The data table
+#' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+#' Filters the Washington State API pull to the PSRC region and removes State/State_label columns.
+#' @param dt Washington State PUMS data.table
 #'
 #' @author Michael Jensen
 #'
-#' @return the filtered data.table
+#' @return PSRC data.table
 #'
-#' @importFrom magrittr %<>% %>%
 #' @import data.table
 
 clip2region <- function(dt){
@@ -63,15 +62,14 @@ clip2region <- function(dt){
 
 #' Add County Name to PUMS API Result
 #'
-#' This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-#' It attaches the county name.
-#' @param dt The data table
+#' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+#' Attaches county name.
+#' @param dt PSRC data.table
 #'
 #' @author Michael Jensen
 #'
-#' @return the filtered data.table
+#' @return PSRC data.table with county names
 #'
-#' @importFrom magrittr %<>% %>%
 #' @import data.table
 
 add_county <- function(dt){
@@ -85,8 +83,8 @@ add_county <- function(dt){
 
 #' Process the PUMS Grouping Variable
 #'
-#' This is one of two primary helper functions to the get_psrc_pums data assembly function.
-#' It calls the Census API to process the optional grouping variable.
+#' One of two primary helpers to the \code{\link{get_psrc_pums}} data assembly function.
+#' Calls the Census API to process the optional grouping variable.
 #' @param span Either 1 for acs1 or 5 for acs5
 #' @param dyear The data year
 #' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
@@ -97,7 +95,6 @@ add_county <- function(dt){
 #'
 #' @return the filtered data.table
 #'
-#' @importFrom magrittr %<>% %>%
 #' @import data.table
 
 psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs){
@@ -117,18 +114,16 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs){
 
 #' Process the PUMS Target Variable
 #'
-#' This is one of two primary helper functions to the get_psrc_pums data assembly function.
-#' It calls the Census API to process the primary variable used for summarization.
+#' One of two primary helpers to the \code{\link{get_psrc_pums}} data assembly function.
+#' Calls the Census API to process the primary variable used for summarization.
 #' @param span Either 1 for acs1 or 5 for acs5
 #' @param dyear The data year
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param tbl_ref Either "person" or "housing", as determined by the get_psrc_pums function
+#' @param tbl_ref Either "person" or "housing", as determined by the \code{\link{get_psrc_pums}} function
 #'
 #' @author Michael Jensen
 #'
 #' @return the filtered data.table
-#'
-#' @importFrom magrittr %<>% %>%
 
 psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
   dt <- tidycensus::get_pums(variables=c(target_var,"PUMA","ADJINC","ADJHSG"), state="WA",         # Include inflation adjustment fields
@@ -140,19 +135,14 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 
 #' Assemble the requested PUMS data
 #'
-#' This is the main assembly function.
-#' It draws from psrc_pums_targetvar and psrc_pums_groupvar and feeds the specific summary stat calls.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#' The main PUMS assembly function.
+#' Combines data from \code{\link{psrc_pums_targetvar}} and \code{\link{psrc_pums_groupvar}} to feed specific summary stat calls.
+#' @inheritParams pums_stats
 #'
 #' @author Michael Jensen
 #'
 #' @return A srvyr object, absent grouping but otherwise ready for summation.
 #'
-#' @importFrom magrittr %<>% %>%
 #' @import data.table
 #'
 #' @examples
@@ -192,46 +182,42 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   return(dt)
 }
 
-#' Genericized Call for PUMS Summary Statistics
+#' Generic call for PUMS summary statistics
 #'
-#' This function is given specific form by related median/mean region/county functions.
-#' It draws from get_psrc_pums.
+#' Given specific form by related total/count/median/mean x region/county \code{\link{pumstat}} functions.
+#' Fed from \code{\link{get_psrc_pums}}
 #' @param stat_type Desired survey statistic
 #' @param geo_scale Either "county" or "region"
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#' @inheritParams pums_stats
 #'
 #' @author Michael Jensen
 #'
 #' @return A table with the variable names, desired statistic, and margin of error
 #'
-#' @importFrom magrittr %<>% %>%
 #' @importFrom rlang sym
-#' @import dplyr srvyr
+#' @importFrom dplyr group_by mutate select
+#' @importFrom srvyr summarise survey_total survey_tally survey_median survey_mean
 psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
-  result_name <- sym(stat_type)
-  srvyrf_name <- as.name(paste0("survey_",stat_type))
-  se_name     <- paste0(stat_type,"_se")
-  moe_name    <- paste0(stat_type,"_moe")
+  result_name <- sym(stat_type)                                                                    # i.e. total, tally, median or mean
+  srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
+  se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
+  moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
-  if(!is.null(group_var) & stat_type!="ratio"){
+  if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
     dt %<>% group_by(!!as.name(groupvar_label))
     }
   if(geo_scale=="county"){
     df %<>% group_by(COUNTY, .add=TRUE)
     }
-  rs <- summarize(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), vartype="se", level=0.95))) %>%  # Generate the weighted statistic
+  rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), vartype="se", level=0.95))) %>%
     mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% select(-se_name)
   return(rs)
 }
 
-#' Regional PUMS total
+#' PUMS summary statistics
 #'
-#' This function uses psrc_pums_stat specific to the regional total.
+#' Called specific to statistic - total/count/median/mean - and to scale - region/counties
 #' @param span Either 1 for acs1 or 5 for acs5
 #' @param dyear The data year
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
@@ -240,222 +226,74 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
 #'
 #' @author Michael Jensen
 #'
-#' @return A table with the variable names, regional total, and margin of error
+#' @return A table with the variable names, summary statistic and margin of error
 #'
-#' @importFrom magrittr %<>% %>%
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 #' psrc_pums_total(1, 2019, "AGEP", "SEX")
+#' county_pums_median(1, 2019, "AGEP", "SEX")
+#'
+#' @describeIn pums_stats Generate regional PUMS totals
+#'
 #' @export
 psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat(stat_type="total", geo_scale="region", span, dyear, target_var, group_var, bin_defs)
+  rs <- psrc_pums_stat("total", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' Regional PUMS count
+#' @describeIn pums_stats Generate regional PUMS count
 #'
-#' This function uses psrc_pums_stat specific to the regional count.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, regional count (i.e. tally), and margin of error
-#'
-#' @importFrom magrittr %<>% %>%
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' psrc_pums_count(1, 2019, "AGEP", "SEX")
 #' @export
 psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' Regional PUMS median
+#' @describeIn pums_stats Generate regional PUMS median
 #'
-#' This function uses psrc_pums_stat specific to the regional median.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, regional median, and margin of error
-#'
-#' @importFrom magrittr %<>% %>%
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' psrc_pums_median(1, 2019, "AGEP", "SEX")
 #' @export
 psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' Regional PUMS mean
+#' @describeIn pums_stats Generate regional PUMS mean
 #'
-#' This function uses psrc_pums_stat specific to the regional mean.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, regional mean, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-# psrc_pums_mean(1, 2019, "AGEP", "SEX")
 #' @export
 psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' Regional PUMS ratio
+#' @describeIn pums_stats Generate PUMS totals by county
 #'
-#' This function uses psrc_pums_stat specific to the regional mean.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param numerator The exact PUMS target variable intended as numerator, as a string in UPPERCASE
-#' @param denominator The exact PUMS variable intended as denominator, as a string in UPPERCASE
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, regional mean, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-# psrc_pums_ratio(1, 2019, "RNTP", "HINCP")
-#' @export
-psrc_pums_ratio <- function(span, dyear, numerator, denominator){
-  rs <- psrc_pums_stat("ratio", "region", span, dyear, numerator, denominator)
-  return(rs)
-}
-
-#' County PUMS totals
-#'
-#' This function uses psrc_pums_stat specific to county totals.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, PSRC county totals, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-# county_pums_total(1, 2019, "AGEP", "SEX")
 #' @export
 county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' County PUMS count
+#' @describeIn pums_stats Generate PUMS counts <tally> by county
 #'
-#' This function uses psrc_pums_stat specific to county unit counts.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, PSRC county unit counts (i.e. tallies), and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' county_pums_count(1, 2019, "AGEP", "SEX")
 #' @export
 county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' County PUMS median
+#' @describeIn pums_stats Generate PUMS medians by county
 #'
-#' This function uses psrc_pums_stat specific to county medians.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, PSRC county medians, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' county_pums_median(1, 2019, "AGEP", "SEX")
 #' @export
 county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs)
   return(rs)
 }
 
-#' County PUMS mean
+#' @describeIn pums_stats Generate PUMS averages <mean> by county
 #'
-#' This function uses psrc_pums_stat specific to county means.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, PSRC county means, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' county_pums_mean(1, 2019, "AGEP", "SEX")
 #' @export
 county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs)
-  return(rs)
-}
-
-#' County PUMS ratio
-#'
-#' This function uses psrc_pums_stat specific to county ratios.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param numerator The exact PUMS target variable intended as numerator, as a string in UPPERCASE
-#' @param denominator The exact PUMS variable intended as denominator, as a string in UPPERCASE
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, county ratios, and margin of error
-#'
-#' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' psrc_pums_ratio(1, 2019, "RNTP", "HINCP")
-#' @export
-psrc_pums_ratio <- function(span, dyear, numerator, denominator){
-  rs <- psrc_pums_stat("ratio", "county", span, dyear, numerator, denominator)
   return(rs)
 }
