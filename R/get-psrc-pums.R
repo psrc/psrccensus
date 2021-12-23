@@ -169,7 +169,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
     varlist %<>% c(groupvar_label)
     group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs=NULL) %>%         # Grouping variable via API
       setkeyv(dt_key)
-    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=get(groupvar_label), on=key(.)]  # Link data tables
+    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)]  # Link data tables
   }
   dt %<>% setDF() %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
@@ -210,12 +210,12 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
-    df %<>% group_by(as.factor(!!as.name(groupvar_label)))
+    df %<>% group_by(!!as.name(groupvar_label))
     }
   if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
   rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), vartype="se", level=0.95))) %>%
     mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% select(-se_name)
-  if(!is.null(group_var)){rs %<>% arrange(!!sym(groupvar_label))}
+  if(!is.null(group_var)){rs %<>% arrange(!!as.name(groupvar_label))}
   if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
   return(rs)
 }
