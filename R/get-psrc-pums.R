@@ -154,7 +154,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var,"COUNTY")
   pums_vars     <- tidycensus::pums_variables %>% setDT() %>% .[year==dyear & survey==paste0("acs", span)] # Retrieve variable definitions
-  tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                      # Table corresponding to unit of analysis (for rep weights)
+  tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)] %>% dplyr::coalesce("") # Table corresponding to unit of analysis (for rep weights)
   key_ref       <- if(!is.null(group_var)){
     copy(pums_vars) %>% .[var_code==group_var, unique(level)] %>% dplyr::coalesce("")              # Table corresponding to grouping variable (for join)
     }else{""
@@ -167,7 +167,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
     varlist %<>% c(groupvar_label)
-    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs=NULL) %>%         # Grouping variable via API
+    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs) %>%              # Grouping variable via API
       setkeyv(dt_key)
     dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)]  # Link data tables
   }
