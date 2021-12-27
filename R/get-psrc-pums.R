@@ -149,7 +149,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-#' get_psrc_pums("region", 1, 2019, "AGEP", "SEX")
+#' get_psrc_pums(1, 2019, "AGEP", "SEX")
 #' @export
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var,"COUNTY")
@@ -252,8 +252,8 @@ psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 #' @title Generate regional PUMS median
 #'
 #' @examples
-#' \dontrun{Sys.getenv("CENSUS_API_KEY")
-#' psrc_pums_median(1, 2019, "AGEP", "SEX")}
+#' \dontrun{Sys.getenv("CENSUS_API_KEY")}
+#' psrc_pums_median(1, 2019, "AGEP", "SEX")
 #'
 #' @export
 psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
@@ -301,8 +301,8 @@ county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 #' @title Generate PUMS medians by county
 #'
 #' @examples
-#' \dontrun{Sys.getenv("CENSUS_API_KEY")
-#' county_pums_median(1, 2019, "AGEP", "SEX")}
+#' \dontrun{Sys.getenv("CENSUS_API_KEY")}
+#' county_pums_median(1, 2019, "AGEP", "SEX")
 #'
 #' @export
 county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
