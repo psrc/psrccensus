@@ -39,23 +39,23 @@ To calculate the regional median household income for 2019, for example, you wou
 ```{r regional median, message=FALSE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
-                 target_var = "HINCP")      # The PUMS variable name for Household Income
+                 target_var = "AGEP")       # The PUMS variable name for age
 ```
 
 To calculate by a subgroup category (here, tenure--e.g. own vs. rent), use the optional grouping variable argument:
 ```{r regional median by category, message=FALSE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
-                 target_var = "HINCP",      # The PUMS variable name for Household Income
-                 group_var = "TEN")         # The PUMS variable name for Tenure
+                 target_var = "AGEP",       # The PUMS variable name for age
+                 group_var = "SEX")         # The PUMS variable name for sex
 ```
 
 For the equivalent calculation by county, use the county-specific function:
 ```{r county median by category, message=FALSE}
 county_pums_median(span = 1,                # Denoting ACS 1-year estimates
                    dyear = 2019,
-                   target_var = "HINCP",    # The PUMS variable name for Household Income
-                   group_var = "TEN")       # The PUMS variable name for Tenure
+                   target_var = "AGEP",     # The PUMS variable name for age
+                   group_var = "SEX")       # The PUMS variable name for sex
 ```
 
 Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.

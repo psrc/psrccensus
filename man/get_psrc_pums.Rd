@@ -27,7 +27,7 @@ Combines data from \code{\link{psrc_pums_targetvar}} and \code{\link{psrc_pums_g
 \examples{
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
-get_psrc_pums("region", 1, 2019, "AGEP", "SEX")
+get_psrc_pums(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
 }
 \author{
 Michael Jensen
