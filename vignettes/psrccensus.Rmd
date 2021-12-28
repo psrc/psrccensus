@@ -25,9 +25,9 @@ The three most important functions are:
 
 -   [`get_acs_recs()`](https://psrc.github.io/psrccensus/reference/get_acs_recs.html "function for getting ACS tables")
 
--   [`get_decennial_recs()`](https://psrc.github.io/psrccensus/reference/get_decennial_recs.html "functions for getting Census tables")
+-   [`get_decennial_recs()`](https://psrc.github.io/psrccensus/reference/get_decennial_recs.html) "functions for getting Census tables")
 
--   `get_pums_recs()`: TBA
+-  [`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.html) "function for getting Public Use Microsample Data")
 
 We have one fancy function that lets us create a map of an ACS variable by tract.
 
@@ -87,3 +87,5 @@ Functions currently in `psrccensus` will only return data in **Washington State*
 ## Get Data
 
 View the [Get Data](https://psrc.github.io/psrccensus/articles/get-data.html) vignette (under Articles) on how to use the primary functions.
+
+View the [Calculate PUMS Summaries](https://psrc.github.io/psrccensus/articles/calculate-pums-summaries.html) vignette (under Articles) on learn how to create aggregations of PUMS data for the region.
