@@ -210,10 +210,10 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
-    df %<>% group_by(!!as.name(groupvar_label))
+    df %<>% group_by(!!as.name(groupvar_label), .drop=FALSE)
     }
   if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
-  rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), vartype="se", level=0.95))) %>%
+  rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.95))) %>%
     mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% select(-se_name)
   if(!is.null(group_var)){rs %<>% arrange(!!as.name(groupvar_label))}
   if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
