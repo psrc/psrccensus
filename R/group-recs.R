@@ -21,19 +21,17 @@
 group_recs <- function(tbl, this_group_name){
   # this is kind of a hard code for the file name and location, may want to revisit
   variables_groupings<-read.csv(system.file('extdata', 'variables_groupings.csv', package='psrccensus'))
-  #variables_groupings<-read.csv('C:/Users/SChildress/Documents/GitHub/psrccensus/inst/extdata/variables_groupings.csv')
-
   this_variable_grouping<- variables_groupings%>%dplyr::filter(.data$group_name==!!this_group_name)
 
-  tbl_w_cats<-dplyr::left_join(tbl, this_variable_grouping, by ='variable')
+  tbl_w_cats<-merge(tbl, this_variable_grouping)
 
   #the column names between acs and census are slightly different
   # for acs:
   if("estimate" %in% colnames(tbl_w_cats)){
     tbl_grouped <- tbl_w_cats%>%
-      dplyr::group_by(dplyr::across(c(name, grouping, group_name )))%>%
+      dplyr::group_by(dplyr::across(-c(estimate, moe,label, variable )))%>%
       dplyr::summarise(estimate=sum(estimate),
-                       moe=tidycensus::moe_sum(moe,estimate, na.rm=TRUE))
+                       moe=tidycensus::moe_sum(moe,estimate))
   }
   # for census:
   else{
