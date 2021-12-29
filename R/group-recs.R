@@ -8,6 +8,8 @@
 #' @author Suzanne Childress
 #'
 #' @return a tibble of grouped ACS or Census estimates
+#' @importFrom utils read.csv
+#'
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}

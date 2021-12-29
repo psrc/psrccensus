@@ -145,6 +145,8 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #'
 #' @import data.table
 #' @importFrom tidyselect all_of
+#' @importFrom dplyr na_if
+#' @importFrom stringr str_match
 #'
 #' @examples
 #' \dontrun{
@@ -169,6 +171,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
     varlist %<>% c(groupvar_label)
     group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs) %>%              # Grouping variable via API
       setkeyv(dt_key)
+    group_var_dt[[groupvar_label]] %<>% na_if(str_match(.,"^N/A."))
     dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)]  # Link data tables
   }
   dt %<>% setDF() %>%
