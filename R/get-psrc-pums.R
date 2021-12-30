@@ -15,6 +15,7 @@ NULL
 
 adjust_inflation <-function(dt, dollar_var, adj_var){
   dt %<>% .[, (dollar_var):=round(as.numeric(gsub(",", "", get(dollar_var))) * as.numeric(get(adj_var)),0)]
+  dt[get(dollar_var)<0, (dollar_var):=NA]                                                          # Negative values (codes) to NA
   return(dt)
 }
 
@@ -170,9 +171,8 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
     groupvar_label <- paste0(group_var,"_label")
     varlist %<>% c(groupvar_label)
     group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs) %>%              # Grouping variable via API
-      setkeyv(dt_key) %>% .[!grep("^N/A.",get(groupvar_label)),]                                   # Remove N/A
-    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)] %>% # Link data tables
-  dt[grep("^N/A ", get(groupvar_label)), (target_var):=NA]                                         # Recode N/A category to NA values (otherwise weighting yields negatives and/or fails)
+      setkeyv(dt_key)
+    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)] # Link data tables
   }
   dt %<>% setDF() %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
