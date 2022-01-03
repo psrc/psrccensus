@@ -169,7 +169,6 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   dt_key        <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
   }else{"SERIALNO"}                                                                                # To match join
   rwgt_ref      <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
-  if(tbl_ref=="housing")
   dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]
   if(!is.null(group_var)){
