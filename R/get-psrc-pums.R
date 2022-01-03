@@ -98,8 +98,10 @@ add_county <- function(dt){
 #' @import data.table
 
 psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs){
-  dt   <- tidycensus::get_pums(variables=c(group_var,"PUMA","ADJINC","ADJHSG"), state="WA",
-                   survey=paste0("acs", span), year=dyear, recode=if(dyear>2016){TRUE}else{FALSE}) %>% # Recode isn't available prior to 2017
+  dt   <- tidycensus::get_pums(variables=c(group_var,"PUMA","ADJINC","ADJHSG"),
+                               state="WA",
+                               year=dyear, survey=paste0("acs", span),
+                               recode=if(dyear>2016){TRUE}else{FALSE}) %>% # Recode isn't available prior to 2017
     setDT() %>% clip2region() %>% adjust_dollars(group_var)
   if(exists("df$SPORDER") & tbl_ref!="person"){
     dt %<>% .[SPORDER==1] %>% .[, SPORDER:=NULL]                                                   # If target variable is household and group variable is person,
@@ -126,9 +128,12 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs){
 #' @return the filtered data.table
 
 psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
-  dt <- tidycensus::get_pums(variables=c(target_var,"PUMA","ADJINC","ADJHSG"), state="WA",         # Include inflation adjustment fields
-                 survey=paste0("acs", span), year=dyear, recode=if(dyear>2016){TRUE}else{FALSE},   # Recode unavailable prior to 2017
-                 rep_weights=tbl_ref) %>% data.table::setDT() %>% clip2region() %>%                # Replication weights for the appropriate table
+  vf <- list
+  dt <- tidycensus::get_pums(variables=unique(c(target_var,"TEN","PUMA","ADJINC","ADJHSG")),       # Include inflation adjustment fields, +tenure for filtering
+                             state="WA", year=dyear, survey=paste0("acs", span),
+                             recode=if(dyear>2016){TRUE}else{FALSE},                               # Recode unavailable prior to 2017
+                             rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
+    data.table::setDT() %>% clip2region() %>%
     adjust_dollars(target_var)
   return(dt)
 }
@@ -164,6 +169,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   dt_key        <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
   }else{"SERIALNO"}                                                                                # To match join
   rwgt_ref      <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
+  if(tbl_ref=="housing")
   dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]
   if(!is.null(group_var)){
