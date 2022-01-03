@@ -15,7 +15,6 @@ NULL
 
 adjust_inflation <-function(dt, dollar_var, adj_var){
   dt %<>% .[, (dollar_var):=round(as.numeric(gsub(",", "", get(dollar_var))) * as.numeric(get(adj_var)),0)]
-  dt[get(dollar_var)<0, (dollar_var):=NA]                                                          # Negative values (codes) to NA
   return(dt)
 }
 
