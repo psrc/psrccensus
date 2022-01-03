@@ -34,9 +34,10 @@ A table with the variable names and labels, summary statistic and margin of erro
 Separate function for total, count, median, or mean
 }
 \examples{
-\dontrun{Sys.getenv("CENSUS_API_KEY")}
+\dontrun{
+Sys.getenv("CENSUS_API_KEY")
 psrc_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
-
+}
 }
 \author{
 Michael Jensen
