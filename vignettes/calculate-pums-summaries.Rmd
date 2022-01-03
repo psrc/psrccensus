@@ -35,6 +35,8 @@ Each function requires three arguments: the first two denote the dataset involve
 
 The functions handle extrapolation to the wider population (via sampling weights) and calculation of margins of error (via replication weights) internally. Additionally, they also apply inflation adjustments to variables measured in dollar values: since the survey is collected on a rolling basis, nominal income components or costs would not otherwise be directly comparable between households.
 
+Household-level summary data involve only occupied housing, i.e. group quarters and vacant units are excluded. Individuals living in group quarters are represented in person-level statistics but can be separated based on the TYPE variable.
+
 To calculate the regional median household income for 2019, for example, you would use the following function call:
 ```{r regional median, message=FALSE, eval=FALSE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
@@ -59,6 +61,8 @@ county_pums_median(span = 1,                # Denoting ACS 1-year estimates
 ```
 
 Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.
+
+Notice, the API doesn't provide variable labels for data years prior to 2017; the label in those cases will be the variable value (consult the appropriate year data dictionary to interpret the value).
 
 **Warning**: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages:
   *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 

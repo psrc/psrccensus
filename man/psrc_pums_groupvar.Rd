@@ -4,7 +4,7 @@
 \alias{psrc_pums_groupvar}
 \title{Process the PUMS Grouping Variable}
 \usage{
-psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs)
+psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -13,7 +13,9 @@ psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs)
 
 \item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
 
-\item{tbl_ref}{Either "person" or "housing", as determined by the get_psrc_pums function}
+\item{tbl_ref}{PUMS table (either "person" or "housing") of the target variable}
+
+\item{key_ref}{PUMS table (either "person" or "housing") of the grouping variable}
 
 \item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
 }

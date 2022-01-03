@@ -1,6 +1,22 @@
 #' @importFrom magrittr %<>% %>%
 NULL
 
+#' NA recode for PUMS
+#'
+#' Helper to the \code{\link{get_psrc_pums}} function
+#' @param dt data.table with Census Bureau "N/A" code ("b" or "bbb...")
+#'
+#' @author Michael Jensen
+#'
+#' @return filtered input data.table with values "b" recoded to NA
+#'
+#' @import data.table
+
+pums_recode_na <-function(dt){
+  for(col in names(dt)) set(dt, i=grep("b+",dt[[col]]), j=col, value=NA)
+  return(dt)
+}
+
 #' Inflation adjustment for PUMS
 #'
 #' Helper to the \code{\link{adjust_dollars}} function
@@ -88,7 +104,8 @@ add_county <- function(dt){
 #' @param span Either 1 for acs1 or 5 for acs5
 #' @param dyear The data year
 #' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param tbl_ref Either "person" or "housing", as determined by the get_psrc_pums function
+#' @param tbl_ref PUMS table (either "person" or "housing") of the target variable
+#' @param key_ref PUMS table (either "person" or "housing") of the grouping variable
 #' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
 #'
 #' @author Michael Jensen
@@ -97,15 +114,14 @@ add_county <- function(dt){
 #'
 #' @import data.table
 
-psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, bin_defs){
+psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_defs){
+  hholder <- list(SPORDER = 1)
   dt   <- tidycensus::get_pums(variables=c(group_var,"PUMA","ADJINC","ADJHSG"),
                                state="WA",
                                year=dyear, survey=paste0("acs", span),
-                               recode=if(dyear>2016){TRUE}else{FALSE}) %>% # Recode isn't available prior to 2017
+                               variables_filter=if(tbl_ref=="housing" & key_ref=="person"){hholder}else{NULL}, # Convention uses householder attributes if target is housing & grouping is person
+                               recode=if(dyear>2016){TRUE}else{FALSE}) %>%                         # Recode isn't available prior to 2017
     setDT() %>% clip2region() %>% adjust_dollars(group_var)
-  if(exists("df$SPORDER") & tbl_ref!="person"){
-    dt %<>% .[SPORDER==1] %>% .[, SPORDER:=NULL]                                                   # If target variable is household and group variable is person,
-  }                                                                                                # uses 'householder' attributes, per convention (albeit odd)
 #  if(!is.null(bin_defs) & length(bin_defs)>1){
 #    dt %<>% .[, (group_var):=cut(group_var, breaks=bin_defs, right=T, labels=F)]                  # Manual grouping categories
 #  }else if(!is.null(bin_defs) & length(bin_defs)==1){
@@ -131,6 +147,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
   vf <- list
   dt <- tidycensus::get_pums(variables=unique(c(target_var,"TEN","PUMA","ADJINC","ADJHSG")),       # Include inflation adjustment fields, +tenure for filtering
                              state="WA", year=dyear, survey=paste0("acs", span),
+                             variables_filter=if(tbl_ref=="housing"){`list(TYPE = 1, VACS = "b")`}else{NULL}, # Household variables filter for occupied housing, not GQ or vacant
                              recode=if(dyear>2016){TRUE}else{FALSE},                               # Recode unavailable prior to 2017
                              rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
     data.table::setDT() %>% clip2region() %>%
@@ -150,7 +167,6 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #'
 #' @import data.table
 #' @importFrom tidyselect all_of
-#' @importFrom dplyr na_if
 #' @importFrom stringr str_match
 #'
 #' @examples
@@ -175,11 +191,11 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
     varlist %<>% c(groupvar_label)
-    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, bin_defs) %>%              # Grouping variable via API
+    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs) %>%     # Grouping variable via API
       setkeyv(dt_key)
     dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)] # Link data tables
   }
-  dt %<>% setDF() %>%
+  dt %<>% pums_recode_na() %>% setDF() %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
                          weights=all_of(rwgt_ref),
                          repweights=all_of(rw),
