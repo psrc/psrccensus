@@ -217,7 +217,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
-    groupvar_label <- paste0(group_var,"_label")
+    groupvar_label <- if(dyear>2016){paste0(group_var,"_label")}else{group_var}
     df %<>% group_by(!!as.name(groupvar_label), .drop=FALSE)
     }
   if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
