@@ -35,9 +35,9 @@ Separate function for total, count, median, or mean
 }
 \examples{
 \dontrun{
-Sys.getenv("CENSUS_API_KEY")
+Sys.getenv("CENSUS_API_KEY")}
 psrc_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
-}
+
 }
 \author{
 Michael Jensen
