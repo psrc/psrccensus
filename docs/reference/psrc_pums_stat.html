@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Genericized Call for PUMS Summary Statistics — psrc_pums_stat • psrccensus</title>
+<title>Generic call for PUMS summary statistics — psrc_pums_stat • psrccensus</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="Genericized Call for PUMS Summary Statistics — psrc_pums_stat" />
-<meta property="og:description" content="This function is given specific form by related median/mean region/county functions.
-It draws from get_psrc_pums." />
+<meta property="og:title" content="Generic call for PUMS summary statistics — psrc_pums_stat" />
+<meta property="og:description" content="Given specific form by related regional_pums_stat and county_pums_stat functions.
+Fed from get_psrc_pums" />
 
 
 
@@ -122,14 +122,14 @@ It draws from get_psrc_pums." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Genericized Call for PUMS Summary Statistics</h1>
+    <h1>Generic call for PUMS summary statistics</h1>
     
     <div class="hidden name"><code>psrc_pums_stat.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is given specific form by related median/mean region/county functions.
-It draws from get_psrc_pums.</p>
+    <p>Given specific form by related <code><a href='regional_pums_stat.html'>regional_pums_stat</a></code> and <code><a href='county_pums_stat.html'>county_pums_stat</a></code> functions.
+Fed from <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code></p>
     </div>
 
     <pre class="usage"><span class='fu'>psrc_pums_stat</span><span class='op'>(</span>
@@ -138,8 +138,8 @@ It draws from get_psrc_pums.</p>
   <span class='va'>span</span>,
   <span class='va'>dyear</span>,
   <span class='va'>target_var</span>,
-  group_var <span class='op'>=</span> <span class='cn'>NULL</span>,
-  bin_defs <span class='op'>=</span> <span class='cn'>NULL</span>
+  <span class='va'>group_var</span>,
+  <span class='va'>bin_defs</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>

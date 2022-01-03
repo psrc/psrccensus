@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Inflation adjustment for PUMS — adjust_inflation" />
-<meta property="og:description" content="This is a helper function for the adjust_dollars function" />
+<meta property="og:description" content="Helper to the adjust_dollars function" />
 
 
 
@@ -127,7 +127,7 @@
     </div>
 
     <div class="ref-description">
-    <p>This is a helper function for the adjust_dollars function</p>
+    <p>Helper to the <code><a href='adjust_dollars.html'>adjust_dollars</a></code> function</p>
     </div>
 
     <pre class="usage"><span class='fu'>adjust_inflation</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>dollar_var</span>, <span class='va'>adj_var</span><span class='op'>)</span></pre>
@@ -137,21 +137,21 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>The data table as conditioned by adjust_dollars function</p></td>
+      <td><p>The data.table</p></td>
     </tr>
     <tr>
       <th>dollar_var</th>
-      <td><p>The reported PUMS variable to adjust</p></td>
+      <td><p>PUMS variable to adjust</p></td>
     </tr>
     <tr>
       <th>adj_var</th>
-      <td><p>The PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost</p></td>
+      <td><p>PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the data.table with the input variable adjusted</p>
+    <p>filtered input data.table with input variable adjusted</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Michael Jensen</p>

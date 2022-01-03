@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Restrict PUMS API pull to PSRC region — clip2region" />
-<meta property="og:description" content="This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-It filters the Washington State API pull to the PSRC region and removes State/label columns" />
+<meta property="og:description" content="Helper to psrc_pums_groupvar and psrc_pums_targetvar functions.
+Filters the Washington State API pull to the PSRC region and removes State/State_label columns." />
 
 
 
@@ -128,8 +128,8 @@ It filters the Washington State API pull to the PSRC region and removes State/la
     </div>
 
     <div class="ref-description">
-    <p>This helper function is used in both the psrc_pums_groupvar and psrc_pums_targetvar functions.
-It filters the Washington State API pull to the PSRC region and removes State/label columns</p>
+    <p>Helper to <code><a href='psrc_pums_groupvar.html'>psrc_pums_groupvar</a></code> and <code><a href='psrc_pums_targetvar.html'>psrc_pums_targetvar</a></code> functions.
+Filters the Washington State API pull to the PSRC region and removes State/State_label columns.</p>
     </div>
 
     <pre class="usage"><span class='fu'>clip2region</span><span class='op'>(</span><span class='va'>dt</span><span class='op'>)</span></pre>
@@ -139,13 +139,13 @@ It filters the Washington State API pull to the PSRC region and removes State/la
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>The data table</p></td>
+      <td><p>Washington State PUMS data.table</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the filtered data.table</p>
+    <p>PSRC data.table</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Michael Jensen</p>
