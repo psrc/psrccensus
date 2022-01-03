@@ -34,8 +34,9 @@ A table with the counties, variable names and labels, summary statistic, and mar
 Separate function for total, count, median, or mean
 }
 \examples{
-\dontrun{Sys.getenv("CENSUS_API_KEY")}
-county_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
+\dontrun{Sys.getenv("CENSUS_API_KEY")
+county_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")}
+
 
 }
 \author{
