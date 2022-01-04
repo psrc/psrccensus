@@ -116,8 +116,9 @@ add_county <- function(dt){
 
 psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_defs){
   hholder <- list(SPORDER = 1)
-  dt   <- tidycensus::get_pums(variables=c(group_var,"PUMA","ADJINC","ADJHSG"),
+  dt   <- tidycensus::get_pums(variables=c(group_var,"ADJINC","ADJHSG"),                           # Include inflation adjustment fields
                                state="WA",
+                               puma = c(11501:11520,11601:11630,11701:11720,11801:11810),          # Generous list, i.e. isn't limited to existing PUMAs
                                year=dyear, survey=paste0("acs", span),
                                variables_filter=if(tbl_ref=="housing" & key_ref=="person"){hholder}else{NULL}, # Convention uses householder attributes if target is housing & grouping is person
                                recode=if(dyear>2016){TRUE}else{FALSE}) %>%                         # Recode isn't available prior to 2017
@@ -145,8 +146,10 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
 
 psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
   vf <- list
-  dt <- tidycensus::get_pums(variables=unique(c(target_var,"TEN","PUMA","ADJINC","ADJHSG")),       # Include inflation adjustment fields, +tenure for filtering
-                             state="WA", year=dyear, survey=paste0("acs", span),
+  dt <- tidycensus::get_pums(variables=unique(c(target_var,"ADJINC","ADJHSG")),                    # Include inflation adjustment fields
+                             state="WA",
+                             puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
+                             year=dyear, survey=paste0("acs", span),
                              variables_filter=if(tbl_ref=="housing"){`list(TYPE = 1, VACS = "b")`}else{NULL}, # Household variables filter for occupied housing, not GQ or vacant
                              recode=if(dyear>2016){TRUE}else{FALSE},                               # Recode unavailable prior to 2017
                              rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
