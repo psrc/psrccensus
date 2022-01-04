@@ -13,7 +13,7 @@ NULL
 #' @import data.table
 
 pums_recode_na <-function(dt){
-  for(col in names(dt)) set(dt, i=grep("b+",dt[[col]]), j=col, value=NA)
+  for(col in names(dt)) set(dt, i=(dt[[col]] %flike% "b+"), j=col, value=NA)
   return(dt)
 }
 
@@ -72,7 +72,7 @@ adjust_dollars <- function(dt, dollar_var){
 
 clip2region <- function(dt){
   dt %<>% .[as.integer(PUMA) %/% 100 %in% c(115,116,117,118)] %>%
-    .[, grep(("^ST$|^ST_label$"), colnames(.)):=NULL]
+    .[, (colnames %flike% "^ST$|^ST_label$"):=NULL]
   return(dt)
 }
 
@@ -187,7 +187,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   }else{"SERIALNO"}                                                                                # To match join
   rwgt_ref      <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
   dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
-  rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]
+  rw <- colnames(dt) %flike% paste0(rwgt_ref,"\\d+")
   if(!is.null(group_var)){
     groupvar_label <- paste0(group_var,"_label")
     varlist %<>% c(groupvar_label)
