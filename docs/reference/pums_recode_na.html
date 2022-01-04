@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Process the PUMS Grouping Variable — psrc_pums_groupvar • psrccensus</title>
+<title>NA recode for PUMS — pums_recode_na • psrccensus</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Process the PUMS Grouping Variable — psrc_pums_groupvar" />
-<meta property="og:description" content="One of two primary helpers to the get_psrc_pums data assembly function.
-Calls the Census API to process the optional grouping variable." />
+<meta property="og:title" content="NA recode for PUMS — pums_recode_na" />
+<meta property="og:description" content="Helper to the get_psrc_pums function" />
 
 
 
@@ -122,50 +121,29 @@ Calls the Census API to process the optional grouping variable." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Process the PUMS Grouping Variable</h1>
+    <h1>NA recode for PUMS</h1>
     
-    <div class="hidden name"><code>psrc_pums_groupvar.Rd</code></div>
+    <div class="hidden name"><code>pums_recode_na.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>One of two primary helpers to the <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code> data assembly function.
-Calls the Census API to process the optional grouping variable.</p>
+    <p>Helper to the <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code> function</p>
     </div>
 
-    <pre class="usage"><span class='fu'>psrc_pums_groupvar</span><span class='op'>(</span><span class='va'>span</span>, <span class='va'>dyear</span>, <span class='va'>group_var</span>, <span class='va'>tbl_ref</span>, <span class='va'>key_ref</span>, <span class='va'>bin_defs</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pums_recode_na</span><span class='op'>(</span><span class='va'>dt</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>span</th>
-      <td><p>Either 1 for acs1 or 5 for acs5</p></td>
-    </tr>
-    <tr>
-      <th>dyear</th>
-      <td><p>The data year</p></td>
-    </tr>
-    <tr>
-      <th>group_var</th>
-      <td><p>The exact PUMS variable intended for grouping, as a string in UPPERCASE</p></td>
-    </tr>
-    <tr>
-      <th>tbl_ref</th>
-      <td><p>PUMS table (either "person" or "housing") of the target variable</p></td>
-    </tr>
-    <tr>
-      <th>key_ref</th>
-      <td><p>PUMS table (either "person" or "housing") of the grouping variable</p></td>
-    </tr>
-    <tr>
-      <th>bin_defs</th>
-      <td><p>Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints</p></td>
+      <th>dt</th>
+      <td><p>data.table with Census Bureau "N/A" code ("b" or "bbb...")</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the filtered data.table</p>
+    <p>filtered input data.table with values "b" recoded to NA</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Michael Jensen</p>
