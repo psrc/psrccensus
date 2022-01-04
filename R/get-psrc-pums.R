@@ -145,12 +145,12 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
 #' @return the filtered data.table
 
 psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
-  vf <- list
+  vf <- list(TYPE = 1, VACS = "b")
   dt <- tidycensus::get_pums(variables=unique(c(target_var,"ADJINC","ADJHSG")),                    # Include inflation adjustment fields
                              state="WA",
                              puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
                              year=dyear, survey=paste0("acs", span),
-                             variables_filter=if(tbl_ref=="housing"){`list(TYPE = 1, VACS = "b")`}else{NULL}, # Household variables filter for occupied housing, not GQ or vacant
+                             variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
                              recode=if(dyear>2016){TRUE}else{FALSE},                               # Recode unavailable prior to 2017
                              rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
     data.table::setDT() %>% clip2region() %>%
