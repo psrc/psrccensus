@@ -122,7 +122,7 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
                                year=dyear, survey=paste0("acs", span),
                                variables_filter=if(tbl_ref=="housing" & key_ref=="person"){hholder}else{NULL}, # Convention uses householder attributes if target is housing & grouping is person
                                recode=if(dyear>2016){TRUE}else{FALSE}) %>%                         # Recode isn't available prior to 2017
-    setDT() %>% clip2region() %>% adjust_dollars(group_var)
+    setDT() %>% adjust_dollars(group_var)
 #  if(!is.null(bin_defs) & length(bin_defs)>1){
 #    dt %<>% .[, (group_var):=cut(group_var, breaks=bin_defs, right=T, labels=F)]                  # Manual grouping categories
 #  }else if(!is.null(bin_defs) & length(bin_defs)==1){
@@ -153,8 +153,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
                              variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
                              recode=if(dyear>2016){TRUE}else{FALSE},                               # Recode unavailable prior to 2017
                              rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
-    data.table::setDT() %>% clip2region() %>%
-    adjust_dollars(target_var)
+    data.table::setDT() %>% adjust_dollars(target_var)
   return(dt)
 }
 
@@ -230,7 +229,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @importFrom dplyr group_by mutate select relocate arrange
 #' @importFrom srvyr summarise survey_total survey_tally survey_median survey_mean
 psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
-  result_name <- sym(stat_type)                                                                    # i.e. total, tally, median or mean
+  result_name <- rlang::sym(stat_type)                                                             # i.e. total, tally, median or mean
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
   se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
@@ -245,7 +244,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   }else{
     rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.95)))
   }
-  rs %<>% mutate(!!sym(moe_name):=!!sym(se_name) * 1.645) %>% select(-se_name)
+  rs %<>% mutate(!!rlang::sym(moe_name):=!!rlang::sym(se_name) * 1.645) %>% select(-se_name)
   if(!is.null(group_var)){rs %<>% arrange(!!as.name(groupvar_label))}
   if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
   return(rs)
