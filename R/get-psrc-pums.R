@@ -229,7 +229,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @importFrom dplyr group_by mutate select relocate arrange
 #' @importFrom srvyr summarise survey_total survey_tally survey_median survey_mean
 psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
-  result_name <- rlang::sym(stat_type)                                                             # i.e. total, tally, median or mean
+  result_name <- eval(sym(stat_type))                                                             # i.e. total, tally, median or mean
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
   se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
@@ -244,7 +244,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   }else{
     rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.95)))
   }
-  rs %<>% mutate(!!rlang::sym(moe_name):=!!rlang::sym(se_name) * 1.645) %>% select(-se_name)
+  rs %<>% mutate(eval(sym(moe_name)):=eval(sym(se_name)) * 1.645) %>% select(-se_name)
   if(!is.null(group_var)){rs %<>% arrange(!!as.name(groupvar_label))}
   if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
   return(rs)
