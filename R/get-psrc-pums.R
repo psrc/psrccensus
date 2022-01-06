@@ -145,7 +145,7 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
 #' @return the filtered data.table
 
 psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
-  vf <- list(TYPE = 1, VACS = "b")
+  vf <- list(TYPE=1, SPORDER=1)
   dt <- tidycensus::get_pums(variables=unique(c(target_var,"ADJINC","ADJHSG")),                    # Include inflation adjustment fields
                              state="WA",
                              puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
@@ -240,8 +240,8 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
     df %<>% group_by(!!as.name(groupvar_label), .drop=FALSE)
     }
   if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
-  if(stat_type=="tally"){
-    rs <- summarise(df, tally:=survey_tally(!!as.name(target_var), vartype="se"))
+  if(stat_type=="count"){
+    rs <- survey_tally(df, name="count", vartype="se")
   }else{
     rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.95)))
   }
