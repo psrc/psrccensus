@@ -90,20 +90,7 @@
     
     
 <pre><code>## Warning: package 'dplyr' was built under R version 4.0.5</code></pre>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
 <pre><code>## Warning: package 'srvyr' was built under R version 4.0.5</code></pre>
-<pre><code>## 
-## Attaching package: 'srvyr'</code></pre>
-<pre><code>## The following object is masked from 'package:stats':
-## 
-##     filter</code></pre>
 <div id="what-is-census-microdata" class="section level2">
 <h2 class="hasAnchor">
 <a href="#what-is-census-microdata" class="anchor"></a>What is Census microdata?</h2>
@@ -117,24 +104,26 @@
 <p>psrc_pums_median() psrc_pums_mean() county_pums_median() county_pums_mean()</p>
 <p>Each function requires three arguments: the first two denote the dataset involved; the third is the PUMS variable name you wish to summarize. To separate that statistic for subgroups of the population, use the optional fourth argument. You must enter the exact target variable or grouping variable name (in uppercase), and since these names vary from the diennial or acs naming, it may be useful to reference the data dictionaries the Census Bureau provides specific to each data year, <a href="https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html">2020 as an example</a>.</p>
 <p>The functions handle extrapolation to the wider population (via sampling weights) and calculation of margins of error (via replication weights) internally. Additionally, they also apply inflation adjustments to variables measured in dollar values: since the survey is collected on a rolling basis, nominal income components or costs would not otherwise be directly comparable between households.</p>
+<p>Household-level summary data involve only occupied housing, i.e. group quarters and vacant units are excluded. Individuals living in group quarters are represented in person-level statistics but can be separated based on the TYPE variable.</p>
 <p>To calculate the regional median household income for 2019, for example, you would use the following function call:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/regional_pums_stat.html">psrc_pums_median</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">1</span>,                  <span class="co"># Denoting ACS 1-year estimates</span>
                  dyear <span class="op">=</span> <span class="fl">2019</span>,
                  target_var <span class="op">=</span> <span class="st">"AGEP"</span><span class="op">)</span>       <span class="co"># The PUMS variable name for age</span></code></pre></div>
 <p>To calculate by a subgroup category (here, tenure–e.g. own vs. rent), use the optional grouping variable argument:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/regional_pums_stat.html">psrc_pums_median</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">1</span>,                  <span class="co"># Denoting ACS 1-year estimates</span>
                  dyear <span class="op">=</span> <span class="fl">2019</span>,
                  target_var <span class="op">=</span> <span class="st">"AGEP"</span>,       <span class="co"># The PUMS variable name for age</span>
                  group_var <span class="op">=</span> <span class="st">"SEX"</span><span class="op">)</span>         <span class="co"># The PUMS variable name for sex</span></code></pre></div>
 <p>For the equivalent calculation by county, use the county-specific function:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/county_pums_stat.html">county_pums_median</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">1</span>,                <span class="co"># Denoting ACS 1-year estimates</span>
                    dyear <span class="op">=</span> <span class="fl">2019</span>,
                    target_var <span class="op">=</span> <span class="st">"AGEP"</span>,     <span class="co"># The PUMS variable name for age</span>
                    group_var <span class="op">=</span> <span class="st">"SEX"</span><span class="op">)</span>       <span class="co"># The PUMS variable name for sex</span></code></pre></div>
 <p>Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.</p>
+<p>Notice, the API doesn’t provide variable labels for data years prior to 2017; the label in those cases will be the variable value (consult the appropriate year data dictionary to interpret the value).</p>
 <p><strong>Warning</strong>: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages: <em>Your API call has errors. The API message returned is There was an error while running your query. We’ve logged the error and we’ll correct it ASAP. Sorry for the inconvenience.</em> -or- <em>“Sorry, the system is currently undergoing maintenance or is busy. Please try again later.”</em> In light of this, we suggest scheduling work with PUMS earlier in the workday, or waiting until the API has been restored. (PUMS data can still be downloaded from the <a href="https://www2.census.gov/programs-surveys/acs/data/pums/">Census FTP server</a>, but without the tools available via psrccensus.)</p>
 </div>
   </div>

@@ -161,27 +161,25 @@
                          years<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2019</span><span class='op'>)</span>,
                          acs.type <span class='op'>=</span> <span class='st'>'acs5'</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Getting data from the 2015-2019 5-year ACS</span></div><div class='input'><span class='fu'>group_recs</span><span class='op'>(</span><span class='va'>inc_poverty</span>, <span class='st'>'Poverty Group 100 Percent'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 15 x 11</span>
-#&gt; <span style='color: #949494;'># Groups:   concept, GEOID, name, state, census_geography, acs_type, year,
-#&gt; #   group_name [5]</span>
-#&gt;    concept GEOID name  state census_geography acs_type  year group_name grouping
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   
-#&gt; <span style='color: #BCBCBC;'> 1</span> RATIO ~ 53033 King~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
-#&gt; <span style='color: #BCBCBC;'> 2</span> RATIO ~ 53033 King~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
-#&gt; <span style='color: #BCBCBC;'> 3</span> RATIO ~ 53033 King~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
-#&gt; <span style='color: #BCBCBC;'> 4</span> RATIO ~ 53035 Kits~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
-#&gt; <span style='color: #BCBCBC;'> 5</span> RATIO ~ 53035 Kits~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
-#&gt; <span style='color: #BCBCBC;'> 6</span> RATIO ~ 53035 Kits~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
-#&gt; <span style='color: #BCBCBC;'> 7</span> RATIO ~ 53053 Pier~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
-#&gt; <span style='color: #BCBCBC;'> 8</span> RATIO ~ 53053 Pier~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
-#&gt; <span style='color: #BCBCBC;'> 9</span> RATIO ~ 53053 Pier~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
-#&gt; <span style='color: #BCBCBC;'>10</span> RATIO ~ 53061 Snoh~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
-#&gt; <span style='color: #BCBCBC;'>11</span> RATIO ~ 53061 Snoh~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
-#&gt; <span style='color: #BCBCBC;'>12</span> RATIO ~ 53061 Snoh~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
-#&gt; <span style='color: #BCBCBC;'>13</span> RATIO ~ REGI~ Regi~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Over 10~
-#&gt; <span style='color: #BCBCBC;'>14</span> RATIO ~ REGI~ Regi~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Total   
-#&gt; <span style='color: #BCBCBC;'>15</span> RATIO ~ REGI~ Regi~ Wash~ County           acs5      <span style='text-decoration: underline;'>2</span>019 Poverty G~ Under 1~
-#&gt; <span style='color: #949494;'># ... with 2 more variables: estimate &lt;dbl&gt;, moe &lt;dbl&gt;</span></div></pre>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 15 x 5</span>
+#&gt; <span style='color: #949494;'># Groups:   name, grouping [15]</span>
+#&gt;    name             grouping   group_name                estimate    moe
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                        <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> King County      Over 100%  Poverty Group 100 Percent  1<span style='text-decoration: underline;'>971</span>959  <span style='text-decoration: underline;'>9</span>778.
+#&gt; <span style='color: #BCBCBC;'> 2</span> King County      Total      Poverty Group 100 Percent  2<span style='text-decoration: underline;'>165</span>562  <span style='text-decoration: underline;'>1</span>132 
+#&gt; <span style='color: #BCBCBC;'> 3</span> King County      Under 100% Poverty Group 100 Percent   <span style='text-decoration: underline;'>193</span>603  <span style='text-decoration: underline;'>5</span>334.
+#&gt; <span style='color: #BCBCBC;'> 4</span> Kitsap County    Over 100%  Poverty Group 100 Percent   <span style='text-decoration: underline;'>234</span>868  <span style='text-decoration: underline;'>2</span>889.
+#&gt; <span style='color: #BCBCBC;'> 5</span> Kitsap County    Total      Poverty Group 100 Percent   <span style='text-decoration: underline;'>257</span>272   703 
+#&gt; <span style='color: #BCBCBC;'> 6</span> Kitsap County    Under 100% Poverty Group 100 Percent    <span style='text-decoration: underline;'>22</span>404  <span style='text-decoration: underline;'>1</span>517.
+#&gt; <span style='color: #BCBCBC;'> 7</span> Pierce County    Over 100%  Poverty Group 100 Percent   <span style='text-decoration: underline;'>770</span>285  <span style='text-decoration: underline;'>7</span>055.
+#&gt; <span style='color: #BCBCBC;'> 8</span> Pierce County    Total      Poverty Group 100 Percent   <span style='text-decoration: underline;'>859</span>999  <span style='text-decoration: underline;'>1</span>014 
+#&gt; <span style='color: #BCBCBC;'> 9</span> Pierce County    Under 100% Poverty Group 100 Percent    <span style='text-decoration: underline;'>89</span>714  <span style='text-decoration: underline;'>3</span>637.
+#&gt; <span style='color: #BCBCBC;'>10</span> Region           Over 100%  Poverty Group 100 Percent  3<span style='text-decoration: underline;'>705</span>242 <span style='text-decoration: underline;'>13</span>676.
+#&gt; <span style='color: #BCBCBC;'>11</span> Region           Total      Poverty Group 100 Percent  4<span style='text-decoration: underline;'>070</span>002  <span style='text-decoration: underline;'>1</span>902.
+#&gt; <span style='color: #BCBCBC;'>12</span> Region           Under 100% Poverty Group 100 Percent   <span style='text-decoration: underline;'>364</span>760  <span style='text-decoration: underline;'>7</span>159.
+#&gt; <span style='color: #BCBCBC;'>13</span> Snohomish County Over 100%  Poverty Group 100 Percent   <span style='text-decoration: underline;'>728</span>130  <span style='text-decoration: underline;'>5</span>771.
+#&gt; <span style='color: #BCBCBC;'>14</span> Snohomish County Total      Poverty Group 100 Percent   <span style='text-decoration: underline;'>787</span>169   902 
+#&gt; <span style='color: #BCBCBC;'>15</span> Snohomish County Under 100% Poverty Group 100 Percent    <span style='text-decoration: underline;'>59</span>039  <span style='text-decoration: underline;'>2</span>696.</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
