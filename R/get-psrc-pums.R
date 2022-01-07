@@ -173,16 +173,16 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #'
 #' @examples
 #' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")
-#' get_psrc_pums(span=1, dyear=2019, target_var="AGEP", group_var="SEX")}
+#' Sys.getenv("CENSUS_API_KEY")}
+#' get_psrc_pums(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
 
 #' @export
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var,"COUNTY")
   pums_vars     <- tidycensus::pums_variables %>% setDT() %>% .[year==dyear & survey==paste0("acs", span)] # Retrieve variable definitions
-  tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)] %>% dplyr::coalesce("") # Table corresponding to unit of analysis (for rep weights)
+  tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                      # Table corresponding to unit of analysis (for rep weights)
   key_ref       <- if(!is.null(group_var)){
-    copy(pums_vars) %>% .[var_code==group_var, unique(level)] %>% dplyr::coalesce("")              # Table corresponding to grouping variable (for join)
+    copy(pums_vars) %>% .[var_code==group_var, unique(level)]                                      # Table corresponding to grouping variable (for join)
     }else{""
     }
   dt_key        <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
@@ -229,7 +229,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @importFrom dplyr group_by mutate select relocate arrange
 #' @importFrom srvyr summarise survey_total survey_tally survey_median survey_mean
 psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
-  result_name <- eval(sym(stat_type))                                                             # i.e. total, tally, median or mean
+  result_name <- sym(stat_type)                                                                    # i.e. total, tally, median or mean
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
   se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
@@ -244,7 +244,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   }else{
     rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.95)))
   }
-  rs %<>% mutate(eval(sym(moe_name)):=eval(sym(se_name)) * 1.645) %>% select(-se_name)
+  rs %<>% mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>% select(-!!as.name(se_name))
   if(!is.null(group_var)){rs %<>% arrange(!!as.name(groupvar_label))}
   if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
   return(rs)
