@@ -167,9 +167,8 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #'
 #' @return A srvyr object, absent grouping but otherwise ready for summation.
 #'
-#' @import data.table
 #' @importFrom tidyselect all_of
-#' @importFrom stringr str_match
+#' @import data.table
 #'
 #' @examples
 #' \dontrun{
@@ -179,7 +178,8 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' @export
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var,"COUNTY")
-  pums_vars     <- tidycensus::pums_variables %>% setDT() %>% .[year==dyear & survey==paste0("acs", span)] # Retrieve variable definitions
+  acsspan       <- paste0("acs", span)
+  pums_vars     <- tidycensus::pums_variables %>% setDT() %>% .[year==dyear & survey==acsspan]     # Retrieve variable definitions
   tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                      # Table corresponding to unit of analysis (for rep weights)
   key_ref       <- if(!is.null(group_var)){
     copy(pums_vars) %>% .[var_code==group_var, unique(level)]                                      # Table corresponding to grouping variable (for join)
