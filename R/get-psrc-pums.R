@@ -13,7 +13,7 @@ NULL
 #' @import data.table
 
 pums_recode_na <-function(dt){
-  for(col in names(dt)) set(dt, i=grep("b+",dt[[col]]), j=col, value=NA)
+  for(col in names(dt)) set(dt, i=grep("^b+$",dt[[col]]), j=col, value=NA)
   return(dt)
 }
 
@@ -121,8 +121,9 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
                                puma = c(11501:11520,11601:11630,11701:11720,11801:11810),          # Generous list, i.e. isn't limited to existing PUMAs
                                year=dyear, survey=paste0("acs", span),
                                variables_filter=if(tbl_ref=="housing" & key_ref=="person"){hholder}else{NULL}, # Convention uses householder attributes if target is housing & grouping is person
-                               recode=if(dyear>2016){TRUE}else{FALSE}) %>%                         # Recode isn't available prior to 2017
-    setDT() %>% adjust_dollars(group_var)
+                               recode=FALSE) %>%                                                   # Recode isn't available prior to 2017
+    setDT() %>% adjust_dollars(group_var) %>%
+    .[,(group_var):=as.factor(get(group_var))]
 #  if(!is.null(bin_defs) & length(bin_defs)>1){
 #    dt %<>% .[, (group_var):=cut(group_var, breaks=bin_defs, right=T, labels=F)]                  # Manual grouping categories
 #  }else if(!is.null(bin_defs) & length(bin_defs)==1){
@@ -151,9 +152,10 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
                              puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
                              year=dyear, survey=paste0("acs", span),
                              variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
-                             recode=if(dyear>2016){TRUE}else{FALSE},                               # Recode unavailable prior to 2017
+                             recode=FALSE,                                                         # Recode unavailable prior to 2017
                              rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
-    data.table::setDT() %>% adjust_dollars(target_var)
+    data.table::setDT() %>% adjust_dollars(target_var) %>%
+    .[,(target_var):=as.numeric(get(target_var))]
   return(dt)
 }
 
@@ -177,25 +179,31 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 
 #' @export
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  varlist       <- c(target_var,"COUNTY")
-  acsspan       <- paste0("acs", span)
-  pums_vars     <- tidycensus::pums_variables %>% setDT()                                          # Retrieve variable definitions
-  tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                      # Table corresponding to unit of analysis (for rep weights)
-  key_ref       <- if(!is.null(group_var)){
+  varlist   <- c(target_var, group_var, "COUNTY") %>% purrr::discard(is.null) %>% unique()
+  acsspan   <- paste0("acs", span)
+  pums_vars <- tidycensus::pums_variables %>% setDT() %>%
+    .[var_code %in% c(target_var, group_var) & survey==paste0("acs", span)]                        # Retrieve variable definitions
+  near_yr   <- min(abs(as.integer(unique(pums_vars$year))) - dyear) + dyear
+  pums_vars %<>% .[year==near_yr]                                                                  # Filter to nearest (or matching) year present in data dictionary
+  tbl_ref   <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                          # Table corresponding to unit of analysis (for rep weights)
+  key_ref   <- if(!is.null(group_var)){
     copy(pums_vars) %>% .[var_code==group_var, unique(level)]                                      # Table corresponding to grouping variable (for join)
     }else{""
     }
-  dt_key        <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
-  }else{"SERIALNO"}                                                                                # To match join
-  rwgt_ref      <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
+  dt_key    <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
+  }else{"SERIALNO"}                                                                                # To link target and grouping variables
+  rwgt_ref  <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
+  recoder   <- pums_vars[var_code==group_var & recode==TRUE & val_min==val_max, .(val_max, val_label)] %>%
+    unique() %>% setkey(val_max)
   dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
-  rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]
+  rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
   if(!is.null(group_var)){
-    groupvar_label <- if(dyear>2016){paste0(group_var,"_label")}else{group_var}
-    varlist %<>% c(groupvar_label)
-    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs) %>%     # Grouping variable via API
-      setkeyv(dt_key)
-    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, (groupvar_label):=as.factor(get(groupvar_label)), on=key(.)] # Link data tables
+    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs)         # Grouping variable via API
+      if(nrow(recoder)>0){
+        group_var_dt %<>% setkeyv(group_var) %>% .[recoder, (group_var):=as.factor(val_label)]     # Convert grouping variable to label if relevant/available
+      }
+    group_var_dt %<>% setkeyv(dt_key)
+    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, on=key(.), (group_var):=as.factor(get(group_var))] # Add grouping variable to primary table
   }
   dt %<>% pums_recode_na() %>% setDF() %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
@@ -235,17 +243,16 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
-    groupvar_label <- if(dyear>2016){paste0(group_var,"_label")}else{group_var}
-    df %<>% group_by(!!as.name(groupvar_label), .drop=FALSE)
+    df %<>% group_by(!!as.name(group_var), .drop=FALSE)
     }
   if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
     rs <- survey_tally(df, name="count", vartype="se")
   }else{
-    rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.95)))
+    rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
   }
   rs %<>% mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>% select(-!!as.name(se_name))
-  if(!is.null(group_var)){rs %<>% arrange(!!as.name(groupvar_label))}
+  if(!is.null(group_var)){rs %<>% arrange(!!as.name(group_var))}
   if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
   return(rs)
 }
