@@ -179,7 +179,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
   varlist       <- c(target_var,"COUNTY")
   acsspan       <- paste0("acs", span)
-  pums_vars     <- tidycensus::pums_variables %>% setDT() %>% .[year==dyear & survey==acsspan]     # Retrieve variable definitions
+  pums_vars     <- tidycensus::pums_variables %>% setDT()                                          # Retrieve variable definitions
   tbl_ref       <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                      # Table corresponding to unit of analysis (for rep weights)
   key_ref       <- if(!is.null(group_var)){
     copy(pums_vars) %>% .[var_code==group_var, unique(level)]                                      # Table corresponding to grouping variable (for join)
@@ -191,7 +191,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]
   if(!is.null(group_var)){
-    groupvar_label <- paste0(group_var,"_label")
+    groupvar_label <- if(dyear>2016){paste0(group_var,"_label")}else{group_var}
     varlist %<>% c(groupvar_label)
     group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs) %>%     # Grouping variable via API
       setkeyv(dt_key)
