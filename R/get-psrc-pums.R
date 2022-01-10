@@ -234,26 +234,24 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @return A table with the variable names, desired statistic, and margin of error
 #'
 #' @importFrom rlang sym
-#' @importFrom dplyr group_by mutate select relocate arrange
-#' @importFrom srvyr summarise survey_total survey_tally survey_median survey_mean
+#' @importFrom srvyr summarise survey_tally survey_total survey_median survey_mean
 psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
-  result_name <- sym(stat_type)                                                                    # i.e. total, tally, median or mean
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
   se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
   df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
   if(!is.null(group_var)){
-    df %<>% group_by(!!as.name(group_var), .drop=FALSE)
+    df %<>% dplyr::group_by(!!as.name(group_var), .drop=FALSE)
     }
-  if(geo_scale=="county"){df %<>% group_by(COUNTY, .add=TRUE)}
+  if(geo_scale=="county"){df %<>% dplyr::group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
     rs <- survey_tally(df, name="count", vartype="se")
   }else{
-    rs <- summarise(df, !!result_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
+    rs <- summarise(df, !!stat_type:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
   }
-  rs %<>% mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>% select(-!!as.name(se_name))
-  if(!is.null(group_var)){rs %<>% arrange(!!as.name(group_var))}
-  if(geo_scale=="county"){rs %<>% relocate(COUNTY) %>% arrange(COUNTY)}
+  rs %<>% dplyr::mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>% dplyr::select(-!!as.name(se_name))
+  if(!is.null(group_var)){rs %<>% dplyr::arrange(!!as.name(group_var))}
+  if(geo_scale=="county"){rs %<>% dplyr::relocate(COUNTY) %>% dplyr::arrange(COUNTY)}
   return(rs)
 }
 
