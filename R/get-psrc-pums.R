@@ -188,7 +188,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   tbl_ref   <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                          # Table corresponding to unit of analysis (for rep weights)
   key_ref   <- if(!is.null(group_var)){
     copy(pums_vars) %>% .[var_code==group_var, unique(level)]                                      # Table corresponding to grouping variable (for join)
-    }else{""
+    }else{"no second table"
     }
   dt_key    <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
   }else{"SERIALNO"}                                                                                # To link target and grouping variables
@@ -213,7 +213,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
                          mse=TRUE,
                          type="other",
                          scale=4/80,
-                         rscale=length(all_of(rw)))
+                         rscale=rep(1:length(all_of(rw))))
   return(dt)
 }
 
