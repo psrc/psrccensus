@@ -12,8 +12,8 @@ vignette: >
 ```{r setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(psrccensus)
-library(dplyr)
-library(srvyr)
+library(magrittr)
+library(knitr)
 ```
 
 ## What is Census microdata?
@@ -41,31 +41,33 @@ To calculate the regional median household income for 2019, for example, you wou
 ```{r regional median, message=FALSE, eval=FALSE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
-                 target_var = "AGEP")       # The PUMS variable name for age
+                 target_var = "AGEP") %>%   # The PUMS variable name for age
+  kable("simple")
 ```
 
-To calculate by a subgroup category (here, tenure--e.g. own vs. rent), use the optional grouping variable argument:
+To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument:
 ```{r regional median by category, message=FALSE, eval=FALSE}
-psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
+psrc_pums_median(span = 5,                  # Denoting ACS 5-year estimates
                  dyear = 2019,
-                 target_var = "AGEP",       # The PUMS variable name for age
-                 group_var = "SEX")         # The PUMS variable name for sex
+                 target_var = "HINCP",      # The PUMS variable name for household income
+                 group_var = "TEN") %>%     # The PUMS variable name for housing tenure
+    kable("simple")
 ```
 
 For the equivalent calculation by county, use the county-specific function:
 ```{r county median by category, message=FALSE, eval=FALSE}
-county_pums_median(span = 1,                # Denoting ACS 1-year estimates
+county_pums_median(span = 5,                # Denoting ACS 5-year estimates
                    dyear = 2019,
-                   target_var = "AGEP",     # The PUMS variable name for age
-                   group_var = "SEX")       # The PUMS variable name for sex
+                   target_var = "HINCP",    # The PUMS variable name for household income
+                   group_var = "TEN")       # The PUMS variable name for housing tenure
+    kable("simple")
 ```
 
-Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.
+Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
 
-Notice, the API doesn't provide variable labels for data years prior to 2017; the label in those cases will be the variable value (consult the appropriate year data dictionary to interpret the value).
-
-**Warning**: The Census Bureau PUMS API routinely has downtime between 2-5pm Pacific Time. Do not be alarmed if you receive one of the following messages:
+At present the Census Microdata API is limited to data years 2017 and later. For earlier data years, or when the API is down, it is possible to download PUMS from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/). Errors typical of API downtime read as:
   *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 
 -or- 
   *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*
-In light of this, we suggest scheduling work with PUMS earlier in the workday, or waiting until the API has been restored. (PUMS data can still be downloaded from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/), but without the tools available via psrccensus.)
+This occurs routinely between 2-7pm Pacific Time, so we recommend you schedule PUMS analysis in the morning if possible.
+
