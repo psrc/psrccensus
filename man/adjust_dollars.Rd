@@ -17,6 +17,7 @@ full input data.table with all dollar values adjusted
 \description{
 Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
 Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
+Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 }
 \author{
 Michael Jensen

@@ -11,7 +11,8 @@ psrc_pums_stat(
   dyear,
   target_var,
   group_var,
-  bin_defs
+  bin_defs,
+  dollar_adj
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ psrc_pums_stat(
 \item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
 
 \item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
+
+\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 }
 \value{
 A table with the variable names, desired statistic, and margin of error

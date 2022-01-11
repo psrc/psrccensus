@@ -4,7 +4,15 @@
 \alias{psrc_pums_groupvar}
 \title{Process the PUMS Grouping Variable}
 \usage{
-psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs)
+psrc_pums_groupvar(
+  span,
+  dyear,
+  group_var,
+  tbl_ref,
+  key_ref,
+  bin_defs,
+  dollar_adj
+)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -18,6 +26,8 @@ psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs)
 \item{key_ref}{PUMS table (either "person" or "housing") of the grouping variable}
 
 \item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
+
+\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 }
 \value{
 the filtered data.table

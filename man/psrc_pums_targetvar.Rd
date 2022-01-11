@@ -4,7 +4,7 @@
 \alias{psrc_pums_targetvar}
 \title{Process the PUMS Target Variable}
 \usage{
-psrc_pums_targetvar(span, dyear, target_var, tbl_ref)
+psrc_pums_targetvar(span, dyear, target_var, tbl_ref, dollar_adj)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -14,6 +14,8 @@ psrc_pums_targetvar(span, dyear, target_var, tbl_ref)
 \item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
 \item{tbl_ref}{Either "person" or "housing", as determined by the \code{\link{get_psrc_pums}} function}
+
+\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 }
 \value{
 the filtered data.table

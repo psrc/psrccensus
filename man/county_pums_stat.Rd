@@ -8,13 +8,41 @@
 \alias{county_pums_mean}
 \title{PUMS summary statistics by county}
 \usage{
-county_pums_total(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
+county_pums_total(
+  span,
+  dyear,
+  target_var,
+  group_var = NULL,
+  bin_defs = NULL,
+  dollar_adj = TRUE
+)
 
-county_pums_count(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
+county_pums_count(
+  span,
+  dyear,
+  target_var,
+  group_var = NULL,
+  bin_defs = NULL,
+  dollar_adj = TRUE
+)
 
-county_pums_median(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
+county_pums_median(
+  span,
+  dyear,
+  target_var,
+  group_var = NULL,
+  bin_defs = NULL,
+  dollar_adj = TRUE
+)
 
-county_pums_mean(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
+county_pums_mean(
+  span,
+  dyear,
+  target_var,
+  group_var = NULL,
+  bin_defs = NULL,
+  dollar_adj = TRUE
+)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -26,6 +54,8 @@ county_pums_mean(span, dyear, target_var, group_var = NULL, bin_defs = NULL)
 \item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
 
 \item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
+
+\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 }
 \value{
 A table with the counties, variable names and labels, summary statistic, and margin of error

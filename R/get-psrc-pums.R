@@ -38,6 +38,7 @@ adjust_inflation <-function(dt, dollar_var, adj_var){
 #'
 #' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
 #' Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
+#' Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 #' @param dt The data.table
 #' @param dollar_var PUMS variable to adjust
 #'
@@ -107,6 +108,7 @@ add_county <- function(dt){
 #' @param tbl_ref PUMS table (either "person" or "housing") of the target variable
 #' @param key_ref PUMS table (either "person" or "housing") of the grouping variable
 #' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
 #'
 #' @author Michael Jensen
 #'
@@ -114,7 +116,7 @@ add_county <- function(dt){
 #'
 #' @import data.table
 
-psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_defs){
+psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_defs, dollar_adj){
   hholder <- list(SPORDER = 1)
   dt   <- tidycensus::get_pums(variables=c(group_var,"ADJINC","ADJHSG"),                           # Include inflation adjustment fields
                                state="WA",
@@ -122,8 +124,8 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
                                year=dyear, survey=paste0("acs", span),
                                variables_filter=if(tbl_ref=="housing" & key_ref=="person"){hholder}else{NULL}, # Convention uses householder attributes if target is housing & grouping is person
                                recode=FALSE) %>%                                                   # Recode isn't available prior to 2017
-    setDT() %>% adjust_dollars(group_var) %>%
-    .[,(group_var):=as.factor(get(group_var))]
+    setDT() %>% .[,(group_var):=as.factor(get(group_var))]
+  if(dollar_adj==TRUE){dt %<>% adjust_dollars(group_var)}                                          # Apply standard inflation adjustment
 #  if(!is.null(bin_defs) & length(bin_defs)>1){
 #    dt %<>% .[, (group_var):=cut(group_var, breaks=bin_defs, right=T, labels=F)]                  # Manual grouping categories
 #  }else if(!is.null(bin_defs) & length(bin_defs)==1){
@@ -140,12 +142,13 @@ psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_def
 #' @param dyear The data year
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
 #' @param tbl_ref Either "person" or "housing", as determined by the \code{\link{get_psrc_pums}} function
+#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
 #'
 #' @author Michael Jensen
 #'
 #' @return the filtered data.table
 
-psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
+psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref, dollar_adj){
   vf <- list(TYPE=1, SPORDER=1)
   dt <- tidycensus::get_pums(variables=unique(c(target_var,"ADJINC","ADJHSG")),                    # Include inflation adjustment fields
                              state="WA",
@@ -154,8 +157,8 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
                              variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
                              recode=FALSE,                                                         # Recode unavailable prior to 2017
                              rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
-    data.table::setDT() %>% adjust_dollars(target_var) %>%
-    .[,(target_var):=as.numeric(get(target_var))]
+    data.table::setDT() %>% .[,(target_var):=as.numeric(get(target_var))]
+  if(dollar_adj==TRUE){dt%<>% adjust_dollars(target_var)}                                          # Apply standard inflation adjustment
   return(dt)
 }
 
@@ -178,7 +181,7 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref){
 #' get_psrc_pums(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
 
 #' @export
-get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
+get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
   varlist   <- c(target_var, group_var, "COUNTY") %>% purrr::discard(is.null) %>% unique()
   acsspan   <- paste0("acs", span)
   pums_vars <- tidycensus::pums_variables %>% setDT() %>%
@@ -195,10 +198,10 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
   rwgt_ref  <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
   recoder   <- pums_vars[var_code==group_var & recode==TRUE & val_min==val_max, .(val_max, val_label)] %>%
     unique() %>% setkey(val_max)
-  dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref) %>% add_county()                     # Target variable via API
+  dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref, dollar_adj) %>% add_county()         # Target variable via API
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
   if(!is.null(group_var)){
-    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs)         # Grouping variable via API
+    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs, dollar_adj) # Grouping variable via API
       if(nrow(recoder)>0){
         group_var_dt %<>% setkeyv(group_var) %>% .[recoder, (group_var):=as.factor(val_label)]     # Convert grouping variable to label if relevant/available
       }
@@ -228,6 +231,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
 #' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
 #' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
+#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
 #'
 #' @author Michael Jensen
 #'
@@ -235,7 +239,7 @@ get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL
 #'
 #' @importFrom rlang sym
 #' @importFrom srvyr summarise survey_tally survey_total survey_median survey_mean
-psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs){
+psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs, dollar_adj){
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
   se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
@@ -270,16 +274,16 @@ NULL
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS totals
 #' @export
-psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("total", "region", span, dyear, target_var, group_var, bin_defs)
+psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("total", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS count
 #' @export
-psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs)
+psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
@@ -292,16 +296,16 @@ psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 #' psrc_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
 #'
 #' @export
-psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("median", "region", span, dyear, target_var, group_var, bin_defs)
+psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("median", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS mean
 #' @export
-psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs)
+psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
@@ -320,16 +324,16 @@ NULL
 #' @rdname county_pums_stat
 #' @title Generate PUMS totals by county
 #' @export
-county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs)
+county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
 #' @rdname county_pums_stat
 #' @title Generate PUMS counts <tally> by county
 #' @export
-county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs)
+county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
@@ -342,15 +346,15 @@ county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 #'
 #'
 #' @export
-county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs)
+county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
 #' @rdname county_pums_stat
 #' @title Generate PUMS averages <mean> by county
 #' @export
-county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL){
-  rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs)
+county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
