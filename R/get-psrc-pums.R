@@ -248,7 +248,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
     df %<>% dplyr::group_by(!!as.name(group_var), .drop=FALSE)
     }
   if(geo_scale=="county"){df %<>% dplyr::group_by(COUNTY, .add=TRUE)}
-  if(stat_type=="count"){
+  if(stat_type=="tally"){
     rs <- survey_tally(df, name="count", vartype="se")
   }else{
     rs <- summarise(df, !!stat_type:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
