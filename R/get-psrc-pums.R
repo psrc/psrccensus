@@ -248,7 +248,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
     df %<>% dplyr::group_by(!!as.name(group_var), .drop=FALSE)
     }
   if(geo_scale=="county"){df %<>% dplyr::group_by(COUNTY, .add=TRUE)}
-  if(stat_type=="tally"){
+  if(stat_type=="count"){
     rs <- survey_tally(df, name="count", vartype="se")
   }else{
     rs <- summarise(df, !!stat_type:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
@@ -283,7 +283,7 @@ psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 #' @title Generate regional PUMS count
 #' @export
 psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("tally", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+  rs <- psrc_pums_stat("count", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
@@ -330,10 +330,10 @@ county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 }
 
 #' @rdname county_pums_stat
-#' @title Generate PUMS counts <tally> by county
+#' @title Generate PUMS counts <count> by county
 #' @export
 county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("tally", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+  rs <- psrc_pums_stat("count", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
 
