@@ -20,7 +20,7 @@ psrc_pums_total(
 psrc_pums_count(
   span,
   dyear,
-  target_var,
+  analysis_unit,
   group_var = NULL,
   bin_defs = NULL,
   dollar_adj = TRUE
@@ -56,6 +56,8 @@ psrc_pums_mean(
 \item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
 
 \item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
+
+\item{analysis_unit}{replaced target_var for the count function; either "persons" or "households"}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error

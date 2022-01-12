@@ -20,7 +20,7 @@ county_pums_total(
 county_pums_count(
   span,
   dyear,
-  target_var,
+  analysis_unit,
   group_var = NULL,
   bin_defs = NULL,
   dollar_adj = TRUE

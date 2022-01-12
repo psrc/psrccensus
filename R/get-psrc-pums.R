@@ -264,6 +264,7 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
 #' Separate function for total, count, median, or mean
 #'
 #' @inheritParams psrc_pums_stat
+#' @param analysis_unit replaced target_var for the count function; either "persons" or "households"
 #' @name regional_pums_stat
 #'
 #' @author Michael Jensen
@@ -282,7 +283,8 @@ psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NU
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS count
 #' @export
-psrc_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+psrc_pums_count <- function(span, dyear, analysis_unit, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  target_var <- if(analysis_unit=="person"){"SPORDER"}else{"HHT"}
   rs <- psrc_pums_stat("count", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }
@@ -332,7 +334,8 @@ county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=
 #' @rdname county_pums_stat
 #' @title Generate PUMS counts <count> by county
 #' @export
-county_pums_count <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+county_pums_count <- function(span, dyear, analysis_unit, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
+  target_var <- if(analysis_unit=="person"){"SPORDER"}else{"HHT"}
   rs <- psrc_pums_stat("count", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
   return(rs)
 }

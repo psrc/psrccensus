@@ -20,22 +20,25 @@ library(knitr)
 
 Along with publishing summary statistics from the diennial Census or American Community Survey (ACS), the Census Bureau also makes available a subset of individual person and housing (incl. household) records, called the Public Use Microdata Sample (PUMS). These can be used to estimate models or to tabulate custom statistics unavailable in Census-published summary statistics. Partly to safeguard privacy, PUMS data is not categorized by standard Census geographies such as block, block group or tract; instead the unit is the Public Use Microdata Area (PUMA), an aggregation of tracts with total population between 100,000-200,000. In the past there were more that one set of PUMAs, corresponding to different sampling; that is no longer the case (PUMAs now consistently represent a 5 percent sample).
 
-PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data.
+PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data. The Census Bureau resource [What ACS Public Use Microdata Sample File Users Need to Know]( https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html) is a helpful resource if you have further questions about PUMS itself.
 
 ## Summary statistics via psrccensus
 
 The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole, using the following functions, specific to geography and the desired statistic:
 
-  psrc_pums_median()
-  psrc_pums_mean()
-  county_pums_median()
-  county_pums_mean()
+  regional               county
+  --------------------   -------------------
+  psrc_pums_total()      county_pums_total()
+  psrc_pums_count()      county_pums_count()
+  psrc_pums_median()     county_pums_median()
+  psrc_pums_mean()       county_pums_mean()
+  
 
-Each function requires three arguments: the first two denote the dataset involved; the third is the PUMS variable name you wish to summarize. To separate that statistic for subgroups of the population, use the optional fourth argument. You must enter the exact target variable or grouping variable name (in uppercase), and since these names vary from the diennial or acs naming, it may be useful to reference the data dictionaries the Census Bureau provides specific to each data year, [2020 as an example]( https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html).
-
-The functions handle extrapolation to the wider population (via sampling weights) and calculation of margins of error (via replication weights) internally. Additionally, they also apply inflation adjustments to variables measured in dollar values: since the survey is collected on a rolling basis, nominal income components or costs would not otherwise be directly comparable between households.
+Each function requires three arguments: the first two denote the dataset involved; the third is the PUMS variable name you wish to summarize (or for the count functions, the unit of analysis being counted, i.e. "person" or "household"). To separate these statistic for subgroups of the population, use the optional fourth argument, the grouping variable. You must enter the exact target variable or grouping variable name (in uppercase), and since these names vary from the diennial or acs naming, it may be useful to reference the data dictionaries the Census Bureau provides specific to each data year, [2020 as an example]( https://www.census.gov/programs-surveys/acs/data/experimental-data/2020-1-year-pums.html). Notice that the target or grouping variable can be any combination in PUMS (though some combinations are not meaningful at present, such as grouping on a continuous variable like income). Per Census Bureau conventions, when the target variable is a household attribute (e.g. household income) and the grouping variable is a person attribute (such as race, which is not separately assigned by household), the household is assigned attributes of the 'householder'--the adult answering the survey (this is also true of published American Community Survey estimates).
 
 Household-level summary data involve only occupied housing, i.e. group quarters and vacant units are excluded. Individuals living in group quarters are represented in person-level statistics but can be separated based on the TYPE variable.
+
+Since PUMS records are survey records, sampling weights are applied to deliver estimates of the full population. Margins of error are tabulated along with the estimate and supplied in a separate column. 
 
 To calculate the regional median household income for 2019, for example, you would use the following function call:
 ```{r regional median, message=FALSE, eval=FALSE}
@@ -49,8 +52,8 @@ To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), u
 ```{r regional median by category, message=FALSE, eval=FALSE}
 psrc_pums_median(span = 5,                  # Denoting ACS 5-year estimates
                  dyear = 2019,
-                 target_var = "HINCP",      # The PUMS variable name for household income
-                 group_var = "TEN") %>%     # The PUMS variable name for housing tenure
+                 target_var = "HINCP",      # The PUMS household income variable
+                 group_var = "TEN") %>%     # The PUMS housing tenure
     kable("simple")
 ```
 
@@ -58,12 +61,23 @@ For the equivalent calculation by county, use the county-specific function:
 ```{r county median by category, message=FALSE, eval=FALSE}
 county_pums_median(span = 5,                # Denoting ACS 5-year estimates
                    dyear = 2019,
-                   target_var = "HINCP",    # The PUMS variable name for household income
-                   group_var = "TEN")       # The PUMS variable name for housing tenure
+                   target_var = "HINCP",    # The PUMS household income variable
+                   group_var = "TEN")       # The PUMS housing tenure variable 
     kable("simple")
 ```
 
-Results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
+The count functions tabulate the number people or households by grouping category. In place of the Target_var argument, you must specify either "person" or "household" as the 'analysis_unit argument':
+```{r county count by category, message=FALSE, eval=FALSE}
+county_pums_count(span = 5,                 # Denoting ACS 5-year estimates
+                  dyear = 2019,
+                  analysis_unit = "person", # Counts represent people
+                  group_var = "COW")        # The PUMS 'class of worker' variable (e.g. employed in the private sector, government, non-profit, etc.)
+    kable("simple")
+```
+
+If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' functions instead, which sum the target variable.
+
+All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
 
 At present the Census Microdata API is limited to data years 2017 and later. For earlier data years, or when the API is down, it is possible to download PUMS from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/). Errors typical of API downtime read as:
   *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 
@@ -71,3 +85,4 @@ At present the Census Microdata API is limited to data years 2017 and later. For
   *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*
 This occurs routinely between 2-7pm Pacific Time, so we recommend you schedule PUMS analysis in the morning if possible.
 
+Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a 'baked-in' inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw--as they were reported--along with an average inflation adjustment factor. If you prefer your estimates not to apply this factor, add the argument `dollar_adj = FALSE` to any of the above functions.
