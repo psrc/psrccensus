@@ -41,7 +41,7 @@ Household-level summary data involve only occupied housing, i.e. group quarters 
 Since PUMS records are survey records, sampling weights are applied to deliver estimates of the full population. Margins of error are tabulated along with the estimate and supplied in a separate column. 
 
 To calculate the regional median household income for 2019, for example, you would use the following function call:
-```{r regional median, message=FALSE, eval=FALSE}
+```{r regional median, message=FALSE, eval=TRUE}
 psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
                  dyear = 2019,
                  target_var = "AGEP") %>%   # The PUMS variable name for age
@@ -49,7 +49,7 @@ psrc_pums_median(span = 1,                  # Denoting ACS 1-year estimates
 ```
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument:
-```{r regional median by category, message=FALSE, eval=FALSE}
+```{r regional median by category, message=FALSE, eval=TRUE}
 psrc_pums_median(span = 5,                  # Denoting ACS 5-year estimates
                  dyear = 2019,
                  target_var = "HINCP",      # The PUMS household income variable
@@ -58,7 +58,7 @@ psrc_pums_median(span = 5,                  # Denoting ACS 5-year estimates
 ```
 
 For the equivalent calculation by county, use the county-specific function:
-```{r county median by category, message=FALSE, eval=FALSE}
+```{r county median by category, message=FALSE, eval=TRUE}
 county_pums_median(span = 5,                # Denoting ACS 5-year estimates
                    dyear = 2019,
                    target_var = "HINCP",    # The PUMS household income variable
@@ -67,7 +67,7 @@ county_pums_median(span = 5,                # Denoting ACS 5-year estimates
 ```
 
 The count functions tabulate the number people or households by grouping category. In place of the Target_var argument, you must specify either "person" or "household" as the 'analysis_unit argument':
-```{r county count by category, message=FALSE, eval=FALSE}
+```{r county count by category, message=FALSE, eval=TRUE}
 county_pums_count(span = 5,                 # Denoting ACS 5-year estimates
                   dyear = 2019,
                   analysis_unit = "person", # Counts represent people
