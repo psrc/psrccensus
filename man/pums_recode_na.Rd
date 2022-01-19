@@ -7,7 +7,7 @@
 pums_recode_na(dt)
 }
 \arguments{
-\item{dt}{data.table with Census Bureau "N/A" code ("b" or "bbb...")'}
+\item{dt}{data.table with Census Bureau "N/A" code--"b" or "bbb..."}
 }
 \value{
 filtered input data.table with values "b" recoded to NA

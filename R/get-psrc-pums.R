@@ -7,7 +7,7 @@ NULL
 #' NA recode for PUMS
 #'
 #' Helper to the \code{\link{get_psrc_pums}} function
-#' @param dt data.table with Census Bureau "N/A" code ("b" or "bbb...")'
+#' @param dt data.table with Census Bureau "N/A" code--"b" or "bbb..."
 #' @return filtered input data.table with values "b" recoded to NA
 #'
 #' @import data.table
@@ -19,7 +19,7 @@ pums_recode_na <- function(dt){
 #' Dollar variable adjustment for PUMS
 #'
 #' Helper to \code{\link{get_psrc_pums}} function.
-#' Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
+#' Applies the Census Bureau-specified inflation adjustment to dollar values. See vignette for brief discussion.
 #' Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 #' @param dt The data.table
 #' @return full input data.table with all dollar values adjusted
@@ -55,20 +55,6 @@ add_county <- function(dt){
   dt %<>% .[, PUMA3:=(as.integer(PUMA) %/% 100)] %>%
     .[county_lookup, COUNTY:=COUNTY, on=.(PUMA3=PUMA3)]
   return(dt)
-}
-
-#' Recode factor variables to labels
-#'
-#' Helper to \code{\link{get_psrc_pums}} function.
-#' Swaps factor values for labels.
-#' @param rcd variable to be recoded
-#' @return data.table with factor label instead of value
-#'
-#' @import data.table
-recode_dt <- function(rcd){
-  setkeyv(dt, rcd)
-  dt[recoder[var_code==rcd], (rcd):=as.factor(i.val_label)]
-  invisible(0+0)
 }
 
 #' Retrieve and assemble PUMS data
@@ -117,8 +103,11 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
   num_vars <- vars[vars %not_in% nonnum_vars]
   dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]                                      # Ensure non-factor, non-key columns are numeric
   if(nrow(recoder)>0){
-    sapply(ftr_vars, recode_dt)                                                                    # Convert group_var to label if relevant/available
-  }
+    for (v in ftr_vars){
+        setkeyv(dt, v)
+        dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_var to label if relevant/available
+      }
+    }
   varlist <- unlist(vars) %>% c("COUNTY", unit_var) %>% unique()
   dt %<>% setDF() %>% srvyr::as_survey_rep(variables=all_of(varlist),                              # Create srvyr object with replication weights for MOE
                                            weights=all_of(rwgt_ref),
