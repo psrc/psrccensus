@@ -57,27 +57,27 @@ get_psrc_pums(span = 1,             # Denoting ACS 1-year estimates
               dyear = 2019,
               level = "p",          # Unit of analysis == person
               vars = "AGEP") %>%    # The PUMS variable name for household income
-  psrc_pums_median("AGEP")
+  psrc_pums_median("AGEP")          # Only second argument is necessary (chaining)
 ```
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument:
 ```{r regional median by category, message=FALSE, eval=FALSE}
-ni <- get_psrc_pums(span = 5,               # Denoting ACS 5-year estimates
+ni <- get_psrc_pums(span = 5,                    # Denoting ACS 5-year estimates
                     dyear = 2019,
-                    level = "h"      ,      # Unit of analysis == household
-                    vars = c("HINCP","TEN") # The PUMS household income & housing tenure variables
-psrc_pums_median(ni, "HINCP", "TEN")        # Median household income grouped by tenure
+                    level = "h"      ,           # Unit of analysis == household
+                    vars = c("HINCP","TEN"))     # The PUMS household income & housing tenure variables
+psrc_pums_median(ni, "HINCP", "TEN")             # Median household income grouped by tenure
 ```
 
 For the equivalent calculation by county, use the county-specific function:
 ```{r county median by category, message=FALSE, eval=FALSE}
-county_pums_median(ni, "HINCP", "TEN") 
+county_pums_median(ni, "HINCP", "TEN")           # Srvyr object can be used repeatedly for calculation
 
 ```
 
-The count functions tabulate the number people or households by grouping category. The second argument is the (optional) grouping variable, as the primary variable is implicit. 
+The count functions tabulate the number people or households by grouping category. The result represents the population (via weighting), not the survey sample.
 ```{r county count by category, message=FALSE, eval=FALSE}
-county_pums_count(ni, "TEN")
+county_pums_count(ni, "TEN")                     # Second argument is grouping variable; primary variable is implicit
 ```
 
 If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' functions instead, which sum the target variable.

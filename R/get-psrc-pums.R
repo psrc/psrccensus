@@ -12,7 +12,7 @@ NULL
 #'
 #' @import data.table
 pums_recode_na <- function(dt){
-  for(col in names(dt)) set(dt, i=grep("^b+$",dt[[col]]), j=col, value=NA)
+  for(col in colnames(dt)) set(dt, i=grep("^b+$",dt[[col]]), j=col, value=NA)
   return(dt)
 }
 
@@ -26,11 +26,16 @@ pums_recode_na <- function(dt){
 #'
 #' @import data.table
 adjust_dollars <- function(dt){
-  income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(dt))
-  cost_cols <- grep("CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(dt))
-  dt[, (income_cols) := lapply(.SD, function(x) x * dt[[ADJINC]] ), .SDcols = income_cols] %>%     # Adjust income variables
-    .[, (cost_cols)   := lapply(.SD, function(x) x * dt[[ADJHSG]] ), .SDcols = cost_cols]           # Adjust cost variables
-  dt[, grep("^ADJINC$|^ADJHSG$", colnames(dt)):=NULL]                                              # Drop inflation adjustments
+  dt[, c("ADJINC","ADJHSG"):=lapply(.SD, as.numeric), .SDcols=c("ADJINC","ADJHSG")]                # Why they arrive as strings, I have no idea
+  income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(dt), value=TRUE)
+  cost_cols <- grep("CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(dt), value=TRUE)
+  if(length(income_cols)>0){
+    dt[, (income_cols):=lapply(.SD, function(x) x * ADJINC), .SDcols=income_cols]                  # Adjust income variables
+  }
+  if(length(cost_cols)>0){
+    .[, (cost_cols):=lapply(.SD, function(x) x * ADJHSG), .SDcols=cost_cols]                       # Adjust cost variables
+  }
+  dt[, grep("^ADJINC$|^ADJHSG$", colnames(dt)):=NULL]                                              # Drop inflation adjustment variables
   return(dt)
 }
 

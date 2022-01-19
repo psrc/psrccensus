@@ -14,6 +14,6 @@ full input data.table with all dollar values adjusted
 }
 \description{
 Helper to \code{\link{get_psrc_pums}} function.
-Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
+Applies the Census Bureau-specified inflation adjustment to dollar values. See vignette for brief discussion.
 Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 }
