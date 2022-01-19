@@ -151,7 +151,7 @@ psrc_pums_stat <- function(so, target_var, group_vars, stat_type, geo_scale){
   if(geo_scale=="county"){
     rs %<>% dplyr::relocate(COUNTY) %>% dplyr::arrange(COUNTY)
   }
-  dt %<>% dplyr::ungroup()
+  so %<>% dplyr::ungroup()
   return(rs)
 }
 
