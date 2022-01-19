@@ -13,9 +13,6 @@ add_county(dt)
 PSRC data.table with county names
 }
 \description{
-Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+Helper to \code{\link{get_psrc_pums}} function.
 Attaches county name.
-}
-\author{
-Michael Jensen
 }

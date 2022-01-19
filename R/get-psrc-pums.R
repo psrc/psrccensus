@@ -1,90 +1,44 @@
 #' @importFrom magrittr %<>% %>%
+#' @author Michael Jensen
 NULL
+
+`%not_in%` <- Negate(`%in%`)
 
 #' NA recode for PUMS
 #'
 #' Helper to the \code{\link{get_psrc_pums}} function
-#' @param dt data.table with Census Bureau "N/A" code ("b" or "bbb...")
-#'
-#' @author Michael Jensen
-#'
+#' @param dt data.table with Census Bureau "N/A" code ("b" or "bbb...")'
 #' @return filtered input data.table with values "b" recoded to NA
 #'
 #' @import data.table
-
-pums_recode_na <-function(dt){
+pums_recode_na <- function(dt){
   for(col in names(dt)) set(dt, i=grep("^b+$",dt[[col]]), j=col, value=NA)
-  return(dt)
-}
-
-#' Inflation adjustment for PUMS
-#'
-#' Helper to the \code{\link{adjust_dollars}} function
-#' @inheritParams adjust_dollars
-#' @param adj_var PUMS adjustment factor: either ADJINC for income or ADJHSG for housing cost
-#'
-#' @author Michael Jensen
-#'
-#' @return filtered input data.table with input variable adjusted
-#'
-#' @import data.table
-
-adjust_inflation <-function(dt, dollar_var, adj_var){
-  dt %<>% .[, (dollar_var):=round(as.numeric(gsub(",", "", get(dollar_var))) * as.numeric(get(adj_var)),0)]
   return(dt)
 }
 
 #' Dollar variable adjustment for PUMS
 #'
-#' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+#' Helper to \code{\link{get_psrc_pums}} function.
 #' Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
 #' Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 #' @param dt The data.table
-#' @param dollar_var PUMS variable to adjust
-#'
-#' @author Michael Jensen
-#'
 #' @return full input data.table with all dollar values adjusted
 #'
 #' @import data.table
-
-adjust_dollars <- function(dt, dollar_var){
-  if(dollar_var %chin% c("FINCP","HINCP","INTP","OIP","PAP","PERNP","PINCP","RETP","SEMP","SSIP","SSP","WAGP")){
-    dt %<>% adjust_inflation(dollar_var, "ADJINC")                                                 # Applied to income variables (either person or housing table)
-  }
-  if(dollar_var %chin% c("CONP","ELEP","FULP","GASP","GRNTP","INSP","MHP","MRGP","SMOCP","RNTP","SMP","WATP","TAXAMT")){
-    dt %<>% adjust_inflation(dollar_var, "ADJHSG")                                                 # Applied to housing cost variables (housing table)
-  }
-  dt %<>% .[, c("ADJINC","ADJHSG"):=NULL]
-  return(dt)
-}
-
-#' Restrict PUMS API pull to PSRC region
-#'
-#' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
-#' Filters the Washington State API pull to the PSRC region and removes State/State_label columns.
-#' @param dt Washington State PUMS data.table
-#'
-#' @author Michael Jensen
-#'
-#' @return PSRC data.table
-#'
-#' @import data.table
-
-clip2region <- function(dt){
-  dt %<>% .[as.integer(PUMA) %/% 100 %in% c(115,116,117,118)] %>%
-    .[, grep(("^ST$|^ST_label$"), colnames(.)):=NULL]
+adjust_dollars <- function(dt){
+  income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(dt))
+  cost_cols <- grep("CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(dt))
+  dt[, (income_cols) := lapply(.SD, function(x) x * dt[[ADJINC]] ), .SDcols = income_cols] %>%     # Adjust income variables
+    .[, (cost_cols)   := lapply(.SD, function(x) x * dt[[ADJHSG]] ), .SDcols = cost_cols]           # Adjust cost variables
+  dt[, grep("^ADJINC$|^ADJHSG$", colnames(dt)):=NULL]                                              # Drop inflation adjustments
   return(dt)
 }
 
 #' Add County Name to PUMS API Result
 #'
-#' Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+#' Helper to \code{\link{get_psrc_pums}} function.
 #' Attaches county name.
 #' @param dt PSRC data.table
-#'
-#' @author Michael Jensen
-#'
 #' @return PSRC data.table with county names
 #'
 #' @import data.table
@@ -98,79 +52,29 @@ add_county <- function(dt){
   return(dt)
 }
 
-#' Process the PUMS Grouping Variable
+#' Recode factor variables to labels
 #'
-#' One of two primary helpers to the \code{\link{get_psrc_pums}} data assembly function.
-#' Calls the Census API to process the optional grouping variable.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param tbl_ref PUMS table (either "person" or "housing") of the target variable
-#' @param key_ref PUMS table (either "person" or "housing") of the grouping variable
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
-#'
-#' @author Michael Jensen
-#'
-#' @return the filtered data.table
+#' Helper to \code{\link{get_psrc_pums}} function.
+#' Swaps factor values for labels.
+#' @param rcd variable to be recoded
+#' @return data.table with factor label instead of value
 #'
 #' @import data.table
-
-psrc_pums_groupvar <- function(span, dyear, group_var, tbl_ref, key_ref, bin_defs, dollar_adj){
-  hholder <- list(SPORDER = 1)
-  dt   <- tidycensus::get_pums(variables=c(group_var,"ADJINC","ADJHSG"),                           # Include inflation adjustment fields
-                               state="WA",
-                               puma = c(11501:11520,11601:11630,11701:11720,11801:11810),          # Generous list, i.e. isn't limited to existing PUMAs
-                               year=dyear, survey=paste0("acs", span),
-                               variables_filter=if(tbl_ref=="housing" & key_ref=="person"){hholder}else{NULL}, # Convention uses householder attributes if target is housing & grouping is person
-                               recode=FALSE) %>%                                                   # Recode isn't available prior to 2017
-    setDT() %>% .[,(group_var):=as.factor(get(group_var))]
-  if(dollar_adj==TRUE){dt %<>% adjust_dollars(group_var)}                                          # Apply standard inflation adjustment
-#  if(!is.null(bin_defs) & length(bin_defs)>1){
-#    dt %<>% .[, (group_var):=cut(group_var, breaks=bin_defs, right=T, labels=F)]                  # Manual grouping categories
-#  }else if(!is.null(bin_defs) & length(bin_defs)==1){
-#    dt %<>% .[, (group_var):=ntile(group_var, bin_defs)]                                          # Ntile grouping categories
-#  }
- return(dt)
-  }
-
-#' Process the PUMS Target Variable
-#'
-#' One of two primary helpers to the \code{\link{get_psrc_pums}} data assembly function.
-#' Calls the Census API to process the primary variable used for summarization.
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param tbl_ref Either "person" or "housing", as determined by the \code{\link{get_psrc_pums}} function
-#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
-#'
-#' @author Michael Jensen
-#'
-#' @return the filtered data.table
-
-psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref, dollar_adj){
-  vf <- list(TYPE=1, SPORDER=1)
-  dt <- tidycensus::get_pums(variables=unique(c(target_var,"ADJINC","ADJHSG")),                    # Include inflation adjustment fields
-                             state="WA",
-                             puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
-                             year=dyear, survey=paste0("acs", span),
-                             variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
-                             recode=FALSE,                                                         # Recode unavailable prior to 2017
-                             rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
-    data.table::setDT() %>% .[,(target_var):=as.numeric(get(target_var))]
-  if(dollar_adj==TRUE){dt%<>% adjust_dollars(target_var)}                                          # Apply standard inflation adjustment
-  return(dt)
+recode_dt <- function(rcd){
+  setkeyv(dt, rcd)
+  dt[recoder[var_code==rcd], (rcd):=as.factor(i.val_label)]
+  invisible(0+0)
 }
 
-#' Assemble the requested PUMS data
+#' Retrieve and assemble PUMS data
 #'
-#' The main PUMS assembly function.
-#' Combines data from \code{\link{psrc_pums_targetvar}} and \code{\link{psrc_pums_groupvar}} to feed specific summary stat calls.
-#' @inheritParams psrc_pums_stat
-#'
-#' @author Michael Jensen
-#'
-#' @return A srvyr object, absent grouping but otherwise ready for summation.
+#' The primary PUMS function
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param level Either "p" or "h", for "persons" or "households" respectively
+#' @param vars PUMS variable/s as an UPPERCASE string element or list
+#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
+#' @return A srvyr object with appropriate sampling weight and replication weights
 #'
 #' @importFrom tidyselect all_of
 #' @import data.table
@@ -178,84 +82,82 @@ psrc_pums_targetvar <- function(span, dyear, target_var, tbl_ref, dollar_adj){
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-#' get_psrc_pums(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
-
+#' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
+#'
 #' @export
-get_psrc_pums <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  varlist   <- c(target_var, group_var, "COUNTY") %>% purrr::discard(is.null) %>% unique()
-  acsspan   <- paste0("acs", span)
-  pums_vars <- tidycensus::pums_variables %>% setDT() %>%
-    .[var_code %in% c(target_var, group_var) & survey==paste0("acs", span)]                        # Retrieve variable definitions
-  near_yr   <- min(abs(as.integer(unique(pums_vars$year))) - dyear) + dyear
-  pums_vars %<>% .[year==near_yr]                                                                  # Filter to nearest (or matching) year present in data dictionary
-  tbl_ref   <- copy(pums_vars) %>% .[var_code==target_var, unique(level)]                          # Table corresponding to unit of analysis (for rep weights)
-  key_ref   <- if(!is.null(group_var)){
-    copy(pums_vars) %>% .[var_code==group_var, unique(level)]                                      # Table corresponding to grouping variable (for join)
-    }else{"no second table"
-    }
-  dt_key    <- if(tbl_ref=="person" & key_ref!="housing"){c("SERIALNO","SPORDER")
-  }else{"SERIALNO"}                                                                                # To link target and grouping variables
-  rwgt_ref  <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
-  recoder   <- pums_vars[var_code==group_var & recode==TRUE & val_min==val_max, .(val_max, val_label)] %>%
-    unique() %>% setkey(val_max)
-  dt <- psrc_pums_targetvar(span, dyear, target_var, tbl_ref, dollar_adj) %>% add_county()         # Target variable via API
+get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
+  varlist <- if(dollar_adj==TRUE){
+    unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                 # Include adjustment variables
+  }else{vars}
+  vf         <- list(TYPE=1, SPORDER=1)
+  tbl_ref    <- if(level=="p"){"person"}else{"housing"}
+  rwgt_ref   <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
+  unit_var   <- if(tbl_ref=="person"){"SPORDER"}else{"SERIALNO"}
+  key_var    <- c("SERIALNO", unit_var) %>% unique()
+  dt <- tidycensus::get_pums(variables=varlist,                                                    # Include inflation adjustment fields
+                             state="WA",
+                             puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
+                             year=dyear, survey=paste0("acs", span),
+                             variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
+                             recode=FALSE,
+                             rep_weights=tbl_ref) %>% setDT() %>%                                  # Replication weights for the appropriate table
+    pums_recode_na() %>% add_county()
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
-  if(!is.null(group_var)){
-    group_var_dt <- psrc_pums_groupvar(span, dyear, group_var, tbl_ref, key_ref, bin_defs, dollar_adj) # Grouping variable via API
-      if(nrow(recoder)>0){
-        group_var_dt %<>% setkeyv(group_var) %>% .[recoder, (group_var):=as.factor(val_label)]     # Convert grouping variable to label if relevant/available
-      }
-    group_var_dt %<>% setkeyv(dt_key)
-    dt %<>% setkeyv(dt_key) %>% .[group_var_dt, on=key(.), (group_var):=as.factor(get(group_var))] # Add grouping variable to primary table
+  if(dollar_adj==TRUE){dt%<>% adjust_dollars()}                                                    # Apply standard inflation adjustment
+  recoder <-  tidycensus::pums_variables %>% setDT() %>%
+    .[var_code %in% vars & recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
+    unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
+  ftr_vars <- recoder$var_code %>% unique()
+  nonnum_vars <- ftr_vars %>% unlist() %>% c(unit_var)
+  num_vars <- vars[vars %not_in% nonnum_vars]
+  dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]                                      # Ensure non-factor, non-key columns are numeric
+  if(nrow(recoder)>0){
+    sapply(ftr_vars, recode_dt)                                                                    # Convert group_var to label if relevant/available
   }
-  dt %<>% pums_recode_na() %>% setDF() %>%
-    srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
-                         weights=all_of(rwgt_ref),
-                         repweights=all_of(rw),
-                         combined_weights=TRUE,
-                         mse=TRUE,
-                         type="other",
-                         scale=4/80,
-                         rscale=rep(1:length(all_of(rw))))
+  varlist <- unlist(vars) %>% c("COUNTY", unit_var) %>% unique()
+  dt %<>% setDF() %>% srvyr::as_survey_rep(variables=all_of(varlist),                              # Create srvyr object with replication weights for MOE
+                                           weights=all_of(rwgt_ref),
+                                           repweights=all_of(rw),
+                                           combined_weights=TRUE,
+                                           mse=TRUE,
+                                           type="other",
+                                           scale=4/80,
+                                           rscale=rep(1:length(all_of(rw))))
   return(dt)
 }
 
 #' Generic call for PUMS summary statistics
 #'
 #' Given specific form by related \code{\link{regional_pums_stat}} and \code{\link{county_pums_stat}} functions.
-#' Fed from \code{\link{get_psrc_pums}}
+#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
+#' @param target_var Numeric PUMS analysis variable, as an UPPERCASE string
+#' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @param stat_type Desired survey statistic
 #' @param geo_scale Either "county" or "region"
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var The exact PUMS variable intended for grouping, as a string in UPPERCASE
-#' @param bin_defs Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints
-#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
-#'
-#' @author Michael Jensen
-#'
-#' @return A table with the variable names, desired statistic, and margin of error
+#' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom rlang sym
 #' @importFrom srvyr summarise survey_tally survey_total survey_median survey_mean
-psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_var, bin_defs, dollar_adj){
+psrc_pums_stat <- function(so, target_var, group_vars, stat_type, geo_scale){
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
   se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
   moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
-  df <- get_psrc_pums(span, dyear, target_var, group_var, bin_defs)
-  if(!is.null(group_var)){
-    df %<>% dplyr::group_by(!!as.name(group_var), .drop=FALSE)
-    }
-  if(geo_scale=="county"){df %<>% dplyr::group_by(COUNTY, .add=TRUE)}
-  if(stat_type=="count"){
-    rs <- survey_tally(df, name="count", vartype="se")
-  }else{
-    rs <- summarise(df, !!stat_type:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
+  so %<>% dplyr::ungroup()
+  if(!is.null(group_vars)){
+    so %<>% dplyr::group_by(across(all_of(group_vars)), .drop=FALSE)                                # Apply grouping
   }
-  rs %<>% dplyr::mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>% dplyr::select(-!!as.name(se_name))
-  if(!is.null(group_var)){rs %<>% dplyr::arrange(!!as.name(group_var))}
-  if(geo_scale=="county"){rs %<>% dplyr::relocate(COUNTY) %>% dplyr::arrange(COUNTY)}
+  if(geo_scale=="county"){so %<>% dplyr::group_by(COUNTY, .add=TRUE)}
+  if(stat_type=="count"){
+    rs <- survey_tally(so, name="count", vartype="se")
+  }else{
+    rs <- summarise(so, !!stat_type:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
+  }
+  rs %<>% dplyr::mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>%
+    dplyr::select(-!!as.name(se_name)) %>% dplyr::arrange(.by_group = TRUE)
+  if(geo_scale=="county"){
+    rs %<>% dplyr::relocate(COUNTY) %>% dplyr::arrange(COUNTY)
+  }
+  dt %<>% dplyr::ungroup()
   return(rs)
 }
 
@@ -263,29 +165,26 @@ psrc_pums_stat <- function(stat_type, geo_scale, span, dyear, target_var, group_
 #'
 #' Separate function for total, count, median, or mean
 #'
-#' @inheritParams psrc_pums_stat
-#' @param analysis_unit replaced target_var for the count function; either "persons" or "households"
+#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @name regional_pums_stat
-#'
-#' @author Michael Jensen
-#'
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
 
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS totals
 #' @export
-psrc_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("total", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+psrc_pums_total <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, target_var, group_vars, "total", "region")
   return(rs)
 }
 
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS count
 #' @export
-psrc_pums_count <- function(span, dyear, analysis_unit, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  target_var <- if(analysis_unit=="person"){"SPORDER"}else{"HHT"}
-  rs <- psrc_pums_stat("count", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+psrc_pums_count <- function(so, group_vars=NULL){
+  rs <- psrc_pums_stat(so, group_vars, "count", "region")
   return(rs)
 }
 
@@ -295,19 +194,19 @@ psrc_pums_count <- function(span, dyear, analysis_unit, group_var=NULL, bin_defs
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-#' psrc_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
+#' get_psrc_pums(1, 2019, "h", "HINCP", "TEN") %>% psrc_pums_median("HINCP", "TEN")
 #'
 #' @export
-psrc_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("median", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+psrc_pums_median <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, target_var, group_vars, "median", "region")
   return(rs)
 }
 
 #' @rdname regional_pums_stat
 #' @title Generate regional PUMS mean
 #' @export
-psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("mean", "region", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+psrc_pums_mean <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, target_var, group_vars, "mean", "region")
   return(rs)
 }
 
@@ -315,28 +214,26 @@ psrc_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NUL
 #'
 #' Separate function for total, count, median, or mean
 #'
-#' @inheritParams psrc_pums_stat
+#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @name county_pums_stat
-#'
-#' @author Michael Jensen
-#'
 #' @return A table with the counties, variable names and labels, summary statistic, and margin of error
 NULL
 
 #' @rdname county_pums_stat
 #' @title Generate PUMS totals by county
 #' @export
-county_pums_total <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("total", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+county_pums_total <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, target_var, group_vars, "total", "county")
   return(rs)
 }
 
 #' @rdname county_pums_stat
 #' @title Generate PUMS counts <count> by county
 #' @export
-county_pums_count <- function(span, dyear, analysis_unit, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  target_var <- if(analysis_unit=="person"){"SPORDER"}else{"HHT"}
-  rs <- psrc_pums_stat("count", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+county_pums_count <- function(so, group_vars=NULL){
+  rs <- psrc_pums_stat(so, group_vars, "count", "region")
   return(rs)
 }
 
@@ -345,19 +242,17 @@ county_pums_count <- function(span, dyear, analysis_unit, group_var=NULL, bin_de
 #'
 #' @examples
 #' \dontrun{Sys.getenv("CENSUS_API_KEY")}
-#' county_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
-#'
+#' get_psrc_pums(1, 2019, "p", AGEP") %>% county_pums_median("AGEP")
 #'
 #' @export
-county_pums_median <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("median", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
+county_pums_median <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, target_var, group_vars, "median", "county")
   return(rs)
 }
 
 #' @rdname county_pums_stat
 #' @title Generate PUMS averages <mean> by county
 #' @export
-county_pums_mean <- function(span, dyear, target_var, group_var=NULL, bin_defs=NULL, dollar_adj=TRUE){
-  rs <- psrc_pums_stat("mean", "county", span, dyear, target_var, group_var, bin_defs, dollar_adj)
-  return(rs)
+county_pums_mean <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, target_var, group_vars, "mean", "county")
 }

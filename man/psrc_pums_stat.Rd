@@ -4,41 +4,22 @@
 \alias{psrc_pums_stat}
 \title{Generic call for PUMS summary statistics}
 \usage{
-psrc_pums_stat(
-  stat_type,
-  geo_scale,
-  span,
-  dyear,
-  target_var,
-  group_var,
-  bin_defs,
-  dollar_adj
-)
+psrc_pums_stat(so, target_var, group_vars, stat_type, geo_scale)
 }
 \arguments{
+\item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
+
+\item{target_var}{Numeric PUMS analysis variable, as an UPPERCASE string}
+
 \item{stat_type}{Desired survey statistic}
 
 \item{geo_scale}{Either "county" or "region"}
 
-\item{span}{Either 1 for acs1 or 5 for acs5}
-
-\item{dyear}{The data year}
-
-\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
-
-\item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
-
-\item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
-
-\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
+\item{group_var}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 }
 \value{
-A table with the variable names, desired statistic, and margin of error
+A summary tibble, including variable names, summary statistic and margin of error
 }
 \description{
 Given specific form by related \code{\link{regional_pums_stat}} and \code{\link{county_pums_stat}} functions.
-Fed from \code{\link{get_psrc_pums}}
-}
-\author{
-Michael Jensen
 }

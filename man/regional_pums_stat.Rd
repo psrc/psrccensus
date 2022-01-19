@@ -8,56 +8,20 @@
 \alias{psrc_pums_mean}
 \title{Regional PUMS summary statistics}
 \usage{
-psrc_pums_total(
-  span,
-  dyear,
-  target_var,
-  group_var = NULL,
-  bin_defs = NULL,
-  dollar_adj = TRUE
-)
+psrc_pums_total(so, target_var, group_vars = NULL)
 
-psrc_pums_count(
-  span,
-  dyear,
-  analysis_unit,
-  group_var = NULL,
-  bin_defs = NULL,
-  dollar_adj = TRUE
-)
+psrc_pums_count(so, group_vars = NULL)
 
-psrc_pums_median(
-  span,
-  dyear,
-  target_var,
-  group_var = NULL,
-  bin_defs = NULL,
-  dollar_adj = TRUE
-)
+psrc_pums_median(so, target_var, group_vars = NULL)
 
-psrc_pums_mean(
-  span,
-  dyear,
-  target_var,
-  group_var = NULL,
-  bin_defs = NULL,
-  dollar_adj = TRUE
-)
+psrc_pums_mean(so, target_var, group_vars = NULL)
 }
 \arguments{
-\item{span}{Either 1 for acs1 or 5 for acs5}
-
-\item{dyear}{The data year}
+\item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
 
 \item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
-\item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
-
-\item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
-
-\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
-
-\item{analysis_unit}{replaced target_var for the count function; either "persons" or "households"}
+\item{group_var}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error
@@ -68,9 +32,6 @@ Separate function for total, count, median, or mean
 \examples{
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
-psrc_pums_median(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
+get_psrc_pums(1, 2019, "h", "HINCP", "TEN") \%>\% psrc_pums_median("HINCP", "TEN")
 
-}
-\author{
-Michael Jensen
 }

@@ -4,21 +4,16 @@
 \alias{adjust_dollars}
 \title{Dollar variable adjustment for PUMS}
 \usage{
-adjust_dollars(dt, dollar_var)
+adjust_dollars(dt)
 }
 \arguments{
 \item{dt}{The data.table}
-
-\item{dollar_var}{PUMS variable to adjust}
 }
 \value{
 full input data.table with all dollar values adjusted
 }
 \description{
-Helper to \code{\link{psrc_pums_groupvar}} and \code{\link{psrc_pums_targetvar}} functions.
+Helper to \code{\link{get_psrc_pums}} function.
 Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the \code{\link{adjust_inflation}} function.
 Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
-}
-\author{
-Michael Jensen
 }

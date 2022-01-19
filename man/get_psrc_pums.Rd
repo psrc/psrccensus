@@ -2,42 +2,30 @@
 % Please edit documentation in R/get-psrc-pums.R
 \name{get_psrc_pums}
 \alias{get_psrc_pums}
-\title{Assemble the requested PUMS data}
+\title{Retrieve and assemble PUMS data}
 \usage{
-get_psrc_pums(
-  span,
-  dyear,
-  target_var,
-  group_var = NULL,
-  bin_defs = NULL,
-  dollar_adj = TRUE
-)
+get_psrc_pums(span, dyear, level, vars, dollar_adj = TRUE)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
 
 \item{dyear}{The data year}
 
-\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
+\item{level}{Either "p" or "h", for "persons" or "households" respectively}
 
-\item{group_var}{The exact PUMS variable intended for grouping, as a string in UPPERCASE}
-
-\item{bin_defs}{Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints}
+\item{vars}{PUMS variable/s as an UPPERCASE string element or list}
 
 \item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 }
 \value{
-A srvyr object, absent grouping but otherwise ready for summation.
+A srvyr object with appropriate sampling weight and replication weights
 }
 \description{
-The main PUMS assembly function.
-Combines data from \code{\link{psrc_pums_targetvar}} and \code{\link{psrc_pums_groupvar}} to feed specific summary stat calls.
+The primary PUMS function
 }
 \examples{
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
-get_psrc_pums(span=1, dyear=2019, target_var="AGEP", group_var="SEX")
-}
-\author{
-Michael Jensen
+get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
+
 }
