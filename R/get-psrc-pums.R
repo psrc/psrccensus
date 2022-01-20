@@ -133,18 +133,19 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
 #' @importFrom rlang sym
 #' @importFrom srvyr summarise survey_tally survey_total survey_median survey_mean
 psrc_pums_stat <- function(so, target_var, group_vars, stat_type, geo_scale){
+  newvar_name <- paste0(target_var,"_",stat_type)
   srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
-  se_name     <- paste0(stat_type,"_se")                                                           # specific srvyr standard error field
-  moe_name    <- paste0(stat_type,"_moe")                                                          # margin of error
+  se_name     <- paste0(target_var, "_", stat_type,"_se")                                          # specific srvyr standard error field
+  moe_name    <- paste0(target_var, "_", stat_type,"_moe")                                         # margin of error
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
-    so %<>% dplyr::group_by(across(all_of(group_vars)), .drop=FALSE)                                # Apply grouping
+    so %<>% dplyr::group_by(across(all_of(group_vars)), .drop=FALSE)                               # Apply grouping
   }
   if(geo_scale=="county"){so %<>% dplyr::group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
     rs <- survey_tally(so, name="count", vartype="se")
   }else{
-    rs <- summarise(so, !!stat_type:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
+    rs <- summarise(so, !!newvar_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
   }
   rs %<>% dplyr::mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>%
     dplyr::select(-!!as.name(se_name)) %>% dplyr::arrange(.by_group = TRUE)
