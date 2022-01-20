@@ -92,7 +92,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
                              variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
                              recode=FALSE,
                              rep_weights=tbl_ref) %>% setDT() %>%                                  # Replication weights for the appropriate table
-    pums_recode_na() %>% add_county()
+    pums_recode_na() %>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
   if(dollar_adj==TRUE){dt%<>% adjust_dollars()}                                                    # Apply standard inflation adjustment
   recoder <-  tidycensus::pums_variables %>% setDT() %>%
@@ -101,90 +101,98 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
   ftr_vars <- recoder$var_code %>% unique()
   nonnum_vars <- ftr_vars %>% unlist() %>% c(unit_var)
   num_vars <- vars[vars %not_in% nonnum_vars]
-  dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]                                      # Ensure non-factor, non-key columns are numeric
   if(nrow(recoder)>0){
     for (v in ftr_vars){
         setkeyv(dt, v)
         dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_var to label if relevant/available
       }
-    }
-  varlist <- unlist(vars) %>% c("COUNTY", unit_var) %>% unique()
-  dt %<>% setDF() %>% srvyr::as_survey_rep(variables=all_of(varlist),                              # Create srvyr object with replication weights for MOE
-                                           weights=all_of(rwgt_ref),
-                                           repweights=all_of(rw),
-                                           combined_weights=TRUE,
-                                           mse=TRUE,
-                                           type="other",
-                                           scale=4/80,
-                                           rscale=rep(1:length(all_of(rw))))
+  }
+  dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]                                      # Ensure variables to summarize are numeric
+  dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                       # Ensure grouping variables are factors (required by srvyr)
+  varlist <- c(unit_var, "COUNTY", unlist(vars)) %>% unique()
+  dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
+    srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
+                         weights=all_of(rwgt_ref),
+                         repweights=all_of(rw),
+                         combined_weights=TRUE,
+                         mse=TRUE,
+                         type="other",
+                         scale=4/80,
+                         rscale=rep(1:length(all_of(rw))))
   return(dt)
 }
 
 #' Generic call for PUMS summary statistics
 #'
-#' Given specific form by related \code{\link{regional_pums_stat}} and \code{\link{county_pums_stat}} functions.
+#' Given specific form by related \code{\link{pums_stat}} functions.
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
+#' @param stat_type Desired survey statistic
 #' @param target_var Numeric PUMS analysis variable, as an UPPERCASE string
 #' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
-#' @param stat_type Desired survey statistic
-#' @param geo_scale Either "county" or "region"
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom rlang sym
-#' @importFrom srvyr summarise survey_tally survey_total survey_median survey_mean
-psrc_pums_stat <- function(so, target_var, group_vars, stat_type, geo_scale){
-  newvar_name <- paste0(target_var,"_",stat_type)
-  srvyrf_name <- as.name(paste0("survey_",stat_type))                                              # specific srvyr function name
-  se_name     <- paste0(target_var, "_", stat_type,"_se")                                          # specific srvyr standard error field
-  moe_name    <- paste0(target_var, "_", stat_type,"_moe")                                         # margin of error
+#' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
+psrc_pums_stat <- function(so, stat_type, target_var, group_vars){
+  prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
-    so %<>% dplyr::group_by(across(all_of(group_vars)), .drop=FALSE)                               # Apply grouping
+    so %<>% srvyr::group_by(dplyr::across(tidyselect::all_of(group_vars)))                         # Apply grouping
   }
-  if(geo_scale=="county"){so %<>% dplyr::group_by(COUNTY, .add=TRUE)}
+  so %<>% srvyr::group_by(COUNTY, .add=TRUE)
   if(stat_type=="count"){
-    rs <- survey_tally(so, name="count", vartype="se")
+    rs <- cascade(so, count:=survey_total(na.rm=TRUE, vartype="se", level=0.90))
+  }else if(stat_type=="summary"){
+    rs <- cascade(so, count:=survey_total(na.rm=TRUE, vartype="se", level=0.90),
+            !!paste0(prefix,"total"):=survey_total(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90),
+            !!paste0(prefix,"median"):=survey_median(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90),
+            !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90))
   }else{
-    rs <- summarise(so, !!newvar_name:=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
+    srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # specific srvyr function name
+    rs <- cascade(so,
+            !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
   }
-  rs %<>% dplyr::mutate(!!sym(moe_name):=eval(sym(se_name)) * 1.645) %>%
-    dplyr::select(-!!as.name(se_name)) %>% dplyr::arrange(.by_group = TRUE)
-  if(geo_scale=="county"){
-    rs %<>% dplyr::relocate(COUNTY) %>% dplyr::arrange(COUNTY)
+  rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
+    .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
+    setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
+  setcolorder(rs, c("COUNTY"))
+  setorder(rs, COUNTY, na.last=TRUE)
+  rs[is.na(COUNTY), COUNTY:="Region"]
+  if(!is.null(group_vars)){
+    rs[, (group_vars):=lapply(.SD, function(x) {x[is.na(x)] <- "Total" ; x}), .SDcols=group_vars]
   }
   so %<>% dplyr::ungroup()
   return(rs)
 }
 
-#' Regional PUMS summary statistics
+#' PUMS summary statistics
 #'
-#' Separate function for total, count, median, or mean
+#' Separate function for total, count, median, mean
 #'
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
 #' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
-#' @name regional_pums_stat
+#' @name pums_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
 
-#' @rdname regional_pums_stat
-#' @title Generate regional PUMS totals
+#' @rdname pums_stat
+#' @title Generate PUMS county and regional counts
 #' @export
-psrc_pums_total <- function(so, target_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, target_var, group_vars, "total", "region")
+psrc_pums_count <- function(so, target_var=NULL, group_vars=NULL){
+  rs <- psrc_pums_stat(so=so, stat_type="count", target_var=NULL, group_vars=group_vars)
+  return(rs)
+}
+#' @rdname pums_stat
+#' @title Generate PUMS county and regional totals
+#' @export
+psrc_pums_sum <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, stat_type="total", target_var=target_var, group_vars=group_vars)
   return(rs)
 }
 
-#' @rdname regional_pums_stat
-#' @title Generate regional PUMS count
-#' @export
-psrc_pums_count <- function(so, group_vars=NULL){
-  rs <- psrc_pums_stat(so, group_vars, "count", "region")
-  return(rs)
-}
-
-#' @rdname regional_pums_stat
-#' @title Generate regional PUMS median
+#' @rdname pums_stat
+#' @title Generate PUMS county and regional medians
 #'
 #' @examples
 #' \dontrun{
@@ -193,61 +201,22 @@ psrc_pums_count <- function(so, group_vars=NULL){
 #'
 #' @export
 psrc_pums_median <- function(so, target_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, target_var, group_vars, "median", "region")
+  rs <- psrc_pums_stat(so=so, stat_type="median", target_var=target_var, group_vars=group_vars)
   return(rs)
 }
 
-#' @rdname regional_pums_stat
-#' @title Generate regional PUMS mean
+#' @rdname pums_stat
+#' @title Generate PUMS county and regional means
 #' @export
 psrc_pums_mean <- function(so, target_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, target_var, group_vars, "mean", "region")
+  rs <- psrc_pums_stat(so=so, stat_type="mean", target_var=target_var, group_vars=group_vars)
   return(rs)
 }
 
-#' PUMS summary statistics by county
-#'
-#' Separate function for total, count, median, or mean
-#'
-#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
-#' @name county_pums_stat
-#' @return A table with the counties, variable names and labels, summary statistic, and margin of error
-NULL
-
-#' @rdname county_pums_stat
-#' @title Generate PUMS totals by county
+#' @rdname pums_stat
+#' @title Generate PUMS county and regional means
 #' @export
-county_pums_total <- function(so, target_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, target_var, group_vars, "total", "county")
+psrc_pums_summary <- function(so, target_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so=so, stat_type="summary", target_var=target_var, group_vars=group_vars)
   return(rs)
-}
-
-#' @rdname county_pums_stat
-#' @title Generate PUMS counts <count> by county
-#' @export
-county_pums_count <- function(so, group_vars=NULL){
-  rs <- psrc_pums_stat(so, group_vars, "count", "region")
-  return(rs)
-}
-
-#' @rdname county_pums_stat
-#' @title Generate PUMS medians by county
-#'
-#' @examples
-#' \dontrun{Sys.getenv("CENSUS_API_KEY")}
-#' get_psrc_pums(1, 2019, "p", AGEP") %>% county_pums_median("AGEP")
-#'
-#' @export
-county_pums_median <- function(so, target_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, target_var, group_vars, "median", "county")
-  return(rs)
-}
-
-#' @rdname county_pums_stat
-#' @title Generate PUMS averages <mean> by county
-#' @export
-county_pums_mean <- function(so, target_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, target_var, group_vars, "mean", "county")
 }

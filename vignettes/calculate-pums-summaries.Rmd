@@ -31,7 +31,7 @@ The first step consists of retrieving the data of interest via the **get_psrc_pu
   * **span**  - either 1 or 5, denoting the span of the desired ACS survey
   * **dyear** - aka data year or concluding year for 5-yr ACS
   * **level** - the unit of analysis, i.e. "p" for "persons" or "h" for "households"
-  * **vars**  - one or more PUMS variables (e.g. list), quoted exactly, in uppercase
+  * **vars**  - one or more PUMS variables (if multiple, as a list), quoted exactly, in uppercase
   
 The PUMS data dictionary is captured in the object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes each separate data dictionary online, [2015-19 as an example](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.pdf).
 
@@ -41,54 +41,55 @@ Because the ACS (from which the PUMS records are developed) is a rolling survey,
 
 The result of **get_psrc_pums()** is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list. Srvyr objects can be manipulated using dplyr syntax if necessary, although that is not required while using psrccensus (see [its vignette] (http://gdfe.co/srvyr/)).
 
-The second step involves calculating summary statistics from the result of the prior step. There are eight separate functions: four statistics, specific either to the region as a whole, or by county.
+The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. Each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping).
 
-  regional               county
-  --------------------   -------------------
-  psrc_pums_total()      county_pums_total()
-  psrc_pums_count()      county_pums_count()
-  psrc_pums_median()     county_pums_median()
-  psrc_pums_mean()       county_pums_mean()
+|          **psrc_pums_count()**    
+|          **psrc_pums_sum()**  
+|          **psrc_pums_median()**    
+|          **psrc_pums_mean()**
+|          **psrc_pums_summary()**
 
-The first argument of each function is the srvyr object returned by get_psrc_pums, which facilitates chaining (e.g. via magrittr pipe). For total, median and mean functions, the second argument is the variable to be summarized; for count, this is implicit. Finally, there is an optional argument for grouping variables, which can be a list of more than one. psrccensus does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous.
+The arguments for each function are identical:
 
-Since PUMS records are survey records, sampling weights are applied to deliver estimates of the full population. Margins of error are tabulated along with the estimate and supplied in a separate column. 
+  * **so**          - The srvyr object returned by **get_psrc_pums()**; this facilitates chaining (e.g. via magrittr pipe)
+  * **target_var**  - The variable to be summarized.
+  * **group_vars**  - Optional grouping variable/s (if multiple, as a list)
+
+**psrccensus** does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous. The target_var argument is ignored by the count function (for which the primary variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).
+
+Since PUMS records are sampled rather than comprising a full census, **psrccensus** applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error for each estimate in a separately labeled '_moe' column. 
 
 To calculate the regional median age for 2019, for example, you would use the following function call:
-```{r regional median, message=FALSE, eval=FALSE}
-get_psrc_pums(span = 1,                        # Denoting ACS 1-year estimates
-              dyear = 2019,
-              level = "p",                     # Unit of analysis == person
-              vars = "AGEP") %>%               # PUMS variable name for household income
-  psrc_pums_median("AGEP")                     # Only 2nd arg is necessary (chaining)
+```{r median, message=FALSE, eval=FALSE}
+get_psrc_pums(span = 5,                               # Denoting ACS 5-year estimates; 1-year also available
+              dyear = 2019,                           # Last data year of span
+              level = "p",                            # Unit of analysis == person; "h" used for household
+              vars = "HINCP") %>%                     # PUMS variable name for household income
+  psrc_pums_median(target_var = "HINCP")              # Only 2nd argument is necessary (chaining)
 ```
 
-To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument:
-```{r regional median by category, message=FALSE, eval=FALSE}
-ni <- get_psrc_pums(span = 5,                  # Denoting ACS 5-year estimates
-                    dyear = 2019,
-                    level = "h",               # Unit of analysis == household
-                    vars = c("HINCP","TEN"))   # PUMS household income & housing tenure variables
-psrc_pums_median(ni, "HINCP", "TEN")           # Median household income grouped by tenure
+To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument. As is typical, function argument names can be omitted if arguments are provided in strict order.
+```{r  median by category, message=FALSE, eval=FALSE}
+ni <- get_psrc_pums(5, 2019, "h", c("HINCP","TEN"))   # PUMS household income & housing tenure variables
+psrc_pums_median(ni, "HINCP", "TEN")                  # Median household income grouped by tenure
 ```
 
-For the equivalent calculation by county, use the county-specific function:
-```{r county median by category, message=FALSE, eval=FALSE}
-county_pums_median(ni, "HINCP", "TEN")         # Srvyr object can be used repeatedly for calculation
-
+The count function tabulates the number people or households by grouping category, depending on the level you specified in **get_psrc_pums**. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
+```{r count by category, message=FALSE, eval=FALSE}
+psrc_pums_count(ni, group_var="TEN")                  # If omitting target_var argument, group_var must be labeled
 ```
 
-The count functions tabulate the number people or households by grouping category. The result represents the population (via weighting), not the survey sample.
-```{r county count by category, message=FALSE, eval=FALSE}
-county_pums_count(ni, "TEN")                   # Second arg for grouping; primary variable is implicit
+The summary function provides all four statistics and their margins of error in the same table:
+```{r summary by category, message=FALSE, eval=FALSE}
+psrc_pums_summary(ni, "HINCP", "TEN")
 ```
-
-If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' functions instead, which sum the target variable.
 
 All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
 
-At present the Census Microdata API is limited to data years 2017 and later. The API also routinely experiences unexplained downtime between 2-7pm Pacific Time, returning in place of data the message
-  *Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience.* 
+At present the Census Microdata API is limited to data years 2017 and later. The API also routinely experiences unexplained downtime between 2-7pm Pacific Time, returning in place of data the message  
+
+  *"Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience."* 
 -or- 
-  *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*
+  *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*  
+  
 For earlier data years, or when the API is down, it is possible to download raw PUMS from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/). 

@@ -4,16 +4,14 @@
 \alias{psrc_pums_stat}
 \title{Generic call for PUMS summary statistics}
 \usage{
-psrc_pums_stat(so, target_var, group_vars, stat_type, geo_scale)
+psrc_pums_stat(so, stat_type, target_var, group_vars)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
 
-\item{target_var}{Numeric PUMS analysis variable, as an UPPERCASE string}
-
 \item{stat_type}{Desired survey statistic}
 
-\item{geo_scale}{Either "county" or "region"}
+\item{target_var}{Numeric PUMS analysis variable, as an UPPERCASE string}
 
 \item{group_var}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 }
@@ -21,5 +19,5 @@ psrc_pums_stat(so, target_var, group_vars, stat_type, geo_scale)
 A summary tibble, including variable names, summary statistic and margin of error
 }
 \description{
-Given specific form by related \code{\link{regional_pums_stat}} and \code{\link{county_pums_stat}} functions.
+Given specific form by related \code{\link{pums_stat}} functions.
 }
