@@ -13,6 +13,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(psrccensus)
 library(magrittr)
+library(knitr)
 ```
 
 ## What is Census microdata?
@@ -26,10 +27,12 @@ PUMS data include sampling weights in order to be extrapolated to a larger popul
 The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole. Data analysis with the psrccensus package involves two steps:
 
 The first step consists of retrieving the data of interest via the **get_psrc_pums()** function. The arguments are:
-   **span**  - either 1 or 5, denoting the span of the desired ACS survey
-   **dyear** - aka data year or concluding year for 5-yr ACS
-   **level** - the unit of analysis, i.e. "p" for "persons" or "h" for "households"
-   **vars**  - one or more PUMS variables (e.g. list), quoted exactly, in uppercase
+
+  * **span**  - either 1 or 5, denoting the span of the desired ACS survey
+  * **dyear** - aka data year or concluding year for 5-yr ACS
+  * **level** - the unit of analysis, i.e. "p" for "persons" or "h" for "households"
+  * **vars**  - one or more PUMS variables (e.g. list), quoted exactly, in uppercase
+  
 The PUMS data dictionary is captured in the object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes each separate data dictionary online, [2015-19 as an example](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.pdf).
 
 PUMS has two distinct units of analysis: persons ("persons" table), or households ("housing" table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) A person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). 
@@ -53,31 +56,31 @@ Since PUMS records are survey records, sampling weights are applied to deliver e
 
 To calculate the regional median age for 2019, for example, you would use the following function call:
 ```{r regional median, message=FALSE, eval=FALSE}
-get_psrc_pums(span = 1,             # Denoting ACS 1-year estimates
+get_psrc_pums(span = 1,                        # Denoting ACS 1-year estimates
               dyear = 2019,
-              level = "p",          # Unit of analysis == person
-              vars = "AGEP") %>%    # The PUMS variable name for household income
-  psrc_pums_median("AGEP")          # Only second argument is necessary (chaining)
+              level = "p",                     # Unit of analysis == person
+              vars = "AGEP") %>%               # PUMS variable name for household income
+  psrc_pums_median("AGEP")                     # Only 2nd arg is necessary (chaining)
 ```
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument:
 ```{r regional median by category, message=FALSE, eval=FALSE}
-ni <- get_psrc_pums(span = 5,                    # Denoting ACS 5-year estimates
+ni <- get_psrc_pums(span = 5,                  # Denoting ACS 5-year estimates
                     dyear = 2019,
-                    level = "h"      ,           # Unit of analysis == household
-                    vars = c("HINCP","TEN"))     # The PUMS household income & housing tenure variables
-psrc_pums_median(ni, "HINCP", "TEN")             # Median household income grouped by tenure
+                    level = "h",               # Unit of analysis == household
+                    vars = c("HINCP","TEN"))   # PUMS household income & housing tenure variables
+psrc_pums_median(ni, "HINCP", "TEN")           # Median household income grouped by tenure
 ```
 
 For the equivalent calculation by county, use the county-specific function:
 ```{r county median by category, message=FALSE, eval=FALSE}
-county_pums_median(ni, "HINCP", "TEN")           # Srvyr object can be used repeatedly for calculation
+county_pums_median(ni, "HINCP", "TEN")         # Srvyr object can be used repeatedly for calculation
 
 ```
 
 The count functions tabulate the number people or households by grouping category. The result represents the population (via weighting), not the survey sample.
 ```{r county count by category, message=FALSE, eval=FALSE}
-county_pums_count(ni, "TEN")                     # Second argument is grouping variable; primary variable is implicit
+county_pums_count(ni, "TEN")                   # Second arg for grouping; primary variable is implicit
 ```
 
 If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' functions instead, which sum the target variable.
