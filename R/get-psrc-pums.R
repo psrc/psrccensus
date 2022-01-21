@@ -237,7 +237,7 @@ psrc_pums_sum <- function(so, target_var, group_vars=NULL){
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 #' library(magrittr)
-#' get_psrc_pums(1, 2019, "h", "HINCP", "TEN") %>% psrc_pums_median("HINCP", "TEN")
+#' get_psrc_pums(1, 2019, "h", c("HINCP", "TEN")) %>% psrc_pums_median("HINCP", "TEN")
 #'
 #' @export
 psrc_pums_median <- function(so, target_var, group_vars=NULL){
