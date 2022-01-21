@@ -13,7 +13,7 @@ psrc_pums_stat(so, stat_type, target_var, group_vars)
 
 \item{target_var}{Numeric PUMS analysis variable, as an UPPERCASE string}
 
-\item{group_var}{Factor variable/s for grouping, as an UPPERCASE string element or list}
+\item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error

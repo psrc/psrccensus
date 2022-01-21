@@ -24,7 +24,7 @@ psrc_pums_summary(so, target_var, group_vars = NULL)
 
 \item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
-\item{group_var}{Factor variable/s for grouping, as an UPPERCASE string element or list}
+\item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error

@@ -104,7 +104,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
   if(nrow(recoder)>0){
     for (v in ftr_vars){
         setkeyv(dt, v)
-        dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_var to label if relevant/available
+        dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_vars to label if relevant/available
       }
   }
   dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]                                      # Ensure variables to summarize are numeric
@@ -128,7 +128,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
 #' @param stat_type Desired survey statistic
 #' @param target_var Numeric PUMS analysis variable, as an UPPERCASE string
-#' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
+#' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom rlang sym
@@ -171,7 +171,7 @@ psrc_pums_stat <- function(so, stat_type, target_var, group_vars){
 #'
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
 #' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
-#' @param group_var Factor variable/s for grouping, as an UPPERCASE string element or list
+#' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @name pums_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
