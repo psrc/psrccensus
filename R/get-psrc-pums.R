@@ -4,6 +4,48 @@ NULL
 
 `%not_in%` <- Negate(`%in%`)
 
+#' Fetch FTP
+#'
+#' Helper to the \code{\link{get_psrc_pums}} function
+#' @param zip_filepath
+#' @param target_files
+#' @return filtered input data.table with values "b" recoded to NA
+#'
+#' @import data.table
+fetch_zip <- function(zip_filepath, target_files){
+  temp <- tempfile()
+  download.file(zip_filepath, temp)
+  macguffin <- fread(unzip(temp, files=target_files, exdir=getwd()),sep=",", stringsAsFactors=FALSE)
+  unlink(temp)
+  rm(temp)
+  return(macguffin)
+}
+
+#' PUMS API go-fer
+#'
+#' Call the Census Bureau Microdata API
+#' Helper to the \code{\link{get_psrc_pums}} function
+#' @inheritParams get_psrc_pums
+#' @return data.table with all requested variables,
+#' sample & replication weights, and if needed, inflation adjustments
+#'
+#' @import data.table
+pums_api_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
+  varlist <- if(dollar_adj==TRUE){
+    unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                             # Include adjustment variables
+  }else{vars}
+  vf         <- list(TYPE=1, SPORDER=1)
+  tbl_ref    <- if(level=="p"){"person"}else{"housing"}
+  dt <- tidycensus::get_pums(variables=varlist,                                                    # Include inflation adjustment fields
+                             state="WA",
+                             puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
+                             year=dyear, survey=paste0("acs", span),
+                             variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
+                             recode=FALSE,
+                             rep_weights=tbl_ref) %>% setDT()                                      # Replication weights for the appropriate table
+  return(dt)
+}
+
 #' NA recode for PUMS
 #'
 #' Helper to the \code{\link{get_psrc_pums}} function
@@ -78,21 +120,18 @@ add_county <- function(dt){
 #' @export
 get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
   varlist <- if(dollar_adj==TRUE){
-    unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                 # Include adjustment variables
+    unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                             # Include adjustment variables
   }else{vars}
   vf         <- list(TYPE=1, SPORDER=1)
   tbl_ref    <- if(level=="p"){"person"}else{"housing"}
   rwgt_ref   <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
   unit_var   <- if(tbl_ref=="person"){"SPORDER"}else{"SERIALNO"}
-  key_var    <- c("SERIALNO", unit_var) %>% unique()
-  dt <- tidycensus::get_pums(variables=varlist,                                                    # Include inflation adjustment fields
-                             state="WA",
-                             puma = c(11501:11520,11601:11630,11701:11720,11801:11810),            # Generous list, i.e. isn't limited to existing PUMAs
-                             year=dyear, survey=paste0("acs", span),
-                             variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
-                             recode=FALSE,
-                             rep_weights=tbl_ref) %>% setDT() %>%                                  # Replication weights for the appropriate table
-    pums_recode_na() %>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
+  if(dyear>=2017){                                                                                 # API only features 2017+ data
+    dt <- pums_api_gofer(span, dyear, level, vars, dollar_adj=TRUE)
+  }else if(dyear >= 1996 & x <= 2016){
+    dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj=TRUE)
+  }else{ dt <- NULL}                                                                               # Should use error handling if dataset doesn't exist
+  dt %<>% pums_recode_na() %>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
   if(dollar_adj==TRUE){dt%<>% adjust_dollars()}                                                    # Apply standard inflation adjustment
   recoder <-  tidycensus::pums_variables %>% setDT() %>%
@@ -197,7 +236,7 @@ psrc_pums_sum <- function(so, target_var, group_vars=NULL){
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
-#' libary(magrittr)
+#' library(magrittr)
 #' get_psrc_pums(1, 2019, "h", "HINCP", "TEN") %>% psrc_pums_median("HINCP", "TEN")
 #'
 #' @export
