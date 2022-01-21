@@ -35,6 +35,7 @@ Separate function for total, count, median, mean
 \examples{
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
+library(magrittr)
 get_psrc_pums(1, 2019, "h", "HINCP", "TEN") \%>\% psrc_pums_median("HINCP", "TEN")
 
 }
