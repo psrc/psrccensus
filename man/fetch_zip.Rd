@@ -2,13 +2,18 @@
 % Please edit documentation in R/get-psrc-pums.R
 \name{fetch_zip}
 \alias{fetch_zip}
-\title{Fetch FTP}
+\title{Fetch ZIP}
 \usage{
-fetch_zip(zip_filepath, target_files)
+fetch_zip(zip_filepath, target_files, dyear)
+}
+\arguments{
+\item{zip_filepath}{ftp URL location}
+
+\item{target_files}{.zip archive file to read}
 }
 \value{
-filtered input data.table with values "b" recoded to NA
+unzipped table
 }
 \description{
-Helper to the \code{\link{get_psrc_pums}} function
+Helper to the \code{\link{pums_ftp_gofer}} function
 }

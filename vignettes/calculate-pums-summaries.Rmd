@@ -59,18 +59,18 @@ The arguments for each function are identical:
 
 Since PUMS records are sampled rather than comprising a full census, **psrccensus** applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error for each estimate in a separately labeled '_moe' column. 
 
-To calculate the regional median age for 2019, for example, you would use the following function call:
+As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
 ```{r median, message=FALSE, eval=FALSE}
-get_psrc_pums(span = 5,                               # Denoting ACS 5-year estimates; 1-year also available
-              dyear = 2019,                           # Last data year of span
-              level = "p",                            # Unit of analysis == person; "h" used for household
-              vars = "HINCP") %>%                     # PUMS variable name for household income
-  psrc_pums_median(target_var = "HINCP")              # Only 2nd argument is necessary (chaining)
+ni<- get_psrc_pums(span = 5,                          # Denoting ACS 5-year estimates; 1-year also available
+                   dyear = 2019,                      # Last data year of span
+                   level = "h",                       # Unit of analysis == person; "h" used for household
+                   vars = c("HINCP","TEN"),           # PUMS household income & housing tenure variables; using tenure later
+                   ftp = TRUE)                        # ftp option avoids Census API downtime
+psrc_pums_median(ni, target_var = "HINCP")            # Median Household income (without regard to tenure)
 ```
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument. As is typical, function argument names can be omitted if arguments are provided in strict order.
 ```{r  median by category, message=FALSE, eval=FALSE}
-ni <- get_psrc_pums(5, 2019, "h", c("HINCP","TEN"))   # PUMS household income & housing tenure variables
 psrc_pums_median(ni, "HINCP", "TEN")                  # Median household income grouped by tenure
 ```
 

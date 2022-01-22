@@ -4,28 +4,107 @@ NULL
 
 `%not_in%` <- Negate(`%in%`)
 
-#' Fetch FTP
+#' NA recode for PUMS
 #'
 #' Helper to the \code{\link{get_psrc_pums}} function
-#' @param zip_filepath
-#' @param target_files
+#' @param dt data.table with Census Bureau "N/A" code--"b" or "bbb..."
 #' @return filtered input data.table with values "b" recoded to NA
 #'
 #' @import data.table
-fetch_zip <- function(zip_filepath, target_files){
+pums_recode_na <- function(dt){
+  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.$|^N.A.//$|^$",dt[[col]]), j=col, value=NA)
+  return(dt)
+}
+
+#' Fetch ZIP
+#'
+#' Helper to the \code{\link{pums_ftp_gofer}} function
+#' @param zip_filepath ftp URL location
+#' @param target_files .zip archive file to read
+#' @param dyear The data year
+#' @return unzipped table
+fetch_zip <- function(zip_filepath, target_files, dyear){
+  ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
+  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
+    .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
+  chr_types <- copy(type_lookup) %>% .[data_type=="chr", var_code] %>% paste()
+  num_types <- copy(type_lookup) %>% .[data_type=="num", var_code] %>% paste()
+  col_typelist <- list(character = chr_types, numeric = num_types)
   temp <- tempfile()
   download.file(zip_filepath, temp)
-  macguffin <- fread(unzip(temp, files=target_files, exdir=getwd()),sep=",", stringsAsFactors=FALSE)
+  dt <- data.table::fread(unzip(temp, files=target_files, exdir=getwd()), sep=",", stringsAsFactors=FALSE, colClasses=col_typelist)
   unlink(temp)
   rm(temp)
-  return(macguffin)
+  return(dt)
+}
+
+#' Fetch FTP
+#'
+#' Helper to the \code{\link{pums_ftp_gofer}} function
+#' This is used on both the person and household table to prep them for join
+#' @param span Either 1 for acs1 or 5 for acs5
+#' @param dyear The data year
+#' @param level Either "p" or "h", for "persons" or "households" respectively
+#' @return data.table
+#'
+#' @import data.table
+fetch_ftp <- function(span, dyear, level){
+  url <- paste0("https://www2.census.gov/programs-surveys/acs/data/pums/", as.character(dyear),
+                    "/", as.character(span), "-Year/csv_", level, "wa.zip")
+  if(!httr::http_error(url)){                                                                      # First verify the target file exists
+    pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # PUMA boundary version correlates to last diennial census
+    dt <- fetch_zip(url,c(dplyr::case_when(dyear>2016 ~paste0("psam_", level, "53.csv"),           # Two filename patterns depending on year
+                          dyear<2017 ~paste0("ss", dyear%%100, level, "wa.csv"))), dyear) %>%
+      setDT()
+    dt %<>% pums_recode_na() %>%
+      .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=F] %>%                         # Drop columns composed completely of N/A values
+      setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                          # Single PUMA column name
+      .[(as.numeric(PUMA) %/% 100) %in% c(115,116,117,118),] %>%                                   # Filter to PSRC region
+      .[,grep("^PUMA\\d\\d", colnames(.)):=NULL] %>%                                               # Where multiple PUMA fields reported, use latest
+      .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                   # Drop variables static to our region
+    setkey(SERIALNO)
+    return(dt)
+  }else{return(NULL)}
+}
+
+#' PUMS ftp go-fer
+#'
+#' Download & filter data from the Census Bureau Microdata ftp server
+#' Helper to the \code{\link{get_psrc_pums}} function
+#' @inheritParams fetch_ftp
+#' @param vars PUMS variable/s as an UPPERCASE string element or list
+#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
+#' @return data.table with all requested variables,
+#' sample & replication weights, and if needed, inflation adjustments
+#'
+#' @import data.table
+pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
+  pwgt <- if(level=="p"){"PWGTP"}else{"WGTP"}
+  rwgt <- paste0(pwgt, 1:80)                                                                       # Create replication weight names
+  adjvars <- if(dollar_adj==TRUE){c("ADJINC","ADJHSG")}else{NULL}
+  unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
+  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, data_type)] %>%
+    unique()
+  varlist <- c(unlist(unit_key),"PUMA", unlist(vars), pwgt, rwgt, adjvars) %>% unique()            # Columns to keep
+  dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                            # Download housing table
+  dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% .[, c("PUMA","ADJINC"):=NULL]          # Download person table; remove duplicate columns
+  if(level=="h"){                                                                                  # For household analysis:
+    dt_h[TYPE==1 & is.na(VACS)]                                                                    #    filter out GQ or vacant units &
+    dt_p[SPORDER==1]                                                                               #    keep only householder person attributes
+  }else if(level=="p"){
+    dt_p[!is.na(SPORDER)]                                                                          # For population analysis, keep only individuals
+  }
+  dt <- merge(dt_h, dt_p, by="SERIALNO", all=TRUE) %>%                                             # Combine
+    .[, colnames(.) %in% varlist, with=FALSE]                                                      # Keep only specified columns
+  dt[, (unit_key):=lapply(.SD, as.character), .SDcols=unit_key]                                    # Confirm datatype for keys (fread may return int for early years)
+  return(dt)
 }
 
 #' PUMS API go-fer
 #'
 #' Call the Census Bureau Microdata API
 #' Helper to the \code{\link{get_psrc_pums}} function
-#' @inheritParams get_psrc_pums
+#' @inheritParams pums_ftp_gofer
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
 #'
@@ -42,19 +121,8 @@ pums_api_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
                              year=dyear, survey=paste0("acs", span),
                              variables_filter=if(tbl_ref=="housing"){vf}else{NULL},                # Household variables filter for occupied housing, not GQ or vacant
                              recode=FALSE,
-                             rep_weights=tbl_ref) %>% setDT()                                      # Replication weights for the appropriate table
-  return(dt)
-}
-
-#' NA recode for PUMS
-#'
-#' Helper to the \code{\link{get_psrc_pums}} function
-#' @param dt data.table with Census Bureau "N/A" code--"b" or "bbb..."
-#' @return filtered input data.table with values "b" recoded to NA
-#'
-#' @import data.table
-pums_recode_na <- function(dt){
-  for(col in colnames(dt)) set(dt, i=grep("^b+$",dt[[col]]), j=col, value=NA)
+                             rep_weights=tbl_ref) %>%                                              # Replication weights for the appropriate table
+    setDT() %>% pums_recode_na()
   return(dt)
 }
 
@@ -102,11 +170,8 @@ add_county <- function(dt){
 #' Retrieve and assemble PUMS data
 #'
 #' The primary PUMS function
-#' @param span Either 1 for acs1 or 5 for acs5
-#' @param dyear The data year
-#' @param level Either "p" or "h", for "persons" or "households" respectively
-#' @param vars PUMS variable/s as an UPPERCASE string element or list
-#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
+#' @inheritParams pums_ftp_gofer
+#' @param ftp Default FALSE; option to specify ftp. Only relevant for API years i.e. dyear>=2017; ftp is only source for earlier years
 #' @return A srvyr object with appropriate sampling weight and replication weights
 #'
 #' @importFrom tidyselect all_of
@@ -118,20 +183,19 @@ add_county <- function(dt){
 #' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
 #'
 #' @export
-get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
+get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=FALSE){
   varlist <- if(dollar_adj==TRUE){
     unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                             # Include adjustment variables
   }else{vars}
   vf         <- list(TYPE=1, SPORDER=1)
-  tbl_ref    <- if(level=="p"){"person"}else{"housing"}
-  rwgt_ref   <- if(tbl_ref=="person"){"PWGTP"}else{"WGTP"}
-  unit_var   <- if(tbl_ref=="person"){"SPORDER"}else{"SERIALNO"}
-  if(dyear>=2017){                                                                                 # API only features 2017+ data
-    dt <- pums_api_gofer(span, dyear, level, vars, dollar_adj=TRUE)
-  }else if(dyear >= 1996 & x <= 2016){
+  rwgt_ref   <- if(level=="p"){"PWGTP"}else{"WGTP"}
+  unit_var   <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
+  if(dyear >= 1996 & dyear <= 2016 || ftp==TRUE){
     dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj=TRUE)
+  }else if(dyear>=2017){                                                                           # API only features 2017+ data
+    dt <- pums_api_gofer(span, dyear, level, vars, dollar_adj=TRUE)
   }else{ dt <- NULL}                                                                               # Should use error handling if dataset doesn't exist
-  dt %<>% pums_recode_na() %>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
+  dt %<>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
   if(dollar_adj==TRUE){dt%<>% adjust_dollars()}                                                    # Apply standard inflation adjustment
   recoder <-  tidycensus::pums_variables %>% setDT() %>%
@@ -143,12 +207,12 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
   if(nrow(recoder)>0){
     for (v in ftr_vars){
         setkeyv(dt, v)
-        dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_vars to label if relevant/available
+       dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_vars to label if relevant/available
       }
   }
-  dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]                                      # Ensure variables to summarize are numeric
-  dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                       # Ensure grouping variables are factors (required by srvyr)
-  varlist <- c(unit_var, "COUNTY", unlist(vars)) %>% unique()
+  if(length(num_vars)>0){dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}              # Ensure variables to summarize are numeric
+  if(length(ftr_vars)>0){dt[, (ftr_vars):=lapply(.SD, as.factor),  .SDcols=ftr_vars]}              # Ensure grouping variables are factors (required by srvyr)
+  varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
                          weights=all_of(rwgt_ref),
@@ -164,10 +228,8 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE){
 #' Generic call for PUMS summary statistics
 #'
 #' Given specific form by related \code{\link{pums_stat}} functions.
-#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
+#' @inheritParams pums_stat
 #' @param stat_type Desired survey statistic
-#' @param target_var Numeric PUMS analysis variable, as an UPPERCASE string
-#' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom rlang sym
@@ -237,7 +299,8 @@ psrc_pums_sum <- function(so, target_var, group_vars=NULL){
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
 #' library(magrittr)
-#' get_psrc_pums(1, 2019, "h", c("HINCP", "TEN")) %>% psrc_pums_median("HINCP", "TEN")
+#' so <- get_psrc_pums(1, 2019, "h", c("HINCP", "TEN"), ftp=TRUE)
+#' rs <- psrc_pums_median(so, "HINCP", "TEN")
 #'
 #' @export
 psrc_pums_median <- function(so, target_var, group_vars=NULL){

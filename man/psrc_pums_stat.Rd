@@ -11,7 +11,7 @@ psrc_pums_stat(so, stat_type, target_var, group_vars)
 
 \item{stat_type}{Desired survey statistic}
 
-\item{target_var}{Numeric PUMS analysis variable, as an UPPERCASE string}
+\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
 \item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 }

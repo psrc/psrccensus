@@ -34,7 +34,8 @@ Imports:
     data.table,
     survey,
     srvyr,
-    tidyselect
+    tidyselect,
+    httr
 Suggests: 
     rmarkdown,
     knitr,

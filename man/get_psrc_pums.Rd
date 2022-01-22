@@ -4,7 +4,7 @@
 \alias{get_psrc_pums}
 \title{Retrieve and assemble PUMS data}
 \usage{
-get_psrc_pums(span, dyear, level, vars, dollar_adj = TRUE)
+get_psrc_pums(span, dyear, level, vars, dollar_adj = TRUE, ftp = FALSE)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -16,6 +16,8 @@ get_psrc_pums(span, dyear, level, vars, dollar_adj = TRUE)
 \item{vars}{PUMS variable/s as an UPPERCASE string element or list}
 
 \item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
+
+\item{ftp}{Default FALSE; option to specify ftp. Only relevant for API years i.e. dyear>=2017; ftp is only source for earlier years}
 }
 \value{
 A srvyr object with appropriate sampling weight and replication weights
