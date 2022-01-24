@@ -36,7 +36,7 @@ Separate function for total, count, median, mean
 \dontrun{
 Sys.getenv("CENSUS_API_KEY")}
 library(magrittr)
-so <- get_psrc_pums(1, 2019, "h", c("HINCP", "TEN"))
+so <- get_psrc_pums(1, 2019, "h", c("HINCP", "TEN"), ftp=TRUE)
 rs <- psrc_pums_median(so, "HINCP", "TEN")
 
 }

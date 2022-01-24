@@ -40,8 +40,7 @@
 
 
 <meta property="og:title" content="Generic call for PUMS summary statistics — psrc_pums_stat" />
-<meta property="og:description" content="Given specific form by related regional_pums_stat and county_pums_stat functions.
-Fed from get_psrc_pums" />
+<meta property="og:description" content="Given specific form by related pums_stat functions." />
 
 
 
@@ -128,59 +127,35 @@ Fed from get_psrc_pums" />
     </div>
 
     <div class="ref-description">
-    <p>Given specific form by related <code><a href='regional_pums_stat.html'>regional_pums_stat</a></code> and <code><a href='county_pums_stat.html'>county_pums_stat</a></code> functions.
-Fed from <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code></p>
+    <p>Given specific form by related <code><a href='pums_stat.html'>pums_stat</a></code> functions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>psrc_pums_stat</span><span class='op'>(</span>
-  <span class='va'>stat_type</span>,
-  <span class='va'>geo_scale</span>,
-  <span class='va'>span</span>,
-  <span class='va'>dyear</span>,
-  <span class='va'>target_var</span>,
-  <span class='va'>group_var</span>,
-  <span class='va'>bin_defs</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>psrc_pums_stat</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>stat_type</span>, <span class='va'>target_var</span>, <span class='va'>group_vars</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>so</th>
+      <td><p>The srvyr object returned by <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code></p></td>
+    </tr>
+    <tr>
       <th>stat_type</th>
       <td><p>Desired survey statistic</p></td>
-    </tr>
-    <tr>
-      <th>geo_scale</th>
-      <td><p>Either "county" or "region"</p></td>
-    </tr>
-    <tr>
-      <th>span</th>
-      <td><p>Either 1 for acs1 or 5 for acs5</p></td>
-    </tr>
-    <tr>
-      <th>dyear</th>
-      <td><p>The data year</p></td>
     </tr>
     <tr>
       <th>target_var</th>
       <td><p>The exact PUMS target variable intended, as a string in UPPERCASE</p></td>
     </tr>
     <tr>
-      <th>group_var</th>
-      <td><p>The exact PUMS variable intended for grouping, as a string in UPPERCASE</p></td>
-    </tr>
-    <tr>
-      <th>bin_defs</th>
-      <td><p>Optional argument: if a single number, used as Ntile; if a list, used as custom bin breakpoints</p></td>
+      <th>group_vars</th>
+      <td><p>Factor variable/s for grouping, as an UPPERCASE string element or list</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A table with the variable names, desired statistic, and margin of error</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
-
-    <p>Michael Jensen</p>
+    <p>A summary tibble, including variable names, summary statistic and margin of error</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
