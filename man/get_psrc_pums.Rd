@@ -4,7 +4,7 @@
 \alias{get_psrc_pums}
 \title{Retrieve and assemble PUMS data}
 \usage{
-get_psrc_pums(span, dyear, level, vars, dollar_adj = TRUE, ftp = FALSE)
+get_psrc_pums(span, dyear, level, vars, dollar_adj = TRUE, ftp = TRUE)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}

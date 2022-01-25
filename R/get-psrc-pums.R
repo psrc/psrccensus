@@ -199,7 +199,7 @@ add_county <- function(dt){
 #' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
 #'
 #' @export
-get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=FALSE){
+get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=TRUE){
   varlist <- if(dollar_adj==TRUE){
     unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                             # Include adjustment variables
   }else{vars}
