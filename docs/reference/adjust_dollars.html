@@ -40,8 +40,9 @@
 
 
 <meta property="og:title" content="Dollar variable adjustment for PUMS — adjust_dollars" />
-<meta property="og:description" content="Helper to psrc_pums_groupvar and psrc_pums_targetvar functions.
-Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the adjust_inflation function." />
+<meta property="og:description" content="Helper to get_psrc_pums function.
+Applies the Census Bureau-specified inflation adjustment to dollar values. See vignette for brief discussion.
+Option to bypass this inflation adjustment exists, in order to match estimates generated without it." />
 
 
 
@@ -128,11 +129,12 @@ Matches the corresponding adjustment factor with the appropriate PUMS variable a
     </div>
 
     <div class="ref-description">
-    <p>Helper to <code><a href='psrc_pums_groupvar.html'>psrc_pums_groupvar</a></code> and <code><a href='psrc_pums_targetvar.html'>psrc_pums_targetvar</a></code> functions.
-Matches the corresponding adjustment factor with the appropriate PUMS variable and applies the <code><a href='adjust_inflation.html'>adjust_inflation</a></code> function.</p>
+    <p>Helper to <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code> function.
+Applies the Census Bureau-specified inflation adjustment to dollar values. See vignette for brief discussion.
+Option to bypass this inflation adjustment exists, in order to match estimates generated without it.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>adjust_dollars</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>dollar_var</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>adjust_dollars</span><span class='op'>(</span><span class='va'>dt</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,18 +143,11 @@ Matches the corresponding adjustment factor with the appropriate PUMS variable a
       <th>dt</th>
       <td><p>The data.table</p></td>
     </tr>
-    <tr>
-      <th>dollar_var</th>
-      <td><p>PUMS variable to adjust</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>full input data.table with all dollar values adjusted</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
-
-    <p>Michael Jensen</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
