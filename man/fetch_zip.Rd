@@ -10,6 +10,8 @@ fetch_zip(zip_filepath, target_files, dyear)
 \item{zip_filepath}{ftp URL location}
 
 \item{target_files}{.zip archive file to read}
+
+\item{dyear}{The data year}
 }
 \value{
 unzipped table

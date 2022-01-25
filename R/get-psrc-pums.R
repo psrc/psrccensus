@@ -4,6 +4,8 @@ NULL
 
 `%not_in%` <- Negate(`%in%`)
 
+stuff <- function(x){unique(x) %>% paste(collapse=",")}
+
 #' NA recode for PUMS
 #'
 #' Helper to the \code{\link{get_psrc_pums}} function
@@ -88,14 +90,25 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
   varlist <- c(unlist(unit_key),"PUMA", unlist(vars), pwgt, rwgt, adjvars) %>% unique()            # Columns to keep
   dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                            # Download housing table
   dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% .[, c("PUMA","ADJINC"):=NULL]          # Download person table; remove duplicate columns
-  if(level=="h"){                                                                                  # For household analysis:
-    dt_h[TYPE==1 & is.na(VACS)]                                                                    #    filter out GQ or vacant units &
-    dt_p[SPORDER==1]                                                                               #    keep only householder person attributes
-  }else if(level=="p"){
-    dt_p[!is.na(SPORDER)]                                                                          # For population analysis, keep only individuals
+  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, RAC1P, HISP)] %>%
+    .[,`:=`(RACETH=RAC1P, HISPYN=fcase(HISP=="01", "N", default="Y"))]
+  tmp_p[RAC1P %in% c("3","4","5"), RACETH:="10"]                                                   # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
+  hh_me <- tmp_p[, .(RACETH=stuff(RACETH), HISPYN=stuff(HISPYN)), by=.(SERIALNO)]                  # Summarize households by race/ethnic composition
+  hh_me[(RACETH %like% ","|HISPYN %like% ","), RACETH:="11"]                                       #     Add multiracial
+  hh_me[(HISPYN==1), RACETH:="12"]                                                                 #     Add all-Hispanic
+  dt_h %<>% .[hh_me, RACETH:=i.RACETH, on=.(SERIALNO)]
+  if(dollar_adj==TRUE){
+    dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]            # Adjustment factors in ftp version without decimal
   }
-  dt <- merge(dt_h, dt_p, by="SERIALNO", all=TRUE) %>%                                             # Combine
-    .[, colnames(.) %in% varlist, with=FALSE]                                                      # Keep only specified columns
+##  dt_h %<>% .[, HINCBIN:=fcase()]                                                                  # PSRC household income categories NYD
+  if(level=="h"){                                                                                  # For household analysis:                                                               #    filter out GQ or vacant units &
+    dt_p[SPORDER==1]                                                                               #    keep only householder person attributes
+    dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]
+
+  }else if(level=="p"){                                                                            # For population analysis, keep only individuals
+    dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
+  }
+  dt %<>% .[, colnames(.) %in% varlist, with=FALSE]                                                # Keep only specified columns
   dt[, (unit_key):=lapply(.SD, as.character), .SDcols=unit_key]                                    # Confirm datatype for keys (fread may return int for early years)
   return(dt)
 }
@@ -138,12 +151,12 @@ pums_api_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
 adjust_dollars <- function(dt){
   dt[, c("ADJINC","ADJHSG"):=lapply(.SD, as.numeric), .SDcols=c("ADJINC","ADJHSG")]                # Why they arrive as strings, I have no idea
   income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(dt), value=TRUE)
-  cost_cols <- grep("CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(dt), value=TRUE)
+  cost_cols <- grep("^CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(dt), value=TRUE)
   if(length(income_cols)>0){
-    dt[, (income_cols):=lapply(.SD, function(x) x * ADJINC), .SDcols=income_cols]                  # Adjust income variables
+    dt[, (income_cols):=lapply(.SD, function(x) {as.numeric(x) * ADJINC}), .SDcols=income_cols]    # Adjust income variables
   }
   if(length(cost_cols)>0){
-    .[, (cost_cols):=lapply(.SD, function(x) x * ADJHSG), .SDcols=cost_cols]                       # Adjust cost variables
+    dt[, (cost_cols):=lapply(.SD, function(x) {as.numeric(x) * ADJHSG}), .SDcols=cost_cols]        # Adjust cost variables
   }
   dt[, grep("^ADJINC$|^ADJHSG$", colnames(dt)):=NULL]                                              # Drop inflation adjustment variables
   return(dt)
@@ -163,7 +176,8 @@ add_county <- function(dt){
                               COUNTY=as.factor(c("Pierce","King","Snohomish","Kitsap"))) %>%
     setDT() %>% setkey(PUMA3)
   dt %<>% .[, PUMA3:=(as.integer(PUMA) %/% 100)] %>%
-    .[county_lookup, COUNTY:=COUNTY, on=.(PUMA3=PUMA3)]
+    .[county_lookup, COUNTY:=COUNTY, on=.(PUMA3=PUMA3)] %>%
+    .[, PUMA3:=NULL]
   return(dt)
 }
 
@@ -197,21 +211,30 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=FALSE){
   }else{ dt <- NULL}                                                                               # Should use error handling if dataset doesn't exist
   dt %<>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
   rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
-  if(dollar_adj==TRUE){dt%<>% adjust_dollars()}                                                    # Apply standard inflation adjustment
+  if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
   recoder <-  tidycensus::pums_variables %>% setDT() %>%
-    .[var_code %in% vars & recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
+    .[recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
     unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
-  ftr_vars <- recoder$var_code %>% unique()
-  nonnum_vars <- ftr_vars %>% unlist() %>% c(unit_var)
-  num_vars <- vars[vars %not_in% nonnum_vars]
+  tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
+    .[, var_code:="RACETH"]
+  raceth <- rbindlist(list(tmp1,
+                           list("RACETH", "10", "American Indian or Alaskan Native Alone"),        # PSRC multiethnic categories, based on RAC1P and HISP
+                           list("RACETH", "11", "Multiple Races"),
+                           list("RACETH", "12", "Hispanic or Latino (regardless of race)")))
+  recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")      # Add to label lookup; filter variables
+  recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
-    for (v in ftr_vars){
+    for (v in recode_vars){
         setkeyv(dt, v)
-       dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                      # Convert group_vars to label if relevant/available
-      }
+       dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                       # Convert group_vars to label if relevant/available
+    }
   }
-  if(length(num_vars)>0){dt[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}              # Ensure variables to summarize are numeric
-  if(length(ftr_vars)>0){dt[, (ftr_vars):=lapply(.SD, as.factor),  .SDcols=ftr_vars]}              # Ensure grouping variables are factors (required by srvyr)
+  ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
+    .[. %not_in% c("SERIALNO","PUMA")]
+  if(length(ftr_vars)>0){
+    dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols = ftr_vars]                                   # Ensure grouping variables are factors (required by srvyr)
+    dt[, (ftr_vars):=lapply(.SD, addNA), .SDcols = ftr_vars]
+    }
   varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
