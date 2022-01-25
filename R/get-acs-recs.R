@@ -142,8 +142,8 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #'
 #' @return a tibble of acs estimates by Place for selected table codes and years. Includes detailed variable names.
 #'
-#'@importFrom magrittr %>%
-#'@importFrom rlang .data
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @keywords internal
 
 get_acs_place <- function (state="Washington", table.names, years, acs.type) {
