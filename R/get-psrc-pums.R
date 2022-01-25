@@ -61,7 +61,7 @@ fetch_ftp <- function(span, dyear, level){
     dt %<>% pums_recode_na() %>%
       .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=F] %>%                         # Drop columns composed completely of N/A values
       setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                          # Single PUMA column name
-      .[(as.numeric(PUMA) %/% 100) %in% c(115,116,117,118),] %>%                                   # Filter to PSRC region
+      .[(as.numeric(PUMA) %/% 100) %in% c(115:118),] %>%                                           # Filter to PSRC region
       .[,grep("^PUMA\\d\\d", colnames(.)):=NULL] %>%                                               # Where multiple PUMA fields reported, use latest
       .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                   # Drop variables static to our region
     setkey(SERIALNO)
@@ -88,21 +88,23 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
   type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, data_type)] %>%
     unique()
   varlist <- c(unlist(unit_key),"PUMA", unlist(vars), pwgt, rwgt, adjvars) %>% unique()            # Columns to keep
-  dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                            # Download housing table
-  dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% .[, c("PUMA","ADJINC"):=NULL]          # Download person table; remove duplicate columns
-  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, RAC1P, HISP)] %>%
-    .[,`:=`(RACETH=RAC1P, HISPYN=fcase(HISP=="01", "N", default="Y"))]
-  tmp_p[RAC1P %in% c("3","4","5"), RACETH:="10"]                                                   # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
-  hh_me <- tmp_p[, .(RACETH=stuff(RACETH), HISPYN=stuff(HISPYN)), by=.(SERIALNO)]                  # Summarize households by race/ethnic composition
-  hh_me[(RACETH %like% ","|HISPYN %like% ","), RACETH:="11"]                                       #     Add multiracial
-  hh_me[(HISPYN==1), RACETH:="12"]                                                                 #     Add all-Hispanic
-  dt_h %<>% .[hh_me, RACETH:=i.RACETH, on=.(SERIALNO)]
+  dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setkeyv("SERIALNO")                    # Download housing table
+  dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setkeyv("SERIALNO") %>%                # Download person table
+    .[, c("PUMA","ADJINC"):=NULL]                                                                  # Remove duplicate columns
+   tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, RAC1P, HISP)] %>%
+     .[,`:=`(RACETH=RAC1P, HISPYN=fcase(HISP=="01", "N", default="Y"))]
+   tmp_p[RAC1P %in% c("3","4","5"), RACETH:="10"]                                                  # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
+   hh_me <- tmp_p[, .(RACETH=stuff(RACETH), HISPYN=stuff(HISPYN)), by=.(SERIALNO)] %>%             # Summarize households by race/ethnic composition
+     setkey("SERIALNO")
+   hh_me[(RACETH %like% ","|HISPYN %like% ","), RACETH:="11"]                                      #     Add multiracial
+   hh_me[(HISPYN %like% ","), HISPYN:="B"]                                                         #     Add all-Hispanic
+   dt_h %<>% merge(hh_me, by="SERIALNO", all.x=TRUE)
   if(dollar_adj==TRUE){
     dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]            # Adjustment factors in ftp version without decimal
   }
 ##  dt_h %<>% .[, HINCBIN:=fcase()]                                                                  # PSRC household income categories NYD
   if(level=="h"){                                                                                  # For household analysis:                                                               #    filter out GQ or vacant units &
-    dt_p[SPORDER==1]                                                                               #    keep only householder person attributes
+    dt_p %<>% .[SPORDER=="1"]                                                                      #    keep only householder person attributes
     dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]
 
   }else if(level=="p"){                                                                            # For population analysis, keep only individuals
@@ -220,7 +222,9 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=FALSE){
   raceth <- rbindlist(list(tmp1,
                            list("RACETH", "10", "American Indian or Alaskan Native Alone"),        # PSRC multiethnic categories, based on RAC1P and HISP
                            list("RACETH", "11", "Multiple Races"),
-                           list("RACETH", "12", "Hispanic or Latino (regardless of race)")))
+                           list("HISPYN", "Y", "Hispanic or Latino"),
+                           list("HISPYN", "N", "Not Hispanic or Latino"),
+                           list("HISPYN", "B", "Some Hispanic or Latino")))
   recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")      # Add to label lookup; filter variables
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
@@ -244,7 +248,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=FALSE){
                          mse=TRUE,
                          type="other",
                          scale=4/80,
-                         rscale=rep(1:length(all_of(rw))))
+                         rscale=rep(1:80))
   return(dt)
 }
 
