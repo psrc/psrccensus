@@ -8,6 +8,7 @@
 #' @author Suzanne Childress
 #'
 #' @return a tibble of grouped ACS or Census estimates
+#' @importFrom utils read.csv
 #' @examples
 #' \dontrun{
 #' Sys.getenv("CENSUS_API_KEY")}
@@ -25,21 +26,22 @@ group_recs <- function(tbl, this_group_name){
 
   this_variable_grouping<- variables_groupings%>%dplyr::filter(.data$group_name==!!this_group_name)
 
-  tbl_w_cats<-dplyr::left_join(tbl, this_variable_grouping, by ='variable')
+  tbl_w_cats<-dplyr::left_join(tbl, this_variable_grouping, by ='variable') %>%
+    tidyr::drop_na(.data$grouping)
 
   #the column names between acs and census are slightly different
   # for acs:
   if("estimate" %in% colnames(tbl_w_cats)){
     tbl_grouped <- tbl_w_cats%>%
-      dplyr::group_by(dplyr::across(c(name, grouping, group_name )))%>%
-      dplyr::summarise(estimate=sum(estimate),
-                       moe=tidycensus::moe_sum(moe,estimate, na.rm=TRUE))
+      dplyr::group_by(dplyr::across(c(.data$name, .data$grouping, .data$group_name )))%>%
+      dplyr::summarise(estimate=sum(.data$estimate),
+                       moe=tidycensus::moe_sum(.data$moe,.data$estimate, na.rm=TRUE))
   }
   # for census:
   else{
     tbl_grouped <- tbl_w_cats%>%
-      dplyr::group_by(dplyr::across(-c(value,label, variable )))%>%
-      dplyr::summarise(value=sum(value))
+      dplyr::group_by(dplyr::across(-c(.data$value,.data$label, .data$variable )))%>%
+      dplyr::summarise(value=sum(.data$value))
 
   }
   tbl_grouped
