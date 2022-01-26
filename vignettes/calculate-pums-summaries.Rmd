@@ -91,6 +91,6 @@ psrc_pums_summary(x, "HINCP", "TEN")
 
 All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
 
-PUMS data is available for years 1996-present; get_psrc_pums() must be called separately for each data year. Note, some variables have changed name or datatype over time: consult the data directories mentioned above to verify the variable code for the data years pertinent to your analysis. 
+PUMS data is available for years 2000-present; get_psrc_pums() must be called separately for each data year. Note, some variables have changed name or datatype over time: consult the data directories mentioned above to verify the variable code for the data years pertinent to your analysis. 
 
 The current default source is via ftp download (there is an API option, `ftp=FALSE`, but the API often returns an internal error, particularly between 2pm-7pm).
