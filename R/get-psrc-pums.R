@@ -27,14 +27,23 @@ pums_recode_na <- function(dt){
 #' @return unzipped table
 fetch_zip <- function(zip_filepath, target_files, dyear){
   ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
-  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
-    .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
-  chr_types <- copy(type_lookup) %>% .[data_type=="chr", var_code] %>% paste()
-  num_types <- copy(type_lookup) %>% .[data_type=="num", var_code] %>% paste()
-  col_typelist <- list(character = chr_types, numeric = num_types)
   temp <- tempfile()
   download.file(zip_filepath, temp)
-  dt <- data.table::fread(unzip(temp, files=target_files, exdir=getwd()), sep=",", stringsAsFactors=FALSE, colClasses=col_typelist)
+  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
+    .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
+  num_types <- copy(type_lookup) %>% .[data_type=="num", var_code] %>% paste()
+  if(dyear>2016){
+    chr_types <- copy(type_lookup) %>% .[data_type=="chr", var_code] %>% paste()
+  }else{
+    num_types %<>% stringr::str_replace("^PGWTP(\\d+)$","pwgtp\\1")
+    num_types %<>% stringr::str_replace("^WGTP(\\d+)$","wgtp\\1")
+    chr_types <- data.table::fread(unzip(temp, files=target_files, exdir=getwd()),
+                    sep=",", nrows=1, stringsAsFactors=FALSE) %>%
+      colnames(.) %>% .[. %not_in% num_types]
+  }
+  col_typelist <- list(character = chr_types, numeric = num_types)
+  dt <- data.table::fread(unzip(temp, files=target_files, exdir=getwd()),
+                          sep=",", stringsAsFactors=FALSE, colClasses=col_typelist)
   unlink(temp)
   rm(temp)
   return(dt)
@@ -53,10 +62,11 @@ fetch_zip <- function(zip_filepath, target_files, dyear){
 fetch_ftp <- function(span, dyear, level){
   url <- paste0("https://www2.census.gov/programs-surveys/acs/data/pums/", as.character(dyear),
                     "/", as.character(span), "-Year/csv_", level, "wa.zip")
+  csv_name <- dplyr::case_when(dyear>2016 ~paste0("psam_", level, "53.csv"),                       # Two filename patterns depending on year
+                   dyear<2017 ~paste0("ss", dyear%%100, level, "wa.csv"))
   if(!httr::http_error(url)){                                                                      # First verify the target file exists
     pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # PUMA boundary version correlates to last diennial census
-    dt <- fetch_zip(url,c(dplyr::case_when(dyear>2016 ~paste0("psam_", level, "53.csv"),           # Two filename patterns depending on year
-                          dyear<2017 ~paste0("ss", dyear%%100, level, "wa.csv"))), dyear) %>%
+    dt <- fetch_zip(url, csv_name, dyear) %>%
       setDT()
     dt %<>% pums_recode_na() %>%
       .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=F] %>%                         # Drop columns composed completely of N/A values
@@ -65,6 +75,7 @@ fetch_ftp <- function(span, dyear, level){
       .[,grep("^PUMA\\d\\d", colnames(.)):=NULL] %>%                                               # Where multiple PUMA fields reported, use latest
       .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                   # Drop variables static to our region
     setkey(SERIALNO)
+    file.remove(csv_name)
     return(dt)
   }else{return(NULL)}
 }
@@ -81,13 +92,13 @@ fetch_ftp <- function(span, dyear, level){
 #'
 #' @import data.table
 pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
-  pwgt <- if(level=="p"){"PWGTP"}else{"WGTP"}
-  rwgt <- paste0(pwgt, 1:80)                                                                       # Create replication weight names
+  swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
+  rwgt <- if(dyear>2016){paste0(swgt,1:80)}else{paste0(tolower(swgt),1:80)}                        # Specify replication weights
   adjvars <- if(dollar_adj==TRUE){c("ADJINC","ADJHSG")}else{NULL}
   unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, data_type)] %>%
     unique()
-  varlist <- c(unlist(unit_key),"PUMA", unlist(vars), pwgt, rwgt, adjvars) %>% unique()            # Columns to keep
+  varlist <- c(unlist(unit_key),"PUMA", unlist(vars), swgt, rwgt, adjvars) %>% unique()            # Columns to keep
   dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setkeyv("SERIALNO")                    # Download housing table
   dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setkeyv("SERIALNO") %>%                # Download person table
     .[, c("PUMA","ADJINC"):=NULL]                                                                  # Remove duplicate columns
@@ -203,8 +214,9 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=TRUE){
   varlist <- if(dollar_adj==TRUE){
     unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                             # Include adjustment variables
   }else{vars}
-  vf         <- list(TYPE=1, SPORDER=1)
-  rwgt_ref   <- if(level=="p"){"PWGTP"}else{"WGTP"}
+  vf   <- list(TYPE=1, SPORDER=1)
+  swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
+  rwgt <- if(dyear>2016){paste0(swgt,1:80)}else{paste0(tolower(swgt),1:80)}                        # Specify replication weights
   unit_var   <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(dyear >= 1996 & dyear <= 2016 || ftp==TRUE){
     dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj=TRUE)
@@ -212,7 +224,6 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=TRUE){
     dt <- pums_api_gofer(span, dyear, level, vars, dollar_adj=TRUE)
   }else{ dt <- NULL}                                                                               # Should use error handling if dataset doesn't exist
   dt %<>% add_county() %>% setcolorder(c(unit_var, "COUNTY"))
-  rw <- colnames(dt) %>% .[grep(paste0(rwgt_ref,"\\d+"),.)]                                        # Specify replication weights
   if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
   recoder <-  tidycensus::pums_variables %>% setDT() %>%
     .[recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
@@ -242,8 +253,8 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=TRUE){
   varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
-                         weights=all_of(rwgt_ref),
-                         repweights=all_of(rw),
+                         weights=all_of(swgt),
+                         repweights=all_of(rwgt),
                          combined_weights=TRUE,
                          mse=TRUE,
                          type="other",
