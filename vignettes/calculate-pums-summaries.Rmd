@@ -35,7 +35,11 @@ The first step consists of retrieving the data of interest via the **get_psrc_pu
   
 The PUMS data dictionary is captured in the object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes each separate data dictionary online, [2015-19 as an example](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.pdf).
 
-PUMS has two distinct units of analysis: persons ("persons" table), or households ("housing" table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) A person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). 
+PUMS has two distinct units of analysis: persons ("persons" table), or households ("housing" table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) You can choose any combination of PUMS variables, however; a person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). 
+
+In addition to variables listed in the Census PUMS data dictionary, you can also select the following custom PSRC variables: 
+  * **RACETH**: household-level race/ethnicity taking all household members into consideration
+  * **HISPYN**: household-level hispanic ethnicity taking all household members into consideration
 
 Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a 'baked-in' inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw--as they were reported--along with an average inflation adjustment factor. If you prefer your estimates exclude this adjustment, add the argument `dollar_adj = FALSE`.
 
@@ -61,35 +65,32 @@ Since PUMS records are sampled rather than comprising a full census, **psrccensu
 
 As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
 ```{r median, message=FALSE, eval=FALSE}
-ni<- get_psrc_pums(span = 5,                          # Denoting ACS 5-year estimates; 1-year also available
+x <- get_psrc_pums(span = 5,                          # Denoting ACS 5-year estimates; 1-year also available
                    dyear = 2019,                      # Last data year of span
                    level = "h",                       # Unit of analysis == person; "h" used for household
-                   vars = c("HINCP","TEN"),           # PUMS household income & housing tenure variables; using tenure later
-                   ftp = TRUE)                        # ftp option avoids Census API downtime
+                   vars = c("HINCP","TEN"))           # PUMS household income & housing tenure variables; using tenure later. You can choose as many variables as you need.
 psrc_pums_median(ni, target_var = "HINCP")            # Median Household income (without regard to tenure)
 ```
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument. As is typical, function argument names can be omitted if arguments are provided in strict order.
 ```{r  median by category, message=FALSE, eval=FALSE}
-psrc_pums_median(ni, "HINCP", "TEN")                  # Median household income grouped by tenure
+psrc_pums_median(x,                                   # the assigned result of get_psrc_pums()
+                 target_var = "HINCP",                # Summarizing household income . . .
+                 group_vars = "TEN")                  # . . . grouped by housing tenure
 ```
 
 The count function tabulates the number people or households by grouping category, depending on the level you specified in **get_psrc_pums**. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
 ```{r count by category, message=FALSE, eval=FALSE}
-psrc_pums_count(ni, group_var="TEN")                  # If omitting target_var argument, group_var must be labeled
+psrc_pums_count(x, group_var="TEN")                   # If omitting target_var argument, group_var must be labeled
 ```
 
 The summary function provides all four statistics and their margins of error in the same table:
 ```{r summary by category, message=FALSE, eval=FALSE}
-psrc_pums_summary(ni, "HINCP", "TEN")
+psrc_pums_summary(x, "HINCP", "TEN")
 ```
 
 All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
 
-At present the Census Microdata API is limited to data years 2017 and later. The API also routinely experiences unexplained downtime between 2-7pm Pacific Time, returning in place of data the message  
+PUMS data is available for years 1996-present; get_psrc_pums() must be called separately for each data year. Note, some variables have changed name or datatype over time: consult the data directories mentioned above to verify the variable code for the data years pertinent to your analysis. 
 
-  *"Your API call has errors. The API message returned is There was an error while running your query. We've logged the error and we'll correct it ASAP. Sorry for the inconvenience."* 
--or- 
-  *"Sorry, the system is currently undergoing maintenance or is busy.  Please try again later."*  
-  
-For earlier data years, or when the API is down, it is possible to download raw PUMS from the [Census FTP server](https://www2.census.gov/programs-surveys/acs/data/pums/). 
+The current default source is via ftp download (there is an API option, `ftp=FALSE`, but the API often returns an internal error, particularly between 2pm-7pm).
