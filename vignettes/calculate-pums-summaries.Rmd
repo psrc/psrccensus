@@ -24,7 +24,7 @@ PUMS data include sampling weights in order to be extrapolated to a larger popul
 
 ## Summary statistics via psrccensus
 
-The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole. Data analysis with the psrccensus package involves two steps:
+The PSRC census package makes it easy to calculate standard summary statistics by county and for the region as a whole. Data analysis with the psrccensus package involves two steps:
 
 The first step consists of retrieving the data of interest via the **get_psrc_pums()** function. The arguments are:
 
@@ -45,7 +45,7 @@ Because the ACS (from which the PUMS records are developed) is a rolling survey,
 
 The result of **get_psrc_pums()** is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list. Srvyr objects can be manipulated using dplyr syntax if necessary, although that is not required while using psrccensus (see [its vignette] (http://gdfe.co/srvyr/)).
 
-The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. Each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping).
+The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument `incl_counties=FALSE`. All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
 
 |          **psrc_pums_count()**    
 |          **psrc_pums_sum()**  
@@ -89,7 +89,7 @@ The summary function provides all four statistics and their margins of error in 
 psrc_pums_summary(x, "HINCP", "TEN")
 ```
 
-All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
+Although psrccensus allows you to specify multiple grouping variables--in addition to county--you'll need to keep in mind that PUMS is a relatively small-sample. If there are no respondents for one of your category combinations, the srvyr statistical functions will return an error; if there are few respondents, the margin of error may be so large as to render the estimate itself almost useless. If this occurs, you may want to consider either switching from the 1-year to 5-year span (for a larger sample), or potentially analyze dimensions of the data separately rather than in combination. If a grouping combination does not exist for one of the counties, use the `incl_counties=FALSE` option to return only the regional estimate.
 
 PUMS data is available for years 2000-present; get_psrc_pums() must be called separately for each data year. Note, some variables have changed name or datatype over time: consult the data directories mentioned above to verify the variable code for the data years pertinent to your analysis. 
 

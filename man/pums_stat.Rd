@@ -9,15 +9,15 @@
 \alias{psrc_pums_summary}
 \title{PUMS summary statistics}
 \usage{
-psrc_pums_count(so, target_var = NULL, group_vars = NULL)
+psrc_pums_count(so, target_var = NULL, group_vars = NULL, incl_counties = TRUE)
 
-psrc_pums_sum(so, target_var, group_vars = NULL)
+psrc_pums_sum(so, target_var, group_vars = NULL, incl_counties = TRUE)
 
-psrc_pums_median(so, target_var, group_vars = NULL)
+psrc_pums_median(so, target_var, group_vars = NULL, incl_counties = TRUE)
 
-psrc_pums_mean(so, target_var, group_vars = NULL)
+psrc_pums_mean(so, target_var, group_vars = NULL, incl_counties = TRUE)
 
-psrc_pums_summary(so, target_var, group_vars = NULL)
+psrc_pums_summary(so, target_var, group_vars = NULL, incl_counties = TRUE)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
@@ -25,6 +25,8 @@ psrc_pums_summary(so, target_var, group_vars = NULL)
 \item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
 \item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
+
+\item{incl_counties}{Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error
