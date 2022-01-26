@@ -4,7 +4,7 @@
 \alias{psrc_pums_stat}
 \title{Generic call for PUMS summary statistics}
 \usage{
-psrc_pums_stat(so, stat_type, target_var, group_vars)
+psrc_pums_stat(so, stat_type, target_var, group_vars, incl_counties = TRUE)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
@@ -14,6 +14,8 @@ psrc_pums_stat(so, stat_type, target_var, group_vars)
 \item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
 
 \item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
+
+\item{incl_counties}{Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error
