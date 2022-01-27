@@ -28,14 +28,14 @@ The PSRC census package makes it easy to calculate standard summary statistics b
 
 The first step consists of retrieving the data of interest via the **get_psrc_pums()** function. The arguments are:
 
-  * **span**  - either 1 or 5, denoting the span of the desired ACS survey
-  * **dyear** - aka data year or concluding year for 5-yr ACS
+  * **span**  - either 1 ,3 or 5, denoting the span of the desired ACS survey (1yr available 2000-present; 3yr only 2007-13; 5yr only 2009-present)
+  * **dyear** - aka data year (concluding year for 3- or 5-yr ACS)
   * **level** - the unit of analysis, i.e. "p" for "persons" or "h" for "households"
-  * **vars**  - one or more PUMS variables (if multiple, as a list), quoted exactly, in uppercase
+  * **vars**  - one or more PUMS variables in UPPERCASE (if multiple, as a character vector)
   
-The PUMS data dictionary is captured in the object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes each separate data dictionary online, [2015-19 as an example](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.pdf).
+**get_psrc_pums()** must be called separately for each combination of span/dyear/level you intend to use. Note, some variables have changed name or datatype over time, so you'll want to consult a PUMS data directory to confirm that variable exists for the span/dyear combination of interest (and check its spelling). The PUMS data dictionary is captured in the R object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes [each separate data dictionary online in html, pdf or txt](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/), which can be easily searched via web browser.
 
-PUMS has two distinct units of analysis: persons ("persons" table), or households ("housing" table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) You can choose any combination of PUMS variables, however; a person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). 
+PUMS has two distinct units of analysis: persons ("persons" table), or households ("housing" table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) You can choose any combination of PUMS variables, however: a person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). 
 
 In addition to variables listed in the Census PUMS data dictionary, you can also select the following custom PSRC variables: 
   * **RACETH**: household-level race/ethnicity taking all household members into consideration
@@ -45,7 +45,7 @@ Because the ACS (from which the PUMS records are developed) is a rolling survey,
 
 The result of **get_psrc_pums()** is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list. Srvyr objects can be manipulated using dplyr syntax if necessary, although that is not required while using psrccensus (see [its vignette] (http://gdfe.co/srvyr/)).
 
-The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument `incl_counties=FALSE`. All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country. 
+The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument `incl_counties=FALSE`. All results are limited to the 4-county PSRC region for simplicity, although the PUMS source data exists for every part of the country. 
 
 |          **psrc_pums_count()**    
 |          **psrc_pums_sum()**  
@@ -59,38 +59,37 @@ The arguments for each function are identical:
   * **target_var**  - The variable to be summarized.
   * **group_vars**  - Optional grouping variable/s (if multiple, as a list)
 
+Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them.
+
 **psrccensus** does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous. The target_var argument is ignored by the count function (for which the primary variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).
 
 Since PUMS records are sampled rather than comprising a full census, **psrccensus** applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error for each estimate in a separately labeled '_moe' column. 
 
 As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
 ```{r median, message=FALSE, eval=FALSE}
-x <- get_psrc_pums(span = 5,                          # Denoting ACS 5-year estimates; 1-year also available
-                   dyear = 2019,                      # Last data year of span
-                   level = "h",                       # Unit of analysis == person; "h" used for household
-                   vars = c("HINCP","TEN"))           # PUMS household income & housing tenure variables; using tenure later. You can choose as many variables as you need.
-psrc_pums_median(ni, target_var = "HINCP")            # Median Household income (without regard to tenure)
+x <- get_psrc_pums(span = 5,                     # Denoting ACS 5-year estimates; 1-year also available
+                   dyear = 2019,                 # Last data year of span
+                   level = "h",                  # Unit of analysis == household ("p" used for person)
+                   vars = c("HINCP","TEN"))      # PUMS household income & housing tenure variables; using tenure later. 
+                                                 #  - You can choose as many variables as you need.
+psrc_pums_median(x, target_var = "HINCP")        # Median Household income (without regard to tenure)
 ```
 
-To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument. As is typical, function argument names can be omitted if arguments are provided in strict order.
+To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument.
 ```{r  median by category, message=FALSE, eval=FALSE}
-psrc_pums_median(x,                                   # the assigned result of get_psrc_pums()
-                 target_var = "HINCP",                # Summarizing household income . . .
-                 group_vars = "TEN")                  # . . . grouped by housing tenure
+psrc_pums_median(x,                              # the assigned result of get_psrc_pums()
+                 target_var = "HINCP",           # Summarizing household income . . .
+                 group_vars = "TEN")             # . . . grouped by housing tenure
 ```
 
 The count function tabulates the number people or households by grouping category, depending on the level you specified in **get_psrc_pums**. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
 ```{r count by category, message=FALSE, eval=FALSE}
-psrc_pums_count(x, group_var="TEN")                   # If omitting target_var argument, group_var must be labeled
+psrc_pums_count(x, group_var="TEN")              # If omitting target_var argument, group_var must be labeled
 ```
 
-The summary function provides all four statistics and their margins of error in the same table:
+The summary function provides all four statistics and their margins of error in the same table. 
 ```{r summary by category, message=FALSE, eval=FALSE}
 psrc_pums_summary(x, "HINCP", "TEN")
 ```
 
-Although psrccensus allows you to specify multiple grouping variables--in addition to county--you'll need to keep in mind that PUMS is a relatively small-sample. If there are no respondents for one of your category combinations, the srvyr statistical functions will return an error; if there are few respondents, the margin of error may be so large as to render the estimate itself almost useless. If this occurs, you may want to consider either switching from the 1-year to 5-year span (for a larger sample), or potentially analyze dimensions of the data separately rather than in combination. If a grouping combination does not exist for one of the counties, use the `incl_counties=FALSE` option to return only the regional estimate.
-
-PUMS data is available for years 2000-present; get_psrc_pums() must be called separately for each data year. Note, some variables have changed name or datatype over time: consult the data directories mentioned above to verify the variable code for the data years pertinent to your analysis. 
-
-The current default source is via ftp download (there is an API option, `ftp=FALSE`, but the API often returns an internal error, particularly between 2pm-7pm).
+Although **psrccensus** allows you to specify multiple grouping variables, you'll need to keep in mind that PUMS is a relatively small sample. If there are no respondents for one of your category combinations, the srvyr statistical functions will return an error; if there are few respondents, the margin of error may be so large as to render the estimate itself almost useless. In these cases, you may want to consider either switching from the 1-year to 5-year span (which has a larger sample), or potentially analyze dimensions of the data separately rather than in combination. If a grouping combination does not exist for one of the counties, use the `incl_counties=FALSE` option to return only the regional estimate.

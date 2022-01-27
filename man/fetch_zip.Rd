@@ -4,12 +4,12 @@
 \alias{fetch_zip}
 \title{Fetch ZIP}
 \usage{
-fetch_zip(zip_filepath, target_files, dyear)
+fetch_zip(zip_filepath, target_file, dyear)
 }
 \arguments{
 \item{zip_filepath}{ftp URL location}
 
-\item{target_files}{.zip archive file to read}
+\item{target_file}{.zip archive file to read}
 
 \item{dyear}{The data year}
 }
