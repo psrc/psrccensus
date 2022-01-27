@@ -32,8 +32,8 @@ group_recs <- function(tbl, this_group_name){
   #the column names between acs and census are slightly different
   # for acs:
   if("estimate" %in% colnames(tbl_w_cats)){
-    tbl_grouped <- tbl_w_cats%>%
-      dplyr::group_by(dplyr::across(c(.data$name, .data$grouping, .data$group_name )))%>%
+    tbl_grouped <- tbl_w_cats %>%
+      dplyr::group_by(dplyr::across(c(.data$GEOID, .data$name, .data$grouping, .data$group_name)))%>%
       dplyr::summarise(estimate=sum(.data$estimate),
                        moe=tidycensus::moe_sum(.data$moe,.data$estimate, na.rm=TRUE))
   }
