@@ -211,6 +211,7 @@ add_county <- function(dt, dyear){
 #' The primary PUMS function
 #' @inheritParams pums_ftp_gofer
 #' @param ftp Default FALSE; option to specify ftp. Only relevant for API years i.e. dyear>=2017; ftp is only source for earlier years
+#' @param labels Default TRUE, recodes varible values to the corresponding label
 #' @return A srvyr object with appropriate sampling weight and replication weights
 #'
 #' @importFrom tidyselect all_of
@@ -222,7 +223,7 @@ add_county <- function(dt, dyear){
 #' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
 #'
 #' @export
-get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=TRUE){
+get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, labels=TRUE, ftp=TRUE){
   vf <- list(TYPE=1, SPORDER=1)
   unit_var <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(dyear >= 2000 & dyear <= 2016 || ftp==TRUE){
@@ -235,23 +236,25 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, ftp=TRUE){
   rwgt <- grep(wgtrgx, colnames(dt), value=TRUE)                                                   # Specify replication weights
   dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY"))
   if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
-  recoder <-  tidycensus::pums_variables %>% setDT() %>%
-    .[recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
+  if(labels==TRUE){
+    recoder <-  tidycensus::pums_variables %>% setDT() %>%
+      .[recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
     unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
-  tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
-    .[, var_code:="RACETH"]
-  raceth <- rbindlist(list(tmp1,
-                           list("RACETH", "10", "American Indian or Alaskan Native Alone"),        # PSRC multiethnic categories, based on RAC1P and HISP
-                           list("RACETH", "11", "Multiple Races"),
-                           list("HISPYN", "Y", "Hispanic or Latino"),
-                           list("HISPYN", "N", "Not Hispanic or Latino"),
-                           list("HISPYN", "B", "Some Hispanic or Latino")))
-  recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")      # Add to label lookup; filter variables
-  recode_vars <- recoder$var_code %>% unique()
-  if(nrow(recoder)>0){
-    for (v in recode_vars){
-        setkeyv(dt, v)
-       dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                       # Convert group_vars to label if relevant/available
+    tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
+      .[, var_code:="RACETH"]
+    raceth <- rbindlist(list(tmp1,
+                             list("RACETH", "10", "American Indian or Alaskan Native Alone"),      # PSRC multiethnic categories, based on RAC1P and HISP
+                             list("RACETH", "11", "Multiple Races"),
+                             list("HISPYN", "Y", "Hispanic or Latino"),
+                             list("HISPYN", "N", "Not Hispanic or Latino"),
+                             list("HISPYN", "B", "Some Hispanic or Latino")))
+    recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")    # Add to label lookup; filter variables
+    recode_vars <- recoder$var_code %>% unique()
+    if(nrow(recoder)>0){
+      for (v in recode_vars){
+          setkeyv(dt, v)
+         dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                     # Convert group_vars to label if relevant/available
+      }
     }
   }
   ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
