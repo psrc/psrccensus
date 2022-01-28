@@ -99,8 +99,6 @@ fetch_ftp <- function(span, dyear, level){
 #' @import data.table
 pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
   unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
-  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, data_type)] %>%
-    unique()
   dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setkeyv("SERIALNO")                    # Download housing table
   dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setkeyv("SERIALNO") %>%                # Download person table
     .[, which(grepl("PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                 # Remove duplicate columns
@@ -119,7 +117,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
   }
 ##  dt_h %<>% .[, HINCBIN:=fcase()]                                                                  # PSRC household income categories NYD
   if(level=="h"){                                                                                  # For household analysis:                                                               #    filter out GQ or vacant units &
-    dt_p %<>% .[SPORDER=="1"]                                                                      #  - keep only householder person attributes
+    dt_p %<>% .[as.integer(SPORDER)==1]                                                                      #  - keep only householder person attributes
     dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]                #  - filter out GQ & vacant
   }else if(level=="p"){                                                                            # For population analysis, keep only individuals
     dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
