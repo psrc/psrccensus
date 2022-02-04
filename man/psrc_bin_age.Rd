@@ -10,7 +10,7 @@ psrc_bin_age(so)
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}, with field AGEP (required)}
 }
 \value{
-The srvyr object with an additional binned age field, "BINAGE"
+The srvyr object with an additional binned age field, "BIN_AGE"
 }
 \description{
 PSRC standard age groupings

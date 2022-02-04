@@ -30,10 +30,10 @@ psrc_bincome <- function(so){
 #' PSRC standard age groupings
 #'
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}, with field AGEP (required)
-#' @return The srvyr object with an additional binned age field, "BINAGE"
+#' @return The srvyr object with an additional binned age field, "BIN_AGE"
 #' @export
 psrc_bin_age <- function(so){
-  so %<>% mutate(BINAGE=factor(case_when(
+  so %<>% mutate(BIN_AGE=factor(case_when(
                                   AGEP < 5  ~"under 5 years",
                                   AGEP < 12 ~"between 5 and 11 years",
                                   AGEP < 16 ~"between 12 and 15 years",
@@ -59,5 +59,31 @@ psrc_bin_age <- function(so){
                                    "between 65 and 75 years",
                                    "between 75 and 85 years",
                                    "Else / Prefer not to answer")))
+  return(so)
+}
+
+#' PSRC income to poverty ratio groupings
+#'
+#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}, with field POVPIP (required)
+#' @return The srvyr object with an additional binned age field, "BIN_POVRATIO"
+#' @export
+psrc_bin_povratio <- function(so){
+  so %<>% mutate(BIN_POVRATIO=factor(case_when(
+                                      POVPIP < 50  ~"under 0.50",
+                                      POVPIP < 100 ~"0.50 to 0.99",
+                                      POVPIP < 125 ~"1.00 to 1.24",
+                                      POVPIP < 150 ~"1.25 to 1.49",
+                                      POVPIP < 185 ~"1.50 to 1.84",
+                                      POVPIP < 200 ~"1.85 to 1.99",
+                                      POVPIP >=200 ~"2.00 and over",
+                                      TRUE ~ "Else"),
+                              levels=c("under 0.50",
+                                       "0.50 to 0.99",
+                                       "1.00 to 1.24",
+                                       "1.25 to 1.49",
+                                       "1.50 to 1.84",
+                                       "1.85 to 1.99",
+                                       "2.00 and over",
+                                       "Else")))
   return(so)
 }
