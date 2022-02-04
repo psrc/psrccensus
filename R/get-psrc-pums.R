@@ -319,6 +319,8 @@ psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=
   return(rs)
 }
 
+
+
 #' PUMS summary statistics
 #'
 #' Separate function for total, count, median, mean
