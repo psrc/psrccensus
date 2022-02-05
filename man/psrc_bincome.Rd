@@ -4,13 +4,13 @@
 \alias{psrc_bincome}
 \title{PSRC standard broad income groupings}
 \usage{
-psrc_bincome(so)
+psrc_bincome(dt)
 }
 \arguments{
-\item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}, with field HINCP (required)}
+\item{dt}{the data.table}
 }
 \value{
-The srvyr object with an additional binned household income field, "BINCOME"
+the data.table with an additional binned household income field, "BINCOME"
 }
 \description{
 PSRC standard broad income groupings
