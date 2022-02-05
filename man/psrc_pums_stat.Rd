@@ -4,7 +4,7 @@
 \alias{psrc_pums_stat}
 \title{Generic call for PUMS summary statistics}
 \usage{
-psrc_pums_stat(so, stat_type, target_var, group_vars, incl_counties = TRUE)
+psrc_pums_stat(so, stat_type, target_var, group_vars, incl_counties)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}

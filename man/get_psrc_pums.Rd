@@ -10,8 +10,8 @@ get_psrc_pums(
   level,
   vars,
   dollar_adj = TRUE,
-  labels = TRUE,
-  ftp = TRUE
+  dir = NULL,
+  labels = TRUE
 )
 }
 \arguments{
@@ -25,9 +25,9 @@ get_psrc_pums(
 
 \item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 
-\item{labels}{Default TRUE, recodes varible values to the corresponding label}
+\item{dir}{Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.}
 
-\item{ftp}{Default FALSE; option to specify ftp. Only relevant for API years i.e. dyear>=2017; ftp is only source for earlier years}
+\item{labels}{Default TRUE, recodes varible values to the corresponding label}
 }
 \value{
 A srvyr object with appropriate sampling weight and replication weights

@@ -14,7 +14,55 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #'
 #' @import data.table
 pums_recode_na <- function(dt){
-  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.$|^N.A.//$|^$",dt[[col]]), j=col, value=NA)
+  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.$|^N.A.//$|^$",dt[[col]]), j=col, value=NA)   # Recode all PUMS NA variations to the NA R recognizes
+  dt %<>% .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=FALSE]                     # Drop columns composed completely of N/A values
+  return(dt)
+}
+
+#' Read PUMS csv
+#'
+#' Helper to the \code{\link{pums_ftp_gofer}} function
+#' Can be either .csv from ftp site, or compressed .gz file on server
+#' @param csv_target csv filename
+#' @param dyear The data year
+#' @return unzipped table
+read_pums <- function(target_file, dyear){
+  ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
+  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
+    .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
+  num_types <- copy(type_lookup) %>% .[data_type=="num", var_code] %>% paste()
+  chr_types <- copy(type_lookup) %>% .[data_type=="chr", var_code] %>% paste()                     # For dyears in the dictionary, datatype from the dictionary
+  if(dyear<2017){
+    var_codes <- data.table::fread(target_file, sep=",", nrows=1, stringsAsFactors=FALSE)
+    allwgts <- grep("^(P)?WGTP(\\d+)?$", colnames(var_codes), value=TRUE)
+    num_types %<>% c(allwgts) %>% unique()
+    chr_types <- colnames(var_codes) %>% .[. %not_in% num_types]                                   # For dyears before the dictionary, keep known numbers as numbers
+    num_types <- colnames(var_codes) %>% .[. %not_in% chr_types]                                   # Reflect back so as not to specify variables that don't exist in that year
+  }
+  col_typelist <- list(character = chr_types, numeric = num_types)
+  dt <- data.table::fread(target_file, sep=",", stringsAsFactors=FALSE, colClasses=col_typelist) %>% # The room where it happens; reads the file with correct datatypes
+   filter2region(dyear)
+  return(dt)
+}
+
+#' Filter PUMS to Region
+#'
+#' Helper to \code{\link{read_pums}} function
+#' @param dt data.table
+#' @param dyear The data year
+#' @return filtered data.table
+filter2region <- function(dt, dyear){
+  pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # PUMA boundary version correlates to last diennial census
+  dt %<>% pums_recode_na() %>%
+    setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                          # Single PUMA column name
+    .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL] %>%                                      # Where multiple PUMA fields reported, use latest
+    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                   # Drop variables static to our region
+    setkey(SERIALNO)
+  if(dyear>2011){
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                        # Filter to PSRC region
+  }else if(dyear>=2000 & dyear<2012){
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(15:18)]                                          # PUMAs renumbered in 2012
+  }
   return(dt)
 }
 
@@ -26,24 +74,11 @@ pums_recode_na <- function(dt){
 #' @param dyear The data year
 #' @return unzipped table
 fetch_zip <- function(zip_filepath, target_file, dyear){
-  ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
   temp <- tempfile()
   download.file(zip_filepath, temp)
   unzip(temp, files=target_file, exdir=getwd())
   csv_target <- paste0(getwd(),"/", target_file)
-  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
-    .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
-  num_types <- copy(type_lookup) %>% .[data_type=="num", var_code] %>% paste()
-  chr_types <- copy(type_lookup) %>% .[data_type=="chr", var_code] %>% paste()                     # For dyears in the dictionary, datatype from the dictionary
-  if(dyear<2017){
-    var_codes <- data.table::fread(csv_target, sep=",", nrows=1, stringsAsFactors=FALSE)
-    allwgts <- grep("^(P)?WGTP(\\d+)?$", colnames(var_codes), value=TRUE)
-    num_types %<>% c(allwgts) %>% unique()
-    chr_types <- colnames(var_codes) %>% .[. %not_in% num_types]                                   # For dyears before the dictionary, keep known numbers as numbers
-    num_types <- colnames(var_codes) %>% .[. %not_in% chr_types]                                   # Reflect back so as not to specify variables that don't exist in that year
-  }
-  col_typelist <- list(character = chr_types, numeric = num_types)
-  dt <- data.table::fread(csv_target, sep=",", stringsAsFactors=FALSE, colClasses=col_typelist)
+  dt <- read_pums(target_file, dyear)
   unlink(temp)
   rm(temp)
   return(dt)
@@ -67,20 +102,8 @@ fetch_ftp <- function(span, dyear, level){
                                dyear==2000 ~paste0("c2ss", level, "wa.csv"),
                                dyear<2017 ~paste0("ss", stringr::str_sub(as.character(dyear),-2L), level, "wa.csv"))
   if(!httr::http_error(url)){                                                                      # First verify the target file exists
-    pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # PUMA boundary version correlates to last diennial census
     dt <- fetch_zip(url, csv_name, dyear) %>%
       setDT()
-    dt %<>% pums_recode_na() %>%
-      .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=FALSE] %>%                     # Drop columns composed completely of N/A values
-      setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                          # Single PUMA column name
-      .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL] %>%                                      # Where multiple PUMA fields reported, use latest
-      .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                   # Drop variables static to our region
-    setkey(SERIALNO)
-    if(dyear>2011){
-      dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                        # Filter to PSRC region
-    }else if(dyear>=2000 & dyear<2012){
-      dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(15:18)]                                          # PUMAs renumbered in 2012
-    }
     file.remove(csv_name)
     return(dt)
   }else{return(NULL)}
@@ -93,18 +116,27 @@ fetch_ftp <- function(span, dyear, level){
 #' @inheritParams fetch_ftp
 #' @param vars PUMS variable/s as an UPPERCASE string element or list
 #' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
+#' @param dir Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
 #'
 #' @import data.table
-pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
+pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj, dir){
   unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
-  dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setkeyv("SERIALNO")                    # Download housing table
-  dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setkeyv("SERIALNO") %>%                # Download person table
-    .[, which(grepl("PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                 # Remove duplicate columns
-  if("sporder" %in% colnames(dt_p)){setnames(dt_p,"sporder","SPORDER")}
+  if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
+    hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
+    pfile <- paste0(dir,"/", dyear, "p", span, ".gz")
+    dt_h  <- suppressWarnings(read_pums(hfile, dyear))
+    dt_p  <- suppressWarnings(read_pums(pfile, dyear))
+  }else{
+    dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                          # Otherwise, ftp source
+    dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p"))
+  }
+  setkeyv(dt_h, "SERIALNO")
+  dt_p %<>% setkeyv("SERIALNO") %>%
+    .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
   tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, RAC1P, HISP)] %>%
-     .[,`:=`(RACETH=RAC1P, HISPYN=fcase(HISP=="01", "N", default="Y"))]
+     .[,`:=`(RACETH=RAC1P, HISPYN=fcase(as.integer(HISP)==1, "N", default="Y"))]
   tmp_p[RAC1P %in% c("3","4","5"), RACETH:="10"]                                                   # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
   hh_me <- tmp_p[, .(RACETH=stuff(RACETH), HISPYN=stuff(HISPYN)), by=.(SERIALNO)] %>%              # Summarize households by race/ethnic composition
      setkey("SERIALNO")
@@ -115,9 +147,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
     adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
     dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]            # Adjustment factors in ftp version without decimal
   }
-##  dt_h %<>% .[, HINCBIN:=fcase()]                                                                  # PSRC household income categories NYD
   if(level=="h"){                                                                                  # For household analysis:                                                               #    filter out GQ or vacant units &
-    dt_p %<>% .[as.integer(SPORDER)==1]                                                                      #  - keep only householder person attributes
+    dt_p %<>% .[as.integer(SPORDER)==1]                                                            #  - keep only householder person attributes
     dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]                #  - filter out GQ & vacant
   }else if(level=="p"){                                                                            # For population analysis, keep only individuals
     dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
@@ -204,11 +235,63 @@ add_county <- function(dt, dyear){
   return(dt)
 }
 
+#' Swap variable codes for labels
+#'
+#' Helper to \code{\link{get_psrc_pums}} function.
+#' Delivers labels instead of values, where labels exist
+#' @param dt PSRC data.table
+#' @param dyear The data year
+#' @return PSRC data.table with labels
+#'
+#' @import data.table
+codes2labels <- function(dt, dyear, vars){
+  ddyear  <- if(dyear>2016){dyear}else{2017}
+  recoder <-  tidycensus::pums_variables %>% setDT() %>%
+    .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
+    unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
+  tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
+    .[, var_code:="RACETH"]
+  raceth <- rbindlist(list(tmp1,
+                           list("RACETH", "10", "American Indian or Alaskan Native Alone"),        # PSRC multiethnic categories, based on RAC1P and HISP
+                           list("RACETH", "11", "Multiple Races"),
+                           list("HISPYN", "Y", "Hispanic or Latino"),
+                           list("HISPYN", "N", "Not Hispanic or Latino"),
+                           list("HISPYN", "B", "Some Hispanic or Latino")))
+  recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")      # Add to label lookup; filter variables
+  recode_vars <- recoder$var_code %>% unique()
+  if(nrow(recoder)>0){
+    for (v in recode_vars){
+      setkeyv(dt, v)
+      dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                        # The room where it happens; group_vars to label (from value) if relevant/available
+    }
+  }
+  return(dt)
+}
+
+#' Confirm correct datatypes for group variables and weights
+#'
+#' Helper to \code{\link{get_psrc_pums}} function.
+#' Makes certain weights are numeric and grouping variables are factors
+#' @param dt PSRC data.table
+#' @return PSRC data.table with types confirmed
+#'
+#' @import data.table
+ensure_datatypes <- function(dt){
+  ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
+    .[. %not_in% c("SERIALNO","PUMA")]
+  if(length(ftr_vars)>0){
+    dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                     # Ensure grouping variables are factors (required by srvyr)
+  }
+  allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
+  dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
+  return(dt)
+}
+
+
 #' Retrieve and assemble PUMS data
 #'
 #' The primary PUMS function
 #' @inheritParams pums_ftp_gofer
-#' @param ftp Default FALSE; option to specify ftp. Only relevant for API years i.e. dyear>=2017; ftp is only source for earlier years
 #' @param labels Default TRUE, recodes varible values to the corresponding label
 #' @return A srvyr object with appropriate sampling weight and replication weights
 #'
@@ -221,48 +304,17 @@ add_county <- function(dt, dyear){
 #' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
 #'
 #' @export
-get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, labels=TRUE, ftp=TRUE){
+get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, labels=TRUE){
   vf <- list(TYPE=1, SPORDER=1)
   unit_var <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
-  if(dyear >= 2000 & dyear <= 2016 || ftp==TRUE){
-    dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj=TRUE)
-  }else if(dyear>=2017){                                                                           # API only features 2017+ data
-    dt <- pums_api_gofer(span, dyear, level, vars, dollar_adj=TRUE)
-  }else{ dt <- NULL}                                                                               # Should use error handling if dataset doesn't exist
+  dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj, dir)
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
   wgtrgx <- paste0("^",swgt,"\\d+$")
   rwgt <- grep(wgtrgx, colnames(dt), value=TRUE)                                                   # Specify replication weights
   dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY"))
   if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
-  if(labels==TRUE){
-    recoder <-  tidycensus::pums_variables %>% setDT() %>%
-      .[recode==TRUE & val_min==val_max, .(var_code, val_max, val_label)] %>%
-    unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
-    tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
-      .[, var_code:="RACETH"]
-    raceth <- rbindlist(list(tmp1,
-                             list("RACETH", "10", "American Indian or Alaskan Native Alone"),      # PSRC multiethnic categories, based on RAC1P and HISP
-                             list("RACETH", "11", "Multiple Races"),
-                             list("HISPYN", "Y", "Hispanic or Latino"),
-                             list("HISPYN", "N", "Not Hispanic or Latino"),
-                             list("HISPYN", "B", "Some Hispanic or Latino")))
-    recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")    # Add to label lookup; filter variables
-    recode_vars <- recoder$var_code %>% unique()
-    if(nrow(recoder)>0){
-      for (v in recode_vars){
-          setkeyv(dt, v)
-         dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                     # Convert group_vars to label if relevant/available
-      }
-    }
-  }
-  ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
-    .[. %not_in% c("SERIALNO","PUMA")]
-  if(length(ftr_vars)>0){
-    dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                     # Ensure grouping variables are factors (required by srvyr)
-    dt[, (ftr_vars):=lapply(.SD, addNA), .SDcols=ftr_vars]
-    }
-  allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
-  dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
+  if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
+  dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
   varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
     srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
@@ -285,7 +337,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, labels=TRUE
 #'
 #' @importFrom rlang sym
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=TRUE){
+psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties){
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
