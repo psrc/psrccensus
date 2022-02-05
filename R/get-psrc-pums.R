@@ -153,6 +153,9 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj, dir){
   }else if(level=="p"){                                                                            # For population analysis, keep only individuals
     dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
   }
+  if("BINCOME" %in% vars){dt %<>% psrc_bincome()}                                                  # See psrc-pums-groupings for custom binned variables
+  if("BIN_AGE" %in% vars){dt %<>% psrc_bin_age()}                                                  # - "
+  if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")

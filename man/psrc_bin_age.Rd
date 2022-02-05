@@ -4,13 +4,13 @@
 \alias{psrc_bin_age}
 \title{PSRC standard age groupings}
 \usage{
-psrc_bin_age(so)
+psrc_bin_age(dt)
 }
 \arguments{
-\item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}, with field AGEP (required)}
+\item{dt}{the data.table}
 }
 \value{
-The srvyr object with an additional binned age field, "BIN_AGE"
+the data.table with an additional binned age field, "BIN_AGE"
 }
 \description{
 PSRC standard age groupings

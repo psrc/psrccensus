@@ -4,13 +4,13 @@
 \alias{psrc_bin_povratio}
 \title{PSRC income to poverty ratio groupings}
 \usage{
-psrc_bin_povratio(so)
+psrc_bin_povratio(dt)
 }
 \arguments{
-\item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}, with field POVPIP (required)}
+\item{dt}{the data.table}
 }
 \value{
-The srvyr object with an additional binned age field, "BIN_POVRATIO"
+the data.table with an additional binned age field, "BIN_POVRATIO"
 }
 \description{
 PSRC income to poverty ratio groupings
