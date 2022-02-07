@@ -18,7 +18,7 @@ library(knitr)
 
 ## What is Census microdata?
 
-Along with publishing summary statistics from the diennial Census or American Community Survey (ACS), the Census Bureau also makes available a subset of individual person and housing (incl. household) records, called the Public Use Microdata Sample (PUMS). These can be used to estimate models or to tabulate custom statistics unavailable in Census-published summary statistics. Partly to safeguard privacy, PUMS data is not categorized by standard Census geographies such as block, block group or tract; instead the unit is the Public Use Microdata Area (PUMA), an aggregation of tracts with total population between 100,000-200,000. In the past there were more that one set of PUMAs, corresponding to different sampling rates; that is no longer the case (PUMAs now consistently represent a 5 percent sample).
+Along with publishing summary statistics from the diennial Census or American Community Survey (ACS), the Census Bureau also makes available a subset of individual person and housing (incl. household) records, called the Public Use Microdata Sample (PUMS). These can be used to estimate models or to tabulate custom statistics unavailable in Census-published summary statistics. Partly to safeguard privacy, PUMS data is not categorized by standard Census geographies such as block, block group or tract; instead the unit is the Public Use Microdata Area (PUMA), an aggregation of tracts with total population between 100,000-200,000. In the past there were more than one set of PUMAs, corresponding to different sampling rates; that is no longer the case (PUMAs now consistently represent a 5 percent sample).
 
 PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data. The Census Bureau resource [What ACS Public Use Microdata Sample File Users Need to Know]( https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html) is a helpful resource if you have further questions about PUMS itself.
 
@@ -28,24 +28,27 @@ The PSRC census package makes it easy to calculate standard summary statistics b
 
 The first step consists of retrieving the data of interest via the **get_psrc_pums()** function. The arguments are:
 
-  * **span**  - either 1 ,3 or 5, denoting the span of the desired ACS survey (1yr available 2000-present; 3yr only 2007-13; 5yr only 2009-present)
+  * **span**  - either 1 ,3 or 5, denoting the span of the desired ACS survey (1yr from 2000-present; 3yr from 2007-13; 5yr from 2009-present)
   * **dyear** - aka data year (concluding year for 3- or 5-yr ACS)
   * **level** - the unit of analysis, i.e. "p" for "persons" or "h" for "households"
   * **vars**  - one or more PUMS variables in UPPERCASE (if multiple, as a character vector)
   
-**get_psrc_pums()** must be called separately for each combination of span/dyear/level you intend to use. Note, some variables have changed name or datatype over time, so you'll want to consult a PUMS data directory to confirm that variable exists for the span/dyear combination of interest (and check its spelling). The PUMS data dictionary is captured in the R object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes [each separate data dictionary online in html, pdf or txt](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/), which can be easily searched via web browser.
+**get_psrc_pums()** must be called separately for each combination of **span - dyear - level** you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (span and year), you will still need to use **get_psrc_pums()** once for households (level="h") and a second time for persons ('level'="p"). This is necessary because in PUMS, households and persons are not perfectly coextensive: household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) When you invoke **get_psrc_pums()** we suggest you assign a name that helps you differentiate between whatever **span - dyear - level** combinations are relevant to your analysis.
 
-PUMS has two distinct units of analysis: persons ("persons" table), or households ("housing" table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) You can choose any combination of PUMS variables, however: a person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). 
+Although PUMS variables are measured specific to either persons or households, either unit of analysis can be associated with all variables--persons inherit their respective household attributes (albeit missing in the case of for group quarters), and households are, per Census Bureau convention, assigned the person attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). Variables must be typed exactly, so it is recommended to consult a PUMS data directory, especially since some variables may differ between data years. The PUMS data dictionary from 2017- forward is captured in the R object **tidycensus::pums_variables** (filter by year and survey). The Census Bureau also publishes [each separate data dictionary online in html, pdf or txt](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/), which can be easily searched via web browser.
 
 In addition to variables listed in the Census PUMS data dictionary, you can also select the following custom PSRC variables: 
   * **RACETH**: household-level race/ethnicity taking all household members into consideration
   * **HISPYN**: household-level hispanic ethnicity taking all household members into consideration
+  * **BINCOME**: household income (HINCP) grouped by standard PSRC breakpoints
+  * **BIN_AGE**: age (AGEP) grouped by standard PSRC breakpoints
+  * **BIN_POVRATIO**: ratio of household income to the poverty level (POVPIP) grouped by standard PSRC breakpoints as direct fraction (not percent)
 
-Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a 'baked-in' inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw--as they were reported--along with an average inflation adjustment factor. If you prefer your estimates exclude this adjustment, add the argument `dollar_adj = FALSE`.
+Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a 'baked-in' inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw--as they were reported--along with an average inflation adjustment factor.
 
-The result of **get_psrc_pums()** is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list. Srvyr objects can be manipulated using dplyr syntax if necessary, although that is not required while using psrccensus (see [its vignette] (http://gdfe.co/srvyr/)).
+The result of **get_psrc_pums()** is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list, if you wish to view the data. When further transformations or groupings of the provided variables are necessary, you can manipulate the srvyr object directly using **dpylr**'s **filter** and **mutate** functions (potentially in combination with **select**), which maintaining the associated srvyr weights and structure (see [its vignette] (http://gdfe.co/srvyr/)).  
 
-The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument `incl_counties=FALSE`. All results are limited to the 4-county PSRC region for simplicity, although the PUMS source data exists for every part of the country. 
+The second step in an analysis involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that gives all four in the same table. By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument `incl_counties=FALSE`. Although PUMS data exists for the entire country, results of psrccensus are filtered to the 4-county PSRC region for simplicity. 
 
 |          **psrc_pums_count()**    
 |          **psrc_pums_sum()**  
@@ -53,17 +56,17 @@ The second step involves calculating summary statistics from the result of the p
 |          **psrc_pums_mean()**
 |          **psrc_pums_summary()**
 
-The arguments for each function are identical:
+The arguments for each summary function are identical:
 
-  * **so**          - The srvyr object returned by **get_psrc_pums()**; this facilitates chaining (e.g. via magrittr pipe)
+  * **so**          - The srvyr object returned by **get_psrc_pums()**
   * **target_var**  - The variable to be summarized.
-  * **group_vars**  - Optional grouping variable/s (if multiple, as a list)
+  * **group_vars**  - Optional grouping variable/s (if multiple, as a character vector)
 
 Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them.
 
 **psrccensus** does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous. The target_var argument is ignored by the count function (for which the primary variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).
 
-Since PUMS records are sampled rather than comprising a full census, **psrccensus** applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error for each estimate in a separately labeled '_moe' column. 
+Since PUMS records are sampled rather than comprising a full census, **psrccensus** applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled '_moe' column. (MOE can be laborious to generate manually and thus an advantage in using psrccensus.)
 
 As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
 ```{r median, message=FALSE, eval=FALSE}
@@ -92,4 +95,4 @@ The summary function provides all four statistics and their margins of error in 
 psrc_pums_summary(x, "HINCP", "TEN")
 ```
 
-Although **psrccensus** allows you to specify multiple grouping variables, you'll need to keep in mind that PUMS is a relatively small sample. If there are no respondents for one of your category combinations, the srvyr statistical functions will return an error; if there are few respondents, the margin of error may be so large as to render the estimate itself almost useless. In these cases, you may want to consider either switching from the 1-year to 5-year span (which has a larger sample), or potentially analyze dimensions of the data separately rather than in combination. If a grouping combination does not exist for one of the counties, use the `incl_counties=FALSE` option to return only the regional estimate.
+Although **psrccensus** allows you to specify multiple grouping variables, you'll need to keep in mind that PUMS is a relatively small sample. If there are no respondents for one of your category combinations, the srvyr statistical functions will return an error; if there are few respondents, the margin of error may be so large the estimate has little practical value. In these cases, you may want to consider either switching from the 1-year to 5-year span (the latter has a larger sample), or potentially analyze dimensions of the data separately rather than in combination. If a grouping combination does not exist for one of the counties, use the `incl_counties=FALSE` option to return only the regional estimate.
