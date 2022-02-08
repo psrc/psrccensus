@@ -76,7 +76,7 @@
 
       
 
-      </header><script src="psrccensus_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><script src="psrccensus_files/header-attrs-2.6.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Getting Started</h1>
@@ -125,7 +125,7 @@
 <p>An alternative method is to install the key in your .Renviron File for repeated use. This is done via the <code>tidycensus</code> package. The benefit is that you would not have to call <code><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv()</a></code> everytime you run your script or other scripts using <code>psrccensus</code> or <code>tidycensus</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first time, run once in console. Then restart R</span>
-<span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/census_api_key.html">census_api_key</a></span><span class="op">(</span><span class="st">'your api key'</span>, install <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tidycensus/man/census_api_key.html">census_api_key</a></span><span class="op">(</span><span class="st">'your api key'</span>, install <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </li>
 </ol>
 <p>Next you need to decide what tables you would like to download and summarize. This is the hardest part because you have to find the correct table code, decide on geography, and which years.</p>

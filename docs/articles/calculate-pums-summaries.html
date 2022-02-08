@@ -76,7 +76,7 @@
 
       
 
-      </header><script src="calculate-pums-summaries_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><script src="calculate-pums-summaries_files/header-attrs-2.6.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Calculate PUMS summaries</h1>
@@ -89,71 +89,102 @@
 
     
     
-<pre><code>## Warning: package 'knitr' was built under R version 4.0.5</code></pre>
 <div id="what-is-census-microdata" class="section level2">
 <h2 class="hasAnchor">
 <a href="#what-is-census-microdata" class="anchor"></a>What is Census microdata?</h2>
-<p>Along with publishing summary statistics from the diennial Census or American Community Survey (ACS), the Census Bureau also makes available a subset of individual person and housing (incl. household) records, called the Public Use Microdata Sample (PUMS). These can be used to estimate models or to tabulate custom statistics unavailable in Census-published summary statistics. Partly to safeguard privacy, PUMS data is not categorized by standard Census geographies such as block, block group or tract; instead the unit is the Public Use Microdata Area (PUMA), an aggregation of tracts with total population between 100,000-200,000. In the past there were more that one set of PUMAs, corresponding to different sampling rates; that is no longer the case (PUMAs now consistently represent a 5 percent sample).</p>
-<p>PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data. The Census Bureau resource <a href="https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html">What ACS Public Use Microdata Sample File Users Need to Know</a> is a helpful resource if you have further questions about PUMS itself.</p>
+<p>Along with publishing summary statistics from the diennial Census or American Community Survey (ACS), the Census Bureau also makes available a subset of individual person and housing (incl. household) records, called the Public Use Microdata Sample (PUMS). These can be used to estimate models or to tabulate custom statistics unavailable in Census-published summary statistics. Partly to safeguard privacy, PUMS data is not categorized by standard Census geographies such as block, block group or tract; instead the unit is the Public Use Microdata Area (PUMA), an aggregation of tracts with total population between 100,000-200,000. In the past there were more than one set of PUMAs, corresponding to different sampling rates; that is no longer the case (PUMAs now consistently represent a 5 percent sample).</p>
+<p>PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data (see [section below] (#Sample-sizes,-confidence,-and error margins)). The Census Bureau resource <a href="https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html">What ACS Public Use Microdata Sample File Users Need to Know</a> is a helpful resource if you have further questions about PUMS itself.</p>
 </div>
-<div id="summary-statistics-via-psrccensus" class="section level2">
+<div id="obtaining-pums-data-using-psrccensus---the-get_psrc_pums-function" class="section level2">
 <h2 class="hasAnchor">
-<a href="#summary-statistics-via-psrccensus" class="anchor"></a>Summary statistics via psrccensus</h2>
-<p>The PSRC census package makes it easy to calculate standard summary statistics by county or for the region as a whole. Data analysis with the psrccensus package involves two steps:</p>
+<a href="#obtaining-pums-data-using-psrccensus---the-get_psrc_pums-function" class="anchor"></a>Obtaining PUMS data using psrccensus - the get_psrc_pums() function</h2>
+<p>The PSRC census package makes it easy to calculate standard summary statistics by county and for the region as a whole. Data analysis with the psrccensus package involves two steps:</p>
 <p>The first step consists of retrieving the data of interest via the <strong>get_psrc_pums()</strong> function. The arguments are:</p>
 <ul>
 <li>
-<strong>span</strong> - either 1 or 5, denoting the span of the desired ACS survey</li>
+<strong>span</strong> - either 1 ,3 or 5, denoting the span of the desired ACS survey (1yr from 2000-present; 3yr from 2007-13; 5yr from 2009-present)</li>
 <li>
-<strong>dyear</strong> - aka data year or concluding year for 5-yr ACS</li>
+<strong>dyear</strong> - aka data year (concluding year for 3- or 5-yr ACS)</li>
 <li>
 <strong>level</strong> - the unit of analysis, i.e. “p” for “persons” or “h” for “households”</li>
 <li>
-<strong>vars</strong> - one or more PUMS variables (if multiple, as a list), quoted exactly, in uppercase</li>
+<strong>vars</strong> - one or more PUMS variables in UPPERCASE (if multiple, as a character vector)</li>
 </ul>
-<p>The PUMS data dictionary is captured in the object <strong>tidycensus::pums_variables</strong> (filter by year and survey). The Census Bureau also publishes each separate data dictionary online, <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.pdf">2015-19 as an example</a>.</p>
-<p>PUMS has two distinct units of analysis: persons (“persons” table), or households (“housing” table). You must call get_psrc_pums() specific to the unit of analysis at hand, as household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) A person-level dataset can include household-level attributes, and per Census Bureau conventions, a household-level dataset can contain the person-level attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates).</p>
-<p>Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a ‘baked-in’ inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw–as they were reported–along with an average inflation adjustment factor. If you prefer your estimates exclude this adjustment, add the argument <code>dollar_adj = FALSE</code>.</p>
-<p>The result of <strong>get_psrc_pums()</strong> is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list. Srvyr objects can be manipulated using dplyr syntax if necessary, although that is not required while using psrccensus (see [its vignette] (<a href="http://gdfe.co/srvyr/" class="uri">http://gdfe.co/srvyr/</a>)).</p>
-<p>The second step involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that combines all four in one call. Each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping).</p>
+<p><strong>get_psrc_pums()</strong> must be called separately for each combination of <strong>span - dyear - level</strong> you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (span and year), you will still need to use <strong>get_psrc_pums()</strong> once for households (level=“h”) and a second time for persons (‘level’=“p”). This is necessary because in PUMS, households and persons are not perfectly coextensive: household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) When you invoke <strong>get_psrc_pums()</strong> we suggest you assign a name that helps you differentiate between whatever <strong>span - dyear - level</strong> combinations are relevant to your analysis.</p>
+<p>Although PUMS variables are measured specific to either persons or households, either unit of analysis can be associated with all variables–persons inherit their respective household attributes (albeit missing in the case of for group quarters), and households are, per Census Bureau convention, assigned the person attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). Variables must be typed exactly, so it is recommended to consult a PUMS data directory, especially since some variables may differ between data years. The PUMS data dictionary from 2017- forward is captured in the R object <strong>tidycensus::pums_variables</strong> (filter by year and survey). The Census Bureau also publishes <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/">each separate data dictionary online in html, pdf or txt</a>, which can be easily searched via web browser.</p>
+<div id="custom-variables" class="section level3">
+<h3 class="hasAnchor">
+<a href="#custom-variables" class="anchor"></a>Custom variables</h3>
+<p>In addition to variables listed in the Census PUMS data dictionary, you can also select the following custom PSRC variables: * <strong>RACETH</strong>: household-level race/ethnicity taking all household members into consideration * <strong>HISPYN</strong>: household-level hispanic ethnicity taking all household members into consideration * <strong>BINCOME</strong>: household income (HINCP) grouped by standard PSRC breakpoints * <strong>BIN_AGE</strong>: age (AGEP) grouped by standard PSRC breakpoints * <strong>BIN_POVRATIO</strong>: ratio of household income to the poverty level (POVPIP) grouped by standard PSRC breakpoints as direct fraction (not percent)</p>
+</div>
+<div id="inflation-adjustment" class="section level3">
+<h3 class="hasAnchor">
+<a href="#inflation-adjustment" class="anchor"></a>Inflation adjustment</h3>
+<p>Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a ‘baked-in’ inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw–as they were reported–along with an average inflation adjustment factor. Inflation adjustment is particularly important for multi-year (3- and 5-yr) datasets. <strong>psrccensus</strong> applies the correct adjustment for you. PUMS estimates will not match their ACS counterparts precisely, but the adjustment brings them closer.</p>
+</div>
+<div id="manipulating-data-after-get_psrc_pums" class="section level3">
+<h3 class="hasAnchor">
+<a href="#manipulating-data-after-get_psrc_pums" class="anchor"></a>Manipulating data after get_psrc_pums()</h3>
+<p>The result of <strong>get_psrc_pums()</strong> is a structured data object (per the srvyr package) that has sampling and replication weights built in. The analysis and grouping variables are stored in a dataframe as the seventh item in the list, if you wish to view the data. When further transformations or groupings of the provided variables are necessary, you can manipulate the srvyr object directly using <strong>dpylr</strong>’s <strong>filter</strong> and <strong>mutate</strong> functions (potentially in combination with <strong>select</strong>), which maintaining the associated srvyr weights and structure (see [its vignette] (<a href="http://gdfe.co/srvyr/" class="uri">http://gdfe.co/srvyr/</a>)).</p>
+</div>
+</div>
+<div id="generating-summary-statistics-from-pums-using-psrccensus" class="section level2">
+<h2 class="hasAnchor">
+<a href="#generating-summary-statistics-from-pums-using-psrccensus" class="anchor"></a>Generating summary statistics from PUMS using psrccensus</h2>
+<p>The second step in an analysis involves calculating summary statistics from the result of the prior step. There are five separate functions, one for each of four statistics, and a summary function that gives all four in the same table. By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument <code>incl_counties=FALSE</code>. Although PUMS data exists for the entire country, results of psrccensus are filtered to the 4-county PSRC region for simplicity.</p>
 <div class="line-block">         <strong>psrc_pums_count()</strong><br>
          <strong>psrc_pums_sum()</strong><br>
          <strong>psrc_pums_median()</strong><br>
          <strong>psrc_pums_mean()</strong><br>
          <strong>psrc_pums_summary()</strong>
 </div>
-<p>The arguments for each function are identical:</p>
+<p>The arguments for each summary function are identical:</p>
 <ul>
 <li>
-<strong>so</strong> - The srvyr object returned by <strong>get_psrc_pums()</strong>; this facilitates chaining (e.g. via magrittr pipe)</li>
+<strong>so</strong> - The srvyr object returned by <strong>get_psrc_pums()</strong>
+</li>
 <li>
 <strong>target_var</strong> - The variable to be summarized.</li>
 <li>
-<strong>group_vars</strong> - Optional grouping variable/s (if multiple, as a list)</li>
+<strong>group_vars</strong> - Optional grouping variable/s (if multiple, as a character vector)</li>
 </ul>
+<p>Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them.</p>
 <p><strong>psrccensus</strong> does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous. The target_var argument is ignored by the count function (for which the primary variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).</p>
-<p>Since PUMS records are sampled rather than comprising a full census, <strong>psrccensus</strong> applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error for each estimate in a separately labeled ’_moe’ column.</p>
+<p>Since PUMS records are sampled rather than comprising a full census, <strong>psrccensus</strong> applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled ’_moe’ column.</p>
+</div>
+<div id="examples" class="section level2">
+<h2 class="hasAnchor">
+<a href="#examples" class="anchor"></a>Examples</h2>
 <p>As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_pums.html">get_psrc_pums</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">5</span>,                     <span class="co"># Denoting ACS 5-year estimates; 1-year also available</span>
+                   dyear <span class="op">=</span> <span class="fl">2019</span>,                 <span class="co"># Last data year of span</span>
+                   level <span class="op">=</span> <span class="st">"h"</span>,                  <span class="co"># Unit of analysis == household ("p" used for person)</span>
+                   vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HINCP"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># PUMS household income &amp; housing tenure variables; using tenure later. </span>
+                                                 <span class="co">#  - You can choose as many variables as you need.</span>
+<span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, target_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>        <span class="co"># Median Household income (without regard to tenure)</span></code></pre></div>
+<p>To calculate by a subgroup category (here, housing tenure–e.g. own vs. rent), use the optional grouping variable argument.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ni</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_pums.html">get_psrc_pums</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">5</span>,                          <span class="co"># Denoting ACS 5-year estimates; 1-year also available</span>
-                   dyear <span class="op">=</span> <span class="fl">2019</span>,                      <span class="co"># Last data year of span</span>
-                   level <span class="op">=</span> <span class="st">"h"</span>,                       <span class="co"># Unit of analysis == person; "h" used for household</span>
-                   vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HINCP"</span>,<span class="st">"TEN"</span><span class="op">)</span>,           <span class="co"># PUMS household income &amp; housing tenure variables; using tenure later</span>
-                   ftp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>                        <span class="co"># ftp option avoids Census API downtime</span>
-<span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">ni</span>, target_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>            <span class="co"># Median Household income (without regard to tenure)</span></code></pre></div>
-<p>To calculate by a subgroup category (here, housing tenure–e.g. own vs. rent), use the optional grouping variable argument. As is typical, function argument names can be omitted if arguments are provided in strict order.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">ni</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span>                  <span class="co"># Median household income grouped by tenure</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>,                              <span class="co"># the assigned result of get_psrc_pums()</span>
+                 target_var <span class="op">=</span> <span class="st">"HINCP"</span>,           <span class="co"># Summarizing household income . . .</span>
+                 group_vars <span class="op">=</span> <span class="st">"TEN"</span><span class="op">)</span>             <span class="co"># . . . grouped by housing tenure</span></code></pre></div>
 <p>The count function tabulates the number people or households by grouping category, depending on the level you specified in <strong>get_psrc_pums</strong>. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the ‘total’ function instead, which sums the target variable.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">x</span>, group_var<span class="op">=</span><span class="st">"TEN"</span><span class="op">)</span>              <span class="co"># If omitting target_var argument, group_var must be labeled</span></code></pre></div>
+<p>The summary function provides all four statistics and their margins of error in the same table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">ni</span>, group_var<span class="op">=</span><span class="st">"TEN"</span><span class="op">)</span>                  <span class="co"># If omitting target_var argument, group_var must be labeled</span></code></pre></div>
-<p>The summary function provides all four statistics and their margins of error in the same table:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_summary</a></span><span class="op">(</span><span class="va">ni</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span></code></pre></div>
-<p>All results are limited to the 4-county PSRC region for simplicity, although the underlying data exists for every part of the country.</p>
-<p>At present the Census Microdata API is limited to data years 2017 and later. The API also routinely experiences unexplained downtime between 2-7pm Pacific Time, returning in place of data the message</p>
-<p><em>“Your API call has errors. The API message returned is There was an error while running your query. We’ve logged the error and we’ll correct it ASAP. Sorry for the inconvenience.”</em> -or- <em>“Sorry, the system is currently undergoing maintenance or is busy. Please try again later.”</em></p>
-<p>For earlier data years, or when the API is down, it is possible to download raw PUMS from the <a href="https://www2.census.gov/programs-surveys/acs/data/pums/">Census FTP server</a>.</p>
+<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_summary</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="sample-sizes-confidence-and-error-margins" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sample-sizes-confidence-and-error-margins" class="anchor"></a>Sample sizes, confidence, and error margins</h2>
+<p>Although <strong>psrccensus</strong> allows you to specify multiple grouping variables, you’ll need to keep in mind that there are limits to what can be usefully determined from small subsets of respondents within PUMS. To draw responsible conclusions from PUMS data, you’ll need to examine the margins of error (MOE) psrccensus calculates along with the estimate. (This is when PUMS via psrccensus really shines, since it can be laborious to calculate the MOE without dedicated statistical software.) Margins of error in the PUMS are given in the same units as the estimate (as with ACS), so it is easy to get the bounds of the 90 percent confidence interval by both adding the MOE to the estimate and subtracting the MOE from it.</p>
+<p>If there are few respondents in a category combination, the margin of error may be beyond calculation (NaN, or ‘not a number’), or so large that the estimate itself has little practical value. In these cases, you may want to consider either switching from the 1-year to 5-year span (the latter has a larger sample), potentially analyze dimensions of the data separately rather than in combination. If there are no respondents at all for one of your category combinations, the srvyr statistical functions will return an error; in that case you’ll need either to shift to region-only estimates (using the <code>incl_counties=FALSE</code> option) or to aggregate/filter the problematic combination (via dplyr’s <code>mutate</code> or <code>filter</code>, for example).</p>
+<div id="determining-difference" class="section level3">
+<h3 class="hasAnchor">
+<a href="#determining-difference" class="anchor"></a>Determining difference</h3>
+<p>Is there an actual difference between two statistics generated from PUMS data? To know, you’ll need to examine the margins of error. As a rule of thumb, if there is overlap in the 90 percent confidence intervals of the two estimates, you cannot conclude the values are different. To perform a more careful test, you can determine whether the Z score: <span class="math display">\[\frac{|Est_{1} - Est_{2}|}{\sqrt{MOE_{est1}^2 + MOE_{est2}^2}}\]</span> There is only a meaningful difference between two estimates if the Z score is greater than 1. This test can be applied between different years, or between PUMS and ACS. However, please remember Census warns against drawing comparisons between estimates generated from different spans (e.g. 1yr vs. 5yr), especially overlapping ones (as the observations may be repeated).</p>
+</div>
 </div>
   </div>
 

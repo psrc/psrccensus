@@ -130,15 +130,15 @@
     <p>Separate function for total, count, median, mean</p>
     </div>
 
-    <pre class="usage"><span class='fu'>psrc_pums_count</span><span class='op'>(</span><span class='va'>so</span>, target_var <span class='op'>=</span> <span class='cn'>NULL</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>psrc_pums_count</span><span class='op'>(</span><span class='va'>so</span>, target_var <span class='op'>=</span> <span class='cn'>NULL</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span>, incl_counties <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='fu'>psrc_pums_sum</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>psrc_pums_sum</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span>, incl_counties <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='fu'>psrc_pums_median</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>psrc_pums_median</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span>, incl_counties <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='fu'>psrc_pums_mean</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>psrc_pums_mean</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span>, incl_counties <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='fu'>psrc_pums_summary</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+<span class='fu'>psrc_pums_summary</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>target_var</span>, group_vars <span class='op'>=</span> <span class='cn'>NULL</span>, incl_counties <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,6 +155,10 @@
       <th>group_vars</th>
       <td><p>Factor variable/s for grouping, as an UPPERCASE string element or list</p></td>
     </tr>
+    <tr>
+      <th>incl_counties</th>
+      <td><p>Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -168,12 +172,9 @@
 </div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Attaching package: 'magrittr'</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from 'package:rlang':</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    set_names</span></div><div class='input'><span class='va'>so</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_psrc_pums.html'>get_psrc_pums</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2019</span>, <span class='st'>"h"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HINCP"</span>, <span class='st'>"TEN"</span><span class='op'>)</span>, ftp<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+#&gt; <span class='message'>    set_names</span></div><div class='input'><span class='va'>so</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_psrc_pums.html'>get_psrc_pums</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2019</span>, <span class='st'>"h"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HINCP"</span>, <span class='st'>"TEN"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>rs</span> <span class='op'>&lt;-</span> <span class='fu'>psrc_pums_median</span><span class='op'>(</span><span class='va'>so</span>, <span class='st'>"HINCP"</span>, <span class='st'>"TEN"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error: Problem with `summarise()` column `HINCP_median`.</span>
-#&gt; <span class='error'><span style='color: #0000BB;'>i</span> `HINCP_median = (...)`.</span>
-#&gt; <span class='error'><span style='color: #BB0000;'>x</span> error in evaluating the argument 'x' in selecting a method for function 't': missing value where TRUE/FALSE needed</span>
-#&gt; <span class='error'><span style='color: #0000BB;'>i</span> The error occurred in group 17: TEN = NA, COUNTY = King.</span></div><div class='input'>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

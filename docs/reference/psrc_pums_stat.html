@@ -130,7 +130,7 @@
     <p>Given specific form by related <code><a href='pums_stat.html'>pums_stat</a></code> functions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>psrc_pums_stat</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>stat_type</span>, <span class='va'>target_var</span>, <span class='va'>group_vars</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>psrc_pums_stat</span><span class='op'>(</span><span class='va'>so</span>, <span class='va'>stat_type</span>, <span class='va'>target_var</span>, <span class='va'>group_vars</span>, <span class='va'>incl_counties</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,6 +150,10 @@
     <tr>
       <th>group_vars</th>
       <td><p>Factor variable/s for grouping, as an UPPERCASE string element or list</p></td>
+    </tr>
+    <tr>
+      <th>incl_counties</th>
+      <td><p>Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."</p></td>
     </tr>
     </table>
 

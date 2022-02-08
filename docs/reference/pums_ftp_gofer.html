@@ -132,7 +132,7 @@ Helper to the get_psrc_pums function" />
 Helper to the <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code> function</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pums_ftp_gofer</span><span class='op'>(</span><span class='va'>span</span>, <span class='va'>dyear</span>, <span class='va'>level</span>, <span class='va'>vars</span>, dollar_adj <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pums_ftp_gofer</span><span class='op'>(</span><span class='va'>span</span>, <span class='va'>dyear</span>, <span class='va'>level</span>, <span class='va'>vars</span>, <span class='va'>dollar_adj</span>, <span class='va'>dir</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,6 +156,10 @@ Helper to the <code><a href='get_psrc_pums.html'>get_psrc_pums</a></code> functi
     <tr>
       <th>dollar_adj</th>
       <td><p>Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS</p></td>
+    </tr>
+    <tr>
+      <th>dir</th>
+      <td><p>Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.</p></td>
     </tr>
     </table>
 
