@@ -11,7 +11,7 @@ get_equity_geographies(
 )
 }
 \arguments{
-\item{equity_type}{string, The type of equity geography either '50' or 'regavg'}
+\item{equity_type}{string, The type of equity geography either '50' (50 percent) or 'regavg' (regional average)}
 
 \item{equity_group}{string, The group of people described by the equity geography, options are:
 'race',
