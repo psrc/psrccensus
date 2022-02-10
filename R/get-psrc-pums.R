@@ -434,3 +434,17 @@ psrc_pums_summary <- function(so, target_var, group_vars=NULL, incl_counties=TRU
   rs <- psrc_pums_stat(so=so, stat_type="summary", target_var=target_var, group_vars=group_vars, incl_counties=incl_counties)
   return(rs)
 }
+
+#' Z Score
+#'
+#' Stat to determine if two estimates are different
+#'
+#' @param x numeric vector, first estimate and corresponding MOE to compare
+#' @param y numeric vector, second estimate and corresponding MOE to compare
+#' @return Z score; if larger than 1, difference is significant
+#'
+#' @export
+z_score <- function(x, y){
+  z <- abs(x[1] - y[1]) / sqrt(x[2]^2 - y[2]^2)
+  return(z)
+}
