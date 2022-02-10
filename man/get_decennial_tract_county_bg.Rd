@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-decennial-recs.R
 \name{get_decennial_tract_county_bg}
 \alias{get_decennial_tract_county_bg}
-\title{Decennial Estimates by Tract and County}
+\title{Decennial Estimates by Tract or Block Group and County}
 \usage{
 get_decennial_tract_county_bg(
   geography,
@@ -19,12 +19,12 @@ get_decennial_tract_county_bg(
 
 \item{table_codes}{A character string or vector of Census table codes.}
 
-\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2010.}
+\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.}
 
 \item{state}{A character string state abbreviation}
 }
 \value{
-a tibble of decennial estimates by either tracts in a county/counties for selected table codes. Does not include
+a tibble of decennial estimates by either tracts in a county/counties for selected table codes and years. Does not include
 variable names.
 }
 \description{

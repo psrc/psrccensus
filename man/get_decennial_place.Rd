@@ -4,16 +4,16 @@
 \alias{get_decennial_place}
 \title{Decennial Estimates by Place}
 \usage{
-get_decennial_place(table_codes, year, fips = NULL, state = "WA")
+get_decennial_place(table_codes, years, fips = NULL, state = "WA")
 }
 \arguments{
 \item{table_codes}{A character string or vector of Census table codes.}
 
+\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.}
+
 \item{fips}{Character value. Single code or vector of place fips codes.}
 
 \item{state}{A character string state abbreviation}
-
-\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2010.}
 }
 \value{
 a tibble of decennial estimates by place(s) for selected table codes. Does not include
