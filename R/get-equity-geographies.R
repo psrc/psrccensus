@@ -35,7 +35,7 @@ get_equity_geographies <- function(equity_type = '50', equity_group = 'race', ye
                   'elderly' = 'older',
                   'limited_english' = 'lep')
 
-  column_name <- column_name_orig <- paste('equity_geog', group, type, sep = "_")
+  column_name <- column_name_orig <- paste('equity', group, type, sep = "_")
   if(nchar(column_name) > 31) column_name <- stringr::str_sub(column_name, 1, 31)
   column_names <- paste0("geoid,", column_name)
   arc_root <- "https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services"

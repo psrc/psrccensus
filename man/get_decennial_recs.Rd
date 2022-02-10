@@ -20,7 +20,7 @@ get_decennial_recs(
 \item{table_codes}{A character string or vector of Census table codes,
 the table code will be padded with 0s such as "H001", as opposed to "H1}
 
-\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2010.}
+\item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.}
 
 \item{fips}{Character. Single code or vector of either MSA or place fips codes.}
 }
@@ -37,6 +37,8 @@ Sys.getenv("CENSUS_API_KEY")}
 tbl_names <- paste0('PCT020', LETTERS[1:6])
 get_decennial_recs(geography = 'county', table_codes = tbl_names, years = 2010)
 
+get_decennial_recs(geography = 'county', table_codes = 'P001', years = c(2000, 2010))
+
 get_decennial_recs(geography = 'tract', table_codes = tbl_names, years = 2010)
 
 get_decennial_recs(geography = 'place',
@@ -46,7 +48,7 @@ get_decennial_recs(geography = 'place',
 
 get_decennial_recs(geography = 'msa',
                    table_codes = c("H001", "P001"),
-                   years = 2010,
+                   years = c(2000, 2010),
                    fips = c('42660', "28420"))
 
 get_decennial_recs(geography = 'block group',
