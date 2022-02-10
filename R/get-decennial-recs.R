@@ -167,7 +167,6 @@ get_decennial_place <- function(table_codes, years, fips = NULL, state = 'WA') {
 get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table_codes, years,
                                fips = NULL) {
 
-  if(length(years) > 1) message('Content for table codes may differ across Census years. Please double check with tidycensus::load_variables()')
   if(geography %in% c('tract', 'county', 'block group')) {
     dfs <- get_decennial_tract_county_bg(geography = geography, table_codes = table_codes, years = years)
   } else if (geography == 'msa'){
@@ -181,6 +180,11 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
   data_years <- unique(dfs$year)
   for(data_year in data_years) {
     vars <- tidycensus::load_variables(data_year, "sf1")
+
+    if(data_year == 2000) { # clean labels
+      vars$concept <- stringr::str_extract(vars$concept, '.*(?=\\s(\\[)*)')
+    }
+
     df_join <- dfs %>%
       dplyr::filter(year == data_year) %>%
       dplyr::left_join(vars, by = c("variable" = "name"))
