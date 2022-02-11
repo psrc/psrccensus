@@ -15,7 +15,7 @@ psrc_bincome <- function(dt){
                              HINCP <  75000, "$50,000-$74,999",
                              HINCP < 100000, "$75,000-$99,999",
                              HINCP >=100000, "$100,000 or more",
-                             rep_len(TRUE, length(HINCP)),  "Else / Prefer not to answer"),
+                             !is.na(HINCP),  "Else / Prefer not to answer"),
                       levels=c("Under $25,000",
                                "$25,000-$49,999",
                                "$50,000-$74,999",
@@ -42,7 +42,7 @@ psrc_bin_age <- function(dt){
                              AGEP < 75, "between 65 and 75 years",
                              AGEP < 85, "between 75 and 85 years",
                              AGEP >=85, "85 years and over",
-                             rep_len(TRUE, length(AGEP)),  "Else / Prefer not to answer"),
+                             !is.na(AGEP), "Else / Prefer not to answer"),
                       levels=c("under 5 years",
                                "between 5 and 11 years",
                                "between 12 and 15 years",
@@ -70,15 +70,15 @@ psrc_bin_povratio <- function(dt){
                                   POVPIP < 185, "1.50 to 1.84",
                                   POVPIP < 200, "1.85 to 1.99",
                                   POVPIP >=200, "2.00 and over",
-                                  rep_len(TRUE, length(POVPIP)),  "Else"),
-                          levels=c("under 0.50",
-                                   "0.50 to 0.99",
-                                   "1.00 to 1.24",
-                                   "1.25 to 1.49",
-                                   "1.50 to 1.84",
-                                   "1.85 to 1.99",
-                                   "2.00 and over",
-                                   "Else"))]
+                                  !is.na(POVPIP), "Else"),
+                            levels=c("under 0.50",
+                                     "0.50 to 0.99",
+                                     "1.00 to 1.24",
+                                     "1.25 to 1.49",
+                                     "1.50 to 1.84",
+                                     "1.85 to 1.99",
+                                     "2.00 and over",
+                                     "Else"))]
   return(dt)
 }
 
@@ -101,18 +101,18 @@ psrc_bin_ybl<- function(dt){
                              grepl("^193", YBL_chr), "1939 or earlier",
                              between(as.integer(str_extract(YBL_chr,"^\\d+")), 2010, 2014), "2010 to 2013",
                              (as.integer(str_extract(YBL_chr,"^\\d+")) > 2013), "2014 or later",
-                             rep_len(TRUE, length(YBL_chr)), "Else"),
-                            levels=c("2014 or later",
-                                     "2010 to 2013",
-                                     "2000 to 2009",
-                                     "1990 to 1999",
-                                     "1980 to 1989",
-                                     "1970 to 1979",
-                                     "1960 to 1969",
-                                     "1950 to 1959",
-                                     "1940 to 1949",
-                                     "1939 or earlier",
-                                     "Else"))]
+                             !is.na(YBL_chr), "Else"),
+                        levels=c("2014 or later",
+                                 "2010 to 2013",
+                                 "2000 to 2009",
+                                 "1990 to 1999",
+                                 "1980 to 1989",
+                                 "1970 to 1979",
+                                 "1960 to 1969",
+                                 "1950 to 1959",
+                                 "1940 to 1949",
+                                 "1939 or earlier",
+                                 "Else"))]
   dt[, YBL_chr:=NULL]
   return(dt)
 }
@@ -124,7 +124,7 @@ psrc_bin_ybl<- function(dt){
 psrc_own_rent<- function(dt){
   dt[, OWN_RENT:=factor(fcase(as.integer(TEN) %in% c(1,2), "Owned",
                               as.integer(TEN) %in% c(3,4), "Rented",
-                              rep_len(TRUE, length(TEN)), "Else"),
+                              !is.na(TEN), "Else"),
                         levels=c("Owned",
                                  "Rented",
                                  "Else"))]
