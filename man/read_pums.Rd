@@ -7,14 +7,13 @@
 read_pums(target_file, dyear)
 }
 \arguments{
-\item{dyear}{The data year}
+\item{target_file}{either .csv from ftp site, or compressed .gz file on server}
 
-\item{csv_target}{csv filename}
+\item{dyear}{The data year}
 }
 \value{
 unzipped table
 }
 \description{
 Helper to the \code{\link{pums_ftp_gofer}} function
-Can be either .csv from ftp site, or compressed .gz file on server
 }

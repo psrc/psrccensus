@@ -10,6 +10,8 @@ codes2labels(dt, dyear, vars)
 \item{dt}{PSRC data.table}
 
 \item{dyear}{The data year}
+
+\item{vars}{PUMS variable/s as an UPPERCASE string element or list}
 }
 \value{
 PSRC data.table with labels

@@ -22,8 +22,7 @@ pums_recode_na <- function(dt){
 #' Read PUMS csv
 #'
 #' Helper to the \code{\link{pums_ftp_gofer}} function
-#' Can be either .csv from ftp site, or compressed .gz file on server
-#' @param csv_target csv filename
+#' @param target_file either .csv from ftp site, or compressed .gz file on server
 #' @param dyear The data year
 #' @return unzipped table
 #'
@@ -249,6 +248,7 @@ add_county <- function(dt, dyear){
 #' Delivers labels instead of values, where labels exist
 #' @param dt PSRC data.table
 #' @param dyear The data year
+#' @param vars PUMS variable/s as an UPPERCASE string element or list
 #' @return PSRC data.table with labels
 #'
 #' @import data.table
