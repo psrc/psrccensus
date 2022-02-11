@@ -81,3 +81,48 @@ psrc_bin_povratio <- function(dt){
                                    "Else"))]
   return(dt)
 }
+
+#' ACS year structure built groupings
+#'
+#' @param dt the data.table
+#' @return the data.table with an additional binned age field, "BIN_YBL"
+psrc_bin_ybl<- function(dt){
+  dt[, BIN_YBL:=factor(fcase(grepl("( to | or )", YBL), YBL,
+                             as.integer(YBL) < 1940,   "Built 1939 or earlier",
+                             as.integer(YBL) < 1950,   "1940 to 1949",
+                             as.integer(YBL) < 1960,   "1950 to 1959",
+                             as.integer(YBL) < 1970,   "1960 to 1969",
+                             as.integer(YBL) < 1980,   "1970 to 1979",
+                             as.integer(YBL) < 1990,   "1980 to 1989",
+                             as.integer(YBL) < 2000,   "1990 to 1999",
+                             as.integer(YBL) < 2010,   "2000 to 2009",
+                             as.integer(YBL) < 2014,   "2010 to 2013",
+                             as.integer(YBL) > 2013,   "2014 or later",
+                             TRUE, "Else"),
+                            levels=c("2014 or later",
+                                     "2010 to 2013",
+                                     "2000 to 2009",
+                                     "1990 to 1999",
+                                     "1980 to 1989",
+                                     "1970 to 1979",
+                                     "1960 to 1969",
+                                     "1950 to 1959",
+                                     "1940 to 1949",
+                                     "1939 or earlier",
+                                     "Else"))]
+  return(dt)
+}
+
+#' PSRC tenure groupings
+#'
+#' @param dt the data.table
+#' @return the data.table with dichotomous tenure field, "OWN_RENT"
+psrc_own_rent<- function(dt){
+  dt[, OWN_RENT:=factor(fcase(as.integer(TEN) %in% c(1,2), "Owned",
+                              as.integer(TEN) %in% c(3,4), "Rented",
+                              TRUE, "Else"),
+                        levels=c("Owned",
+                                 "Rented",
+                                 "Else"))]
+  return(dt)
+}

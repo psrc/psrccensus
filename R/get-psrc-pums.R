@@ -156,6 +156,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj, dir){
   if("BINCOME" %in% vars){dt %<>% psrc_bincome()}                                                  # See psrc-pums-groupings for custom binned variables
   if("BIN_AGE" %in% vars){dt %<>% psrc_bin_age()}                                                  # - "
   if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
+  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl()}                                                  # - "
+  if("OWN_RENT" %in% vars){dt %<>% psrc_own_rent()}                                                # - "
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")
