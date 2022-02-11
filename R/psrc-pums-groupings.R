@@ -90,7 +90,7 @@ psrc_bin_povratio <- function(dt){
 #' @importFrom stringr str_sub
 psrc_bin_ybl<- function(dt){
   dt[, BIN_YBL:=factor(fcase(grepl("( to | or )", YBL), YBL,
-                             as.integer(str_sub(YBL,1,4)) < 1940, "Built 1939 or earlier",
+                             as.integer(str_sub(YBL,1,4)) < 1940, "1939 or earlier",
                              as.integer(str_sub(YBL,1,4)) < 1950, "1940 to 1949",
                              as.integer(str_sub(YBL,1,4)) < 1960, "1950 to 1959",
                              as.integer(str_sub(YBL,1,4)) < 1970, "1960 to 1969",
