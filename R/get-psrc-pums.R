@@ -14,7 +14,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #'
 #' @import data.table
 pums_recode_na <- function(dt){
-  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.$|^N.A.//$|^$",dt[[col]]), j=col, value=NA)   # Recode all PUMS NA variations to the NA R recognizes
+  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.$|^N.A.//$|^NA$|^$",dt[[col]]), j=col, value=NA) # Recode all PUMS NA variations to the NA R recognizes
   dt %<>% .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=FALSE]                     # Drop columns composed completely of N/A values
   return(dt)
 }
