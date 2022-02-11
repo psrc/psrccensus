@@ -86,18 +86,20 @@ psrc_bin_povratio <- function(dt){
 #'
 #' @param dt the data.table
 #' @return the data.table with an additional binned age field, "BIN_YBL"
+#'
+#' @importFrom stringr str_sub
 psrc_bin_ybl<- function(dt){
   dt[, BIN_YBL:=factor(fcase(grepl("( to | or )", YBL), YBL,
-                             as.integer(YBL) < 1940,   "Built 1939 or earlier",
-                             as.integer(YBL) < 1950,   "1940 to 1949",
-                             as.integer(YBL) < 1960,   "1950 to 1959",
-                             as.integer(YBL) < 1970,   "1960 to 1969",
-                             as.integer(YBL) < 1980,   "1970 to 1979",
-                             as.integer(YBL) < 1990,   "1980 to 1989",
-                             as.integer(YBL) < 2000,   "1990 to 1999",
-                             as.integer(YBL) < 2010,   "2000 to 2009",
-                             as.integer(YBL) < 2014,   "2010 to 2013",
-                             as.integer(YBL) > 2013,   "2014 or later",
+                             as.integer(str_sub(YBL,1,4)) < 1940, "Built 1939 or earlier",
+                             as.integer(str_sub(YBL,1,4)) < 1950, "1940 to 1949",
+                             as.integer(str_sub(YBL,1,4)) < 1960, "1950 to 1959",
+                             as.integer(str_sub(YBL,1,4)) < 1970, "1960 to 1969",
+                             as.integer(str_sub(YBL,1,4)) < 1980, "1970 to 1979",
+                             as.integer(str_sub(YBL,1,4)) < 1990, "1980 to 1989",
+                             as.integer(str_sub(YBL,1,4)) < 2000, "1990 to 1999",
+                             as.integer(str_sub(YBL,1,4)) < 2010, "2000 to 2009",
+                             as.integer(str_sub(YBL,1,4)) < 2014, "2010 to 2013",
+                             as.integer(str_sub(YBL,1,4)) > 2013, "2014 or later",
                              TRUE, "Else"),
                             levels=c("2014 or later",
                                      "2010 to 2013",

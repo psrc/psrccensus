@@ -26,6 +26,8 @@ pums_recode_na <- function(dt){
 #' @param csv_target csv filename
 #' @param dyear The data year
 #' @return unzipped table
+#'
+#' @import data.table
 read_pums <- function(target_file, dyear){
   ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
   type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
@@ -51,6 +53,8 @@ read_pums <- function(target_file, dyear){
 #' @param dt data.table
 #' @param dyear The data year
 #' @return filtered data.table
+#'
+#' @import data.table
 filter2region <- function(dt, dyear){
   pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # PUMA boundary version correlates to last diennial census
   dt %<>% pums_recode_na() %>%
@@ -229,7 +233,6 @@ adjust_dollars <- function(dt){
 #' @return PSRC data.table with county names
 #'
 #' @import data.table
-
 add_county <- function(dt, dyear){
   PUMA3 <- if(dyear>2011){c(115:118)}else if(dyear<=2011 & dyear>=2000){c(15:18)}                  # PUMAs renumbered in 2012
   county_lookup <- data.frame(PUMA3, COUNTY=as.factor(c("Pierce","King","Snohomish","Kitsap"))) %>%
