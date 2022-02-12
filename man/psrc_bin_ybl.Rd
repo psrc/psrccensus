@@ -4,10 +4,12 @@
 \alias{psrc_bin_ybl}
 \title{ACS year structure built groupings}
 \usage{
-psrc_bin_ybl(dt)
+psrc_bin_ybl(dt, dyear)
 }
 \arguments{
 \item{dt}{the data.table}
+
+\item{dyear}{the data year}
 }
 \value{
 the data.table with an additional binned age field, "BIN_YBL"

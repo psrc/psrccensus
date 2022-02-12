@@ -47,7 +47,7 @@ In addition to variables listed in the Census PUMS data dictionary, you can also
   * **BINCOME**: household income (HINCP) grouped by standard PSRC breakpoints
   * **BIN_AGE**: age (AGEP) grouped by standard PSRC breakpoints
   * **BIN_POVRATIO**: ratio of household income to the poverty level (POVPIP) w/ PSRC breakpoints (fraction, not percent)
-  * **BIN_YBL**: year structure built by current ACS breakpoints
+  * **BIN_YBL**: year structure was built, by current ACS breakpoints
   * **OWN_RENT**: dichotomous tenure (simplified from TEN)
   
 ### Built-in inflation adjustment
