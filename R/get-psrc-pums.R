@@ -159,13 +159,13 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj, dir){
   if("BINCOME" %in% vars){dt %<>% psrc_bincome()}                                                  # See psrc-pums-groupings for custom binned variables
   if("BIN_AGE" %in% vars){dt %<>% psrc_bin_age()}                                                  # - "
   if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
-  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl()}                                                  # - "
   if("OWN_RENT" %in% vars){dt %<>% psrc_own_rent()}                                                # - "
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")
   rwgt <- grep(wgtrgx, colnames(dt), value=TRUE)                                                   # Specify replication weights
   varlist <- c(unlist(unit_key),"PUMA", unlist(vars), swgt, rwgt, adjvars) %>% unique()            # Columns to keep
+  if("BIN_YBL" %in% vars){varlist <- varlist[!(varlist %in% "BIN_YBL")] %>% c("YBL")}               # Swap; to be used later
   dt %<>% .[, colnames(.) %in% varlist, with=FALSE]                                                # Keep only specified columns
   dt[, (unit_key):=lapply(.SD, as.character), .SDcols=unit_key]                                    # Confirm datatype for keys (fread may return int for early years)
   return(dt)
@@ -322,6 +322,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, l
   dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY"))
   if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
   if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
+  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl()}
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
   varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
