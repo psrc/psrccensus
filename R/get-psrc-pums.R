@@ -146,10 +146,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj, dir){
   hh_me[(RACETH %like% ","|HISPYN %like% ","), RACETH:="11"]                                       # - Add multiracial
   hh_me[(HISPYN %like% ","), HISPYN:="B"]                                                          # - Add all-Hispanic
   dt_h %<>% merge(hh_me, by="SERIALNO", all.x=TRUE)
-  if(dollar_adj==TRUE){
-    adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
-    dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]            # Adjustment factors in ftp version without decimal
-  }
+  adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
+  dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]              # Adjustment factors in ftp version without decimal
   if(level=="h"){                                                                                  # For household analysis:                                                               #    filter out GQ or vacant units &
     dt_p %<>% .[as.integer(SPORDER)==1]                                                            #  - keep only householder person attributes
     dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]                #  - filter out GQ & vacant
