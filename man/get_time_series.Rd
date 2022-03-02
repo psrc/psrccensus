@@ -22,19 +22,13 @@ a time series chart or table.
 Generate Time Series Charts for Census Data
 }
 \examples{
-library(rlang)
-library(dplyr)
-library(rlang)
-library(scales)
-library(stringr)
 library(psrccensus)
-library(ggplot2)
 
 {
 Sys.getenv("CENSUS_API_KEY")
 }
 
-ts.table = get_acs_recs(geography = 'county', table.names = c('B01001'), years=c(2019,2018,2017),
+ts.table <- get_acs_recs(geography = 'county', table.names = c('B01001'), years=c(2019,2018,2017),
                     acs.type = 'acs5')
 
 get_time_series(ts.table, "B01001_002")

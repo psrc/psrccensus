@@ -63,7 +63,7 @@ tract.url <- "https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services
 tract.lyr<-st_read(tract.url)
 create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,
 map.title='Black, non-Hispanic Population',
-,map.title.position='topleft', legend.title='Black, Non-Hispanic Population',
+map.title.position='topleft', legend.title='Black, Non-Hispanic Population',
 legend.subtitle='by Census Tract')
 
 }
