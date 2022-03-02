@@ -307,8 +307,8 @@ ensure_datatypes <- function(dt){
 #'
 #' @examples
 #' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
-#' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
+#' Sys.getenv("CENSUS_API_KEY")
+#' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))}
 #'
 #' @export
 get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, labels=TRUE){
@@ -413,11 +413,11 @@ psrc_pums_sum <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
 #'
 #' @examples
 #' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
+#' Sys.getenv("CENSUS_API_KEY")
 #' library(magrittr)
 #' so <- get_psrc_pums(1, 2019, "h", c("HINCP", "TEN"))
 #' rs <- psrc_pums_median(so, "HINCP", "TEN")
-#'
+#'}
 #' @export
 psrc_pums_median <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
   rs <- psrc_pums_stat(so=so, stat_type="median", target_var=target_var, group_vars=group_vars, incl_counties=incl_counties)
