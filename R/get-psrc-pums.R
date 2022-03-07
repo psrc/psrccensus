@@ -284,13 +284,13 @@ codes2labels <- function(dt, dyear, vars){
 #'
 #' @import data.table
 ensure_datatypes <- function(dt){
-  ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
+  allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
+  dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
+    ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
     .[. %not_in% c("SERIALNO","PUMA")]
   if(length(ftr_vars)>0){
     dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                     # Ensure grouping variables are factors (required by srvyr)
   }
-  allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
-  dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
   return(dt)
 }
 
@@ -316,8 +316,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, l
   unit_var <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj, dir)
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
-  wgtrgx <- paste0("^",swgt,"\\d+$")
-  rwgt <- grep(wgtrgx, colnames(dt), value=TRUE)                                                   # Specify replication weights
+  rwgt <- paste0(swgt, 1:80)                                                                       # Specify replication weights
   dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY"))
   if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
   if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
@@ -325,14 +324,14 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, l
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
   varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
-    srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
-                         weights=all_of(swgt),
-                         repweights=all_of(rwgt),
+    srvyr::as_survey_rep(variables=varlist,                                                        # Create srvyr object with replication weights for MOE
+                         weights=swgt,
+                         repweights=rwgt,
                          combined_weights=TRUE,
                          mse=TRUE,
                          type="other",
                          scale=4/80,
-                         rscale=rep(1:80))
+                         rscale=rep(1,80))
   return(dt)
 }
 
@@ -353,16 +352,17 @@ psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties)
   }
   if(incl_counties==TRUE){so %<>% srvyr::group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
-    rs <- cascade(so, count:=survey_total(na.rm=TRUE, vartype="se", level=0.90))
+    rs <- cascade(so, count:=survey_total(na.rm=TRUE))
   }else if(stat_type=="summary"){
-    rs <- cascade(so, count:=survey_total(na.rm=TRUE, vartype="se", level=0.90),
-            !!paste0(prefix,"total"):=survey_total(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90),
-            !!paste0(prefix,"median"):=survey_median(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90),
-            !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90))
+    rs <- cascade(so, count:=survey_total(na.rm=TRUE),
+            !!paste0(prefix,"share"):=survey_prop(),
+            !!paste0(prefix,"total"):=survey_total(!!as.name(target_var), na.rm=TRUE),
+            !!paste0(prefix,"median"):=survey_median(!!as.name(target_var), na.rm=TRUE),
+            !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- cascade(so,
-            !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE, vartype="se", level=0.90)))
+            !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE)))
   }
   rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
