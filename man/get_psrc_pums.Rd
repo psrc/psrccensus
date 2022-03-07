@@ -37,7 +37,7 @@ The primary PUMS function
 }
 \examples{
 \dontrun{
-Sys.getenv("CENSUS_API_KEY")}
-get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))
+Sys.getenv("CENSUS_API_KEY")
+get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))}
 
 }
