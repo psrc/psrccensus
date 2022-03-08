@@ -124,7 +124,7 @@ fetch_ftp <- function(span, dyear, level){
 #' sample & replication weights, and if needed, inflation adjustments
 #'
 #' @import data.table
-pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj, dir){
+pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
   unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
@@ -344,7 +344,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, l
 #'
 #' @importFrom rlang sym
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties){
+psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=TRUE){
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){

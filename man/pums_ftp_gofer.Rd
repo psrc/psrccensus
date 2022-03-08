@@ -4,7 +4,7 @@
 \alias{pums_ftp_gofer}
 \title{PUMS ftp go-fer}
 \usage{
-pums_ftp_gofer(span, dyear, level, vars, dollar_adj, dir)
+pums_ftp_gofer(span, dyear, level, vars, dollar_adj = TRUE, dir = NULL)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
