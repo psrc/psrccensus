@@ -352,18 +352,21 @@ psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=
   }
   if(incl_counties==TRUE){so %<>% srvyr::group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
-    rs <- suppressWarnings(cascade(so, count:=survey_total(na.rm=TRUE),
-            !!paste0(prefix,"share"):=survey_prop()))
+    rs <- suppressMessages(cascade(so,
+            count:=survey_total(na.rm=TRUE),
+            share:=survey_prop()))
   }else if(stat_type=="median"){
-    rs <- suppressWarnings(cascade(so, !!paste0(prefix, stat_type):=survey_median(!!as.name(target_var), na.rm=TRUE, interval_type = "quantile")))
+    rs <- suppressMessages(cascade(so,
+            !!paste0(prefix, "median"):=survey_median(!!as.name(target_var), na.rm=TRUE, interval_type = "quantile", qrule="school")))
   }else if(stat_type=="summary"){
-    rs <- suppressWarnings(cascade(so, count:=survey_total(na.rm=TRUE),
-            !!paste0(prefix,"share"):=survey_prop(),
-            !!paste0(prefix,"median"):=survey_median(!!as.name(target_var), na.rm=TRUE, interval_type = "quantile"),
-            !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE)))
+    rs <- suppressMessages(cascade(so,
+            count:=survey_total(na.rm=TRUE),
+            share:=survey_prop(),
+            !!paste0(prefix, "median"):=survey_median(!!as.name(target_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+            !!paste0(prefix, "mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE)))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
-    rs <- suppressWarnings(cascade(so,
+    rs <- suppressMessages(cascade(so,
             !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE))))
   }
   rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
