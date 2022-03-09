@@ -352,11 +352,11 @@ psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=
   }
   if(incl_counties==TRUE){so %<>% srvyr::group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
-    rs <- cascade(so, count:=survey_total(na.rm=TRUE))
+    rs <- cascade(so, count:=survey_total(na.rm=TRUE),
+            !!paste0(prefix,"share"):=survey_prop())
   }else if(stat_type=="summary"){
     rs <- cascade(so, count:=survey_total(na.rm=TRUE),
             !!paste0(prefix,"share"):=survey_prop(),
-            !!paste0(prefix,"total"):=survey_total(!!as.name(target_var), na.rm=TRUE),
             !!paste0(prefix,"median"):=survey_median(!!as.name(target_var), na.rm=TRUE),
             !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE))
   }else{
