@@ -110,6 +110,7 @@ B18130_041,AGE BY DISABILITY STATUS BY POVERTY STATUS,Estimate!!Total:!!75 years
 B18130_042,AGE BY DISABILITY STATUS BY POVERTY STATUS,Estimate!!Total:!!75 years and over:!!No disability:!!Income in the past 12-months below poverty level,Disability - Income Group,With a disabilty- income below poverty
 B18130_043,AGE BY DISABILITY STATUS BY POVERTY STATUS,Estimate!!Total:!!75 years and over:!!No disability:!!Income in the past 12-months at or above poverty level,Disability - Income Group,With a disability-income at or above poverty
 B03002_001,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:,Race Group,Total
+B03002_002,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or Latino,Race Group,Not Hispanic or Latino
 B03002_003,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or Latino:!!White alone,Race Group,"White alone, not Hispanic"
 B03002_004,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone,Race Group,"Black or African American alone, not Hispanic"
 B03002_005,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or Latino:!!American Indian and Alaska Native alone,Race Group,"Other Race or Two or More Races, Not Hispanic"
@@ -118,3 +119,11 @@ B03002_007,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or L
 B03002_008,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or Latino:!!Some other race alone,Race Group,"Other Race or Two or More Races, Not Hispanic"
 B03002_009,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Not Hispanic or Latino:!!Two or more races:,Race Group,"Other Race or Two or More Races, Not Hispanic"
 B03002_012,HISPANIC OR LATINO ORIGIN BY RACE,Estimate!!Total:!!Hispanic or Latino:,Race Group,Hispanic or Latino (of any race)
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+v,,,,
