@@ -133,14 +133,18 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
     dt_p  <- suppressWarnings(read_pums(pfile, dyear))
   }else{
     dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                          # Otherwise, ftp source
-    dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p"))
+    dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>%
+      .[, RACE:=fcase(as.integer(HISP)!=1, "11",                                                   # PSRC non-overlapping race category (Hispanic its own race)
+                      RAC1P %in% c("3","4","5"), "10",
+                      !is.na(RAC1P), RAC1P)]
   }
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
   tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, RAC1P, HISP)] %>%
-     .[,`:=`(RACETH=RAC1P, HISPYN=fcase(as.integer(HISP)==1, "N", default="Y"))]
-  tmp_p[RAC1P %in% c("3","4","5"), RACETH:="10"]                                                   # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
+     .[,`:=`(RACETH=RAC1P,
+             HISPYN=fcase(as.integer(HISP)==1, "N", default="Y"))]
+  tmp_p[RAC1P %in% c("3","4","5"), c("RACE", "RACETH"):="10"]                                      # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
   hh_me <- tmp_p[, .(RACETH=stuff(RACETH), HISPYN=stuff(HISPYN)), by=.(SERIALNO)] %>%              # Summarize households by race/ethnic composition
      setkey("SERIALNO")
   hh_me[(RACETH %like% ","|HISPYN %like% ","), RACETH:="11"]                                       # - Add multiracial
@@ -258,13 +262,16 @@ codes2labels <- function(dt, dyear, vars){
     unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
   tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
     .[, var_code:="RACETH"]
-  raceth <- rbindlist(list(tmp1,
-                           list("RACETH", "10", "American Indian or Alaskan Native Alone"),        # PSRC multiethnic categories, based on RAC1P and HISP
-                           list("RACETH", "11", "Multiple Races"),
-                           list("HISPYN", "Y", "Hispanic or Latino"),
-                           list("HISPYN", "N", "Not Hispanic or Latino"),
-                           list("HISPYN", "B", "Some Hispanic or Latino")))
-  recoder <- rbindlist(list(recoder, raceth)) %>% .[var_code %in% vars] %>% setkey("val_max")      # Add to label lookup; filter variables
+  tmp2 <- copy(tmp1) %>% .[, var_code:="RACE"]
+  racextra <- rbindlist(list(tmp1, tmp2,
+                         list("RACE", "10", "American Indian or Alaskan Native Alone"),
+                         list("RACE", "11", "Hispanic or Latino"),                                 # PSRC non-overlapping race category (Hispanic as a race)
+                         list("RACETH", "10", "American Indian or Alaskan Native Alone"),
+                         list("RACETH", "11", "Multiple Races"),                                   # PSRC race/ethnicity category based on all household members
+                         list("HISPYN", "Y", "Hispanic or Latino"),                                # PSRC Hispanic category based on all household members
+                         list("HISPYN", "N", "Not Hispanic or Latino"),
+                         list("HISPYN", "B", "Some Hispanic or Latino")))
+  recoder <- rbindlist(list(recoder, racextra)) %>% .[var_code %in% vars] %>% setkey("val_max")    # Add to label lookup; filter variables
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
     for (v in recode_vars){
