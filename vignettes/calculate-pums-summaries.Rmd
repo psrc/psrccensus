@@ -42,13 +42,14 @@ Although PUMS variables are measured specific to either persons or households, e
 ### Built-in PSRC variables
 In addition to variables listed in the Census PUMS data dictionary, you can also select the following custom PSRC variables:
 
-  * **RACETH**: household-level race/ethnicity taking all household members into consideration
-  * **HISPYN**: household-level hispanic ethnicity taking all household members into consideration
-  * **BINCOME**: household income (HINCP) grouped by standard PSRC breakpoints
-  * **BIN_AGE**: age (AGEP) grouped by standard PSRC breakpoints
-  * **BIN_POVRATIO**: ratio of household income to the poverty level (POVPIP) w/ PSRC breakpoints (fraction, not percent)
-  * **BIN_YBL**: year structure was built, by current ACS breakpoints
-  * **OWN_RENT**: dichotomous tenure (simplified from TEN)
+  * **RACE**         - person-level race/ethnicity in which Hispanic/Latino is its own race category (non-overlapping with other races)
+  * **RACETH**       - household-level race/ethnicity taking all household members into consideration
+  * **HISPYN**       - household-level hispanic ethnicity taking all household members into consideration
+  * **BINCOME**      - household income (HINCP) grouped by standard PSRC breakpoints
+  * **BIN_AGE**      - age (AGEP) grouped by standard PSRC breakpoints
+  * **BIN_POVRATIO** - ratio of household income to the poverty level (POVPIP) w/ PSRC breakpoints (fraction, not percent)
+  * **BIN_YBL**      - year structure was built, by current ACS breakpoints
+  * **OWN_RENT**     - dichotomous tenure (simplified from TEN)
   
 ### Built-in inflation adjustment
 Because the ACS (from which the PUMS records are developed) is a rolling survey, responses are collected at different times throughout the year and the value of money may have changed slightly during that time. Published ACS estimates have a 'baked-in' inflation adjustment (derived from the Federal Consumer Price Index, or CPI) to account for this. Dollar amounts in the PUMS dataset, however, are provided raw--as they were reported--along with an average inflation adjustment factor. Inflation adjustment is particularly important for multi-year (3- and 5-yr) datasets. **psrccensus** applies the correct adjustment for you. PUMS estimates will not match their ACS counterparts precisely, but the adjustment brings them closer.
