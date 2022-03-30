@@ -1,41 +1,4 @@
-reference:
-- title: Functions
-  desc: Functions to Call
-- contents:
-  - get_acs_recs
-  - get_decennial_recs
-  - create_tract_map
-  - get_time_series
-  - get_psrc_pums
-  - psrc_pums_median
-  - psrc_pums_mean
-  - psrc_pums_count
-  - psrc_pums_ratio
-  - psrc_pums_total
-  - county_pums_median
-  - county_pums_mean
-  - county_pums_count
-  - county_pums_total
+url: https://psrc.github.io/psrccensus/
+template:
+  bootstrap: 5
 
-- subtitle: Formatting functions
-  desc: Functions to better format the data and ease data access
-  contents:
-  - format_estimates
-  - group_recs
-  - get_equity_geographies
-- subtitle: Helper functions
-  desc: Internal, intermediate functions not for end-users' use
-  contents:
-  - get_acs_county
-  - get_acs_place
-  - get_acs_tract
-  - get_decennial_msa
-  - get_decennial_place
-  - get_decennial_tract_county_bg
-  - adjust_inflation
-  - adjust_dollars
-  - clip2region
-  - add_county
-  - psrc_pums_groupvar
-  - psrc_pums_targetvar
-  - psrc_pums_stat
