@@ -9,6 +9,13 @@
 This package provides functions to easily collect census estimates across geographies within the
 Central Puget Sound region. It works with Decennial, ACS and PUMS datasets
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://psrc.github.io/psrccensus/}
+}
+
+}
 \author{
 Christy Lam \email{clam@psrc.org}
 }
