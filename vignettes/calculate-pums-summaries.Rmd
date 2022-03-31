@@ -20,7 +20,7 @@ library(knitr)
 
 Along with publishing summary statistics from the diennial Census or American Community Survey (ACS), the Census Bureau also makes available a subset of individual person and housing (incl. household) records, called the Public Use Microdata Sample (PUMS). These can be used to estimate models or to tabulate custom statistics unavailable in Census-published summary statistics. Partly to safeguard privacy, PUMS data is not categorized by standard Census geographies such as block, block group or tract; instead the unit is the Public Use Microdata Area (PUMA), an aggregation of tracts with total population between 100,000-200,000. In the past there were more than one set of PUMAs, corresponding to different sampling rates; that is no longer the case (PUMAs now consistently represent a 5 percent sample).
 
-PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data (see [section below] (#Sample-sizes,-confidence,-and error margins)). The Census Bureau resource [What ACS Public Use Microdata Sample File Users Need to Know]( https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html) is a helpful resource if you have further questions about PUMS itself.
+PUMS data include sampling weights in order to be extrapolated to a larger population, and replication weights in order to calculate margins of error. When PUMS is used to drill down to small subsets of the population, particular attention should be paid to the margins of error in drawing any conclusions from the data; see [section below](#Sample-sizes,-confidence,-and error margins). The Census Bureau resource [What ACS Public Use Microdata Sample File Users Need to Know]( https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html) is a helpful resource if you have further questions about PUMS itself.
 
 ## Retrieve PUMS data: *get_psrc_pums()*
 
@@ -83,7 +83,7 @@ Since PUMS records are sampled rather than comprising a full census, **psrccensu
 
 ### Examples
 As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
-```{r median, message=FALSE, eval=FALSE}
+```{r median, message=FALSE}
 x <- get_psrc_pums(span = 5,                     # Denoting ACS 5-year estimates; 1-year also available
                    dyear = 2019,                 # Last data year of span
                    level = "h",                  # Unit of analysis == household ("p" used for person)
@@ -94,7 +94,7 @@ psrc_pums_median(x, target_var = "HINCP")        # Median Household income (with
 
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument.
-```{r  median by category, message=FALSE, eval=FALSE}
+```{r  median by category, message=FALSE}
 psrc_pums_median(x,                              # the assigned result of get_psrc_pums()
                  target_var = "HINCP",           # Summarizing household income . . .
                  group_vars = "TEN")             # . . . grouped by housing tenure
@@ -102,13 +102,13 @@ psrc_pums_median(x,                              # the assigned result of get_ps
 
 
 The count function tabulates the number people or households by grouping category, depending on the level you specified in **get_psrc_pums**. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
-```{r count by category, message=FALSE, eval=FALSE}
+```{r count by category, message=FALSE}
 psrc_pums_count(x, group_var="TEN")              # If omitting target_var argument, group_var must be labeled
 ```
 
 
 The summary function provides all four statistics and their margins of error in the same table. 
-```{r summary by category, message=FALSE, eval=FALSE}
+```{r summary by category, message=FALSE}
 psrc_pums_summary(x, "HINCP", "TEN")
 ```
 
