@@ -42,9 +42,8 @@ Although PUMS variables are measured specific to either persons or households, e
 ### Built-in PSRC variables
 In addition to variables listed in the Census PUMS data dictionary, you can also select the following custom PSRC variables:
 
-  * **RACE**         - person-level race/ethnicity in which Hispanic/Latino is its own race category (non-overlapping with other races)
-  * **RACETH**       - household-level race/ethnicity taking all household members into consideration
-  * **HISPYN**       - household-level hispanic ethnicity taking all household members into consideration
+  * **PRACE**        - person-level race/ethnicity in which Hispanic/Latino is its own race category (non-overlapping with other races)
+  * **HRACE**        - household-level race/ethnicity considering all members; 'Multiple Races' category as well as Hispanic/Latino 
   * **BINCOME**      - household income (HINCP) grouped by standard PSRC breakpoints
   * **BIN_AGE**      - age (AGEP) grouped by standard PSRC breakpoints
   * **BIN_POVRATIO** - ratio of household income to the poverty level (POVPIP) w/ PSRC breakpoints (fraction, not percent)
@@ -124,7 +123,7 @@ Is there an actual difference between two statistics generated from PUMS data? T
 There is only a meaningful difference between two estimates if the Z score is greater than 1. This test can be applied between different years, or between PUMS and ACS. However, please remember Census warns against drawing comparisons between estimates generated from different spans (e.g. 1yr with 5yr), especially if they overlap (as the same observations may be exist in both).
 
 The `z_score()` convenience function performs this calculation:
-```{r z score calculation, message=FALSE, eval=FALSE}
+```{r z score calculation, message=FALSE}
 rs <- psrc_pums_median(x, "HINCP", "TEN")
 c1 <- rs[1,(ncol(rs)-1):ncol(rs)]                # First-line estimate and its MOE (as numeric vector)
 c2 <- rs[3,(ncol(rs)-1):ncol(rs)]                # Third-line estimate and its MOE (as numeric vector)

@@ -134,21 +134,16 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
   }else{
     dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                          # Otherwise, ftp source
     dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>%
-      .[, RACE:=fcase(as.integer(HISP)!=1, "11",                                                   # PSRC non-overlapping race category (Hispanic its own race)
-                      RAC1P %in% c("3","4","5"), "10",
+      .[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                   # PSRC non-overlapping race category (Hispanic its own race)
+                      RAC1P %in% c("3","4","5"), "I",
                       !is.na(RAC1P), RAC1P)]
   }
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
-  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, RAC1P, HISP)] %>%
-     .[,`:=`(RACETH=RAC1P,
-             HISPYN=fcase(as.integer(HISP)==1, "N", default="Y"))]
-  tmp_p[RAC1P %in% c("3","4","5"), c("RACE", "RACETH"):="10"]                                      # Combine Native American & Alaskan Native;                                                                                                    #     not as.integer because non-number values exist
-  hh_me <- tmp_p[, .(RACETH=stuff(RACETH), HISPYN=stuff(HISPYN)), by=.(SERIALNO)] %>%              # Summarize households by race/ethnic composition
-     setkey("SERIALNO")
-  hh_me[(RACETH %like% ","|HISPYN %like% ","), RACETH:="11"]                                       # - Add multiracial
-  hh_me[(HISPYN %like% ","), HISPYN:="B"]                                                          # - Add all-Hispanic
+  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, PRACE)]                                                                                                  #     not as.integer because non-number values exist
+  hh_me <- tmp_p[, .(HRACE=stuff(PRACE)), by=.(SERIALNO)] %>% setkey("SERIALNO")                   # Summarize households by race/ethnic composition
+  hh_me[(HRACE %like% ","), HRACE:="M"]                                                            # - Characterize multiracial
   dt_h %<>% merge(hh_me, by="SERIALNO", all.x=TRUE)
   adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
   dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]              # Adjustment factors in ftp version without decimal
@@ -257,21 +252,18 @@ add_county <- function(dt, dyear){
 #' @import data.table
 codes2labels <- function(dt, dyear, vars){
   ddyear  <- if(dyear>2016){dyear}else{2017}
-  recoder <-  tidycensus::pums_variables %>% setDT() %>%
+  recoder <- list()
+  recoder[[1]] <- tidycensus::pums_variables %>% setDT() %>%                                       # Get the value-label correspondence for any/all factor variables
     .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
-    unique() %>% setkeyv("val_max")                                                                # Get the value-label correspondence for any/all factor variables
-  tmp1 <- copy(recoder) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
-    .[, var_code:="RACETH"]
-  tmp2 <- copy(tmp1) %>% .[, var_code:="RACE"]
-  racextra <- rbindlist(list(tmp1, tmp2,
-                         list("RACE", "10", "American Indian or Alaskan Native Alone"),
-                         list("RACE", "11", "Hispanic or Latino"),                                 # PSRC non-overlapping race category (Hispanic as a race)
-                         list("RACETH", "10", "American Indian or Alaskan Native Alone"),
-                         list("RACETH", "11", "Multiple Races"),                                   # PSRC race/ethnicity category based on all household members
-                         list("HISPYN", "Y", "Hispanic or Latino"),                                # PSRC Hispanic category based on all household members
-                         list("HISPYN", "N", "Not Hispanic or Latino"),
-                         list("HISPYN", "B", "Some Hispanic or Latino")))
-  recoder <- rbindlist(list(recoder, racextra)) %>% .[var_code %in% vars] %>% setkey("val_max")    # Add to label lookup; filter variables
+    unique()
+  recoder[[2]] <- copy(recoder[[1]]) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
+    rbind(list(
+      c(rep("",3)),
+      c("I", "H","M"),
+      c("American Indian or Alaskan Native Alone", "Hispanic or Latino","Multiple Races"))) %>%    # PSRC non-overlapping race category (Hispanic as a race)
+    .[,var_code:="HRACE"]
+  recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
+  recoder %<>% rbindlist() %>% setDT() %>% .[var_code %in% vars]%>% setkeyv("val_max")             # Add to label lookup; filter variables
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
     for (v in recode_vars){
