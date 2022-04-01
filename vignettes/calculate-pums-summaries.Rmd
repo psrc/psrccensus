@@ -82,7 +82,7 @@ Since PUMS records are sampled rather than comprising a full census, **psrccensu
 
 ### Examples
 As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
-```{r median, message=FALSE}
+```{r median, message=FALSE, eval=FALSE}
 x <- get_psrc_pums(span = 5,                     # Denoting ACS 5-year estimates; 1-year also available
                    dyear = 2019,                 # Last data year of span
                    level = "h",                  # Unit of analysis == household ("p" used for person)
@@ -93,7 +93,7 @@ psrc_pums_median(x, target_var = "HINCP")        # Median Household income (with
 
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument.
-```{r  median by category, message=FALSE}
+```{r  median by category, message=FALSE, eval=FALSE}
 psrc_pums_median(x,                              # the assigned result of get_psrc_pums()
                  target_var = "HINCP",           # Summarizing household income . . .
                  group_vars = "TEN")             # . . . grouped by housing tenure
@@ -101,14 +101,14 @@ psrc_pums_median(x,                              # the assigned result of get_ps
 
 
 The count function tabulates the number people or households by grouping category, depending on the level you specified in **get_psrc_pums**. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
-```{r count by category, message=FALSE}
+```{r count by category, message=FALSE, eval=FALSE}
 psrc_pums_count(x, group_var="TEN")              # If omitting target_var argument, group_var must be labeled
 ```
 
 
 The summary function provides all four statistics and their margins of error in the same table. 
-```{r summary by category, message=FALSE}
-psrc_pums_summary(x, "HINCP", "TEN")
+```{r summary by category, message=FALSE, eval=FALSE}
+psrc_pums_summary(x, "HINCP", "TEN", incl_counties=FALSE) %>% print()
 ```
 
 ## Sample sizes, confidence, and error margins
@@ -123,7 +123,7 @@ Is there an actual difference between two statistics generated from PUMS data? T
 There is only a meaningful difference between two estimates if the Z score is greater than 1. This test can be applied between different years, or between PUMS and ACS. However, please remember Census warns against drawing comparisons between estimates generated from different spans (e.g. 1yr with 5yr), especially if they overlap (as the same observations may be exist in both).
 
 The `z_score()` convenience function performs this calculation:
-```{r z score calculation, message=FALSE}
+```{r z score calculation, message=FALSE, eval=FALSE}
 rs <- psrc_pums_median(x, "HINCP", "TEN")
 c1 <- rs[1,(ncol(rs)-1):ncol(rs)]                # First-line estimate and its MOE (as numeric vector)
 c2 <- rs[3,(ncol(rs)-1):ncol(rs)]                # Third-line estimate and its MOE (as numeric vector)
