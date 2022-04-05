@@ -459,6 +459,36 @@ psrc_pums_summary <- function(so, target_var, group_vars=NULL, incl_counties=TRU
   return(rs)
 }
 
+#' PUMS bulk summary statistics
+#'
+#' Generate a statistic separately for a list of grouping variables
+#' List input items can be multiple, i.e. character vector
+#'
+#' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
+#' @param stat_type Desired survey statistic
+#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param group_var_list List with each list item a grouping variable or set of grouping variables
+#' @param incl_counties Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."
+#' @return A table with the variable names and labels, summary statistic and margin of error
+#'
+#' @importFrom data.table rbindlist setDF
+#' @importFrom dplyr mutate rename relocate
+#' @export
+pums_bulk_stat <- function(df, stat_type, target_var=NULL, group_var_list, incl_counties=TRUE){
+  list_stat <- function(x){
+    rsub <- psrc_pums_stat(so=so,
+                           stat_type=stat_type,
+                           target_var=target_var,
+                           group_vars=x,
+                           incl_counties=incl_counties)
+  }
+  df <- list()
+  df <- lapply(group_var_list, list_stat) %>%
+    lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
+    rename(var_value=colnames(.)[1]) %>% relocate(var_name)
+  return(df)
+}
+
 #' Z Score
 #'
 #' Stat to determine if two estimates are different

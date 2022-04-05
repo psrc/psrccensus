@@ -6,6 +6,9 @@
 \usage{
 pums_varsearch(regex)
 }
+\arguments{
+\item{regex}{search term}
+}
 \value{
 data.table of filtered variable attributes
 }
