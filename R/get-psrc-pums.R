@@ -9,7 +9,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' Search PUMS variable definitions
 #'
 #' Look for a var_code via search term
-#' @regex search term
+#' @param regex search term
 #' @return data.table of filtered variable attributes
 #'
 #' @import data.table
