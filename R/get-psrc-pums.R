@@ -6,6 +6,20 @@ NULL
 
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
+#' Search PUMS variable definitions
+#'
+#' Look for a var_code via search term
+#' @regex search term
+#' @return data.table of filtered variable attributes
+#'
+#' @import data.table
+#' @export
+pums_varsearch <- function(regex){
+  rs <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, var_label)] %>%
+  .[!grepl("flag$", var_label) & grepl(regex, var_label, ignore.case=TRUE)] %>% unique()
+  return(rs)
+}
+
 #' NA recode for PUMS
 #'
 #' Helper to the \code{\link{get_psrc_pums}} function
