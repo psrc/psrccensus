@@ -16,7 +16,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @export
 pums_varsearch <- function(regex){
   rs <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, var_label)] %>%
-  .[!grepl("flag$", var_label) & grepl(regex, var_label, ignore.case=TRUE)] %>% unique()
+  .[!grepl("flag$", var_label) & (grepl(regex, var_label, ignore.case=TRUE)|grepl(regex, var_code, ignore.case=TRUE))] %>% unique()
   return(rs)
 }
 
