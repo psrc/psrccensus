@@ -52,15 +52,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_psrc_pums</span><span class="op">(</span>
-  <span class="va">span</span>,
-  <span class="va">dyear</span>,
-  <span class="va">level</span>,
-  <span class="va">vars</span>,
-  dollar_adj <span class="op">=</span> <span class="cn">TRUE</span>,
-  dir <span class="op">=</span> <span class="cn">NULL</span>,
-  labels <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_psrc_pums</span><span class="op">(</span><span class="va">span</span>, <span class="va">dyear</span>, <span class="va">level</span>, <span class="va">vars</span>, dir <span class="op">=</span> <span class="cn">NULL</span>, labels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -73,8 +65,6 @@
 <dd><p>Either "p" or "h", for "persons" or "households" respectively</p></dd>
 <dt>vars</dt>
 <dd><p>PUMS variable/s as an UPPERCASE string element or list</p></dd>
-<dt>dollar_adj</dt>
-<dd><p>Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS</p></dd>
 <dt>dir</dt>
 <dd><p>Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.</p></dd>
 <dt>labels</dt>
