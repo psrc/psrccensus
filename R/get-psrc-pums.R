@@ -357,13 +357,12 @@ get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, l
 #'
 #' @importFrom rlang sym
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=TRUE){
-  prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
+psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
+  prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
-    so %<>% srvyr::group_by(dplyr::across(tidyselect::all_of(group_vars)))                         # Apply grouping
+      so %<>% srvyr::group_by(dplyr::across(!!!enquos(group_vars)))
   }
-  if(incl_counties==TRUE){so %<>% srvyr::group_by(COUNTY, .add=TRUE)}
   if(stat_type=="count"){
     rs <- suppressMessages(cascade(so,
             count:=survey_total(na.rm=TRUE),
@@ -371,41 +370,38 @@ psrc_pums_stat <- function(so, stat_type, target_var, group_vars, incl_counties=
             .fill="Total"))
   }else if(stat_type=="median"){
     rs <- suppressMessages(cascade(so,
-            !!paste0(prefix, "median"):=survey_median(!!as.name(target_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+            !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
             .fill="Total"))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(cascade(so,
             count:=survey_total(na.rm=TRUE),
             share:=survey_prop(),
-            !!paste0(prefix, "median"):=survey_median(!!as.name(target_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
-            !!paste0(prefix, "mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE),
+            !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+            !!paste0(prefix, "mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
             .fill="Total"))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- suppressMessages(cascade(so,
-            !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE)),
+            !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
             .fill="Total"))
   }
   rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
     setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
-  if(incl_counties==TRUE){
+  if("COUNTY" %in% colnames(rs)){
     setcolorder(rs, c("COUNTY"))
-    setorder(rs, COUNTY, na.last=TRUE)
-    rs[is.na(COUNTY), COUNTY:="Region"]
+    setorder(rs, "COUNTY")
   }
   so %<>% dplyr::ungroup()
   return(rs)
 }
-
-
 
 #' PUMS summary statistics
 #'
 #' Separate function for total, count, median, mean
 #'
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param stat_var The numeric variable to summarize
 #' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @param incl_counties Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."
 #' @name pums_stat
@@ -415,15 +411,15 @@ NULL
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional counts
 #' @export
-psrc_pums_count <- function(so, target_var=NULL, group_vars=NULL, incl_counties=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="count", target_var=NULL, group_vars=group_vars, incl_counties=incl_counties)
+psrc_pums_count <- function(so, stat_var=NULL, group_vars=NULL){
+  rs <- psrc_pums_stat(so=so, stat_type="count", stat_var=NULL, group_vars=group_vars)
   return(rs)
 }
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional totals
 #' @export
-psrc_pums_sum <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
-  rs <- psrc_pums_stat(so, stat_type="total", target_var=target_var, group_vars=group_vars, incl_counties=incl_counties)
+psrc_pums_sum <- function(so, stat_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so, stat_type="total", stat_var=stat_var, group_vars=group_vars)
   return(rs)
 }
 
@@ -438,24 +434,24 @@ psrc_pums_sum <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
 #' rs <- psrc_pums_median(so, "HINCP", "TEN")
 #'}
 #' @export
-psrc_pums_median <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="median", target_var=target_var, group_vars=group_vars, incl_counties=incl_counties)
+psrc_pums_median <- function(so, stat_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so=so, stat_type="median", stat_var=stat_var, group_vars=group_vars)
   return(rs)
 }
 
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional means
 #' @export
-psrc_pums_mean <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="mean", target_var=target_var, group_vars=group_vars, incl_counties=incl_counties)
+psrc_pums_mean <- function(so, stat_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so=so, stat_type="mean", stat_var=stat_var, group_vars=group_vars)
   return(rs)
 }
 
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional means
 #' @export
-psrc_pums_summary <- function(so, target_var, group_vars=NULL, incl_counties=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="summary", target_var=target_var, group_vars=group_vars, incl_counties=incl_counties)
+psrc_pums_summary <- function(so, stat_var, group_vars=NULL){
+  rs <- psrc_pums_stat(so=so, stat_type="summary", stat_var=stat_var, group_vars=group_vars)
   return(rs)
 }
 
@@ -466,7 +462,7 @@ psrc_pums_summary <- function(so, target_var, group_vars=NULL, incl_counties=TRU
 #'
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
 #' @param stat_type Desired survey statistic
-#' @param target_var The exact PUMS target variable intended, as a string in UPPERCASE
+#' @param stat_var The numeric variable to summarize
 #' @param group_var_list List with each list item a grouping variable or set of grouping variables
 #' @param incl_counties Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."
 #' @return A table with the variable names and labels, summary statistic and margin of error
@@ -474,13 +470,12 @@ psrc_pums_summary <- function(so, target_var, group_vars=NULL, incl_counties=TRU
 #' @importFrom data.table rbindlist setDF
 #' @importFrom dplyr mutate rename relocate
 #' @export
-pums_bulk_stat <- function(df, stat_type, target_var=NULL, group_var_list, incl_counties=TRUE){
+pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list){
   list_stat <- function(x){
     rsub <- psrc_pums_stat(so=so,
                            stat_type=stat_type,
-                           target_var=target_var,
-                           group_vars=x,
-                           incl_counties=incl_counties)
+                           stat_var=stat_var,
+                           group_vars=x)
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%

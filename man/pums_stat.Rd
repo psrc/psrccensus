@@ -9,20 +9,20 @@
 \alias{psrc_pums_summary}
 \title{PUMS summary statistics}
 \usage{
-psrc_pums_count(so, target_var = NULL, group_vars = NULL, incl_counties = TRUE)
+psrc_pums_count(so, stat_var = NULL, group_vars = NULL)
 
-psrc_pums_sum(so, target_var, group_vars = NULL, incl_counties = TRUE)
+psrc_pums_sum(so, stat_var, group_vars = NULL)
 
-psrc_pums_median(so, target_var, group_vars = NULL, incl_counties = TRUE)
+psrc_pums_median(so, stat_var, group_vars = NULL)
 
-psrc_pums_mean(so, target_var, group_vars = NULL, incl_counties = TRUE)
+psrc_pums_mean(so, stat_var, group_vars = NULL)
 
-psrc_pums_summary(so, target_var, group_vars = NULL, incl_counties = TRUE)
+psrc_pums_summary(so, stat_var, group_vars = NULL)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
 
-\item{target_var}{The exact PUMS target variable intended, as a string in UPPERCASE}
+\item{stat_var}{The numeric variable to summarize}
 
 \item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
 
