@@ -52,23 +52,23 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">psrc_pums_count</span><span class="op">(</span><span class="va">so</span>, target_var <span class="op">=</span> <span class="cn">NULL</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span>, incl_counties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">psrc_pums_count</span><span class="op">(</span><span class="va">so</span>, stat_var <span class="op">=</span> <span class="cn">NULL</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 
-<span class="fu">psrc_pums_sum</span><span class="op">(</span><span class="va">so</span>, <span class="va">target_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span>, incl_counties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">psrc_pums_sum</span><span class="op">(</span><span class="va">so</span>, <span class="va">stat_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 
-<span class="fu">psrc_pums_median</span><span class="op">(</span><span class="va">so</span>, <span class="va">target_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span>, incl_counties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">psrc_pums_median</span><span class="op">(</span><span class="va">so</span>, <span class="va">stat_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 
-<span class="fu">psrc_pums_mean</span><span class="op">(</span><span class="va">so</span>, <span class="va">target_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span>, incl_counties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">psrc_pums_mean</span><span class="op">(</span><span class="va">so</span>, <span class="va">stat_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 
-<span class="fu">psrc_pums_summary</span><span class="op">(</span><span class="va">so</span>, <span class="va">target_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span>, incl_counties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu">psrc_pums_summary</span><span class="op">(</span><span class="va">so</span>, <span class="va">stat_var</span>, group_vars <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>so</dt>
 <dd><p>The srvyr object returned by <code><a href="get_psrc_pums.html">get_psrc_pums</a></code></p></dd>
-<dt>target_var</dt>
-<dd><p>The exact PUMS target variable intended, as a string in UPPERCASE</p></dd>
+<dt>stat_var</dt>
+<dd><p>The numeric variable to summarize</p></dd>
 <dt>group_vars</dt>
 <dd><p>Factor variable/s for grouping, as an UPPERCASE string element or list</p></dd>
 <dt>incl_counties</dt>

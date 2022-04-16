@@ -96,9 +96,9 @@
 <li>
 <strong>vars</strong> - one or more PUMS variables in UPPERCASE (if multiple, as a character vector)</li>
 </ul>
-<p>The result of <strong>get_psrc_pums()</strong> is a structured data object (per the <strong>srvyr</strong> package) that has sampling and replication weights built in.</p>
-<p><strong>get_psrc_pums()</strong> must be called separately for each combination of <strong>span - dyear - level</strong> you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (span and year), you will still need to use <strong>get_psrc_pums()</strong> once for households (level=“h”) and a second time for persons (‘level’=“p”). This is necessary because in PUMS, households and persons are not perfectly coextensive: household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) When you invoke <strong>get_psrc_pums()</strong> we suggest you assign a name that helps you differentiate between whatever <strong>span - dyear - level</strong> combinations are relevant to your analysis.</p>
-<p>Although PUMS variables are measured specific to either persons or households, either unit of analysis can be associated with all variables–persons inherit their respective household attributes (albeit missing in the case of for group quarters), and households are, per Census Bureau convention, assigned the person attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). Variables must be typed exactly, so it is recommended to consult a PUMS data directory, especially since some variables may differ between data years. The PUMS data dictionary from 2017- forward is captured in the R object <strong>tidycensus::pums_variables</strong> (filter by year and survey). The Census Bureau also publishes <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/" class="external-link">each separate data dictionary online in html, pdf or txt</a>, which can be easily searched via web browser.</p>
+<p>The result of <strong><code><a href="../reference/get_psrc_pums.html">get_psrc_pums()</a></code></strong> is a structured data object (per the <strong>srvyr</strong> package) that has sampling and replication weights built in.</p>
+<p><strong><code><a href="../reference/get_psrc_pums.html">get_psrc_pums()</a></code></strong> must be called separately for each combination of <strong>span - dyear - level</strong> you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (span and year), you will still need to use <strong><code><a href="../reference/get_psrc_pums.html">get_psrc_pums()</a></code></strong> once for households (level=“h”) and a second time for persons (‘level’=“p”). This is necessary because in PUMS, households and persons are not perfectly coextensive: household-level datasets do not contain persons living in group quarters and person-level datasets are not filtered to households. (Household datasets are further filtered to remove vacant units.) When you invoke <strong><code><a href="../reference/get_psrc_pums.html">get_psrc_pums()</a></code></strong> we suggest you assign a name that helps you differentiate between whatever <strong>span - dyear - level</strong> combinations are relevant to your analysis.</p>
+<p>Although PUMS variables are measured specific to either persons or households, either unit of analysis can be associated with all variables–persons inherit their respective household attributes (albeit missing in the case of for group quarters), and households are, per Census Bureau convention, assigned the person attributes of the adult respondent (aka "householder; this is also true of published American Community Survey estimates). Variables must be typed exactly, so it is recommended to consult a PUMS data directory, especially since some variables may differ between data years. The PUMS data dictionary from 2017- forward is captured in the R object <strong><code><a href="https://walker-data.com/tidycensus/reference/pums_variables.html" class="external-link">tidycensus::pums_variables</a></code></strong> (filter by year and survey). The Census Bureau also publishes <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/" class="external-link">each separate data dictionary online in html, pdf or txt</a>, which can be easily searched via web browser.</p>
 <div class="section level3">
 <h3 id="built-in-psrc-variables">Built-in PSRC variables<a class="anchor" aria-label="anchor" href="#built-in-psrc-variables"></a>
 </h3>
@@ -119,6 +119,7 @@
 <li>
 <strong>OWN_RENT</strong> - dichotomous tenure (simplified from TEN)</li>
 </ul>
+<p>Additionally, the custom <strong>COUNTY</strong> variable is always included in the table without you having to specify it.</p>
 </div>
 <div class="section level3">
 <h3 id="built-in-inflation-adjustment">Built-in inflation adjustment<a class="anchor" aria-label="anchor" href="#built-in-inflation-adjustment"></a>
@@ -129,10 +130,9 @@
 <div class="section level2">
 <h2 id="generate-summary-statistics">Generate summary statistics<a class="anchor" aria-label="anchor" href="#generate-summary-statistics"></a>
 </h2>
-<p>The second step in an analysis involves calculating summary statistics from the result of the prior step. Because PUMS are sampled, summary statistics must use the sampling weight in order to be expanded to the full population</p>
+<p>The second step in an analysis involves calculating summary statistics from the result of the prior step. Because PUMS are sampled, summary statistics must use the sampling weight in order to be expanded to the full population. Although PUMS data exists for the entire country, results of <strong>psrccensus</strong> are filtered to the 4-county PSRC region for simplicity.</p>
 <p>There are four relevant statistical functions, along with a summary function that gives all four in the same table.</p>
-<p>By default, each function returns both county and regional subtotals (by group, if grouping variable/s are specified), and the overall regional total (without grouping); for regional results only, add the argument <code>incl_counties=FALSE</code>. Although PUMS data exists for the entire country, results of <strong>psrccensus</strong> are filtered to the 4-county PSRC region for simplicity.</p>
-<div class="line-block">         <strong>psrc_pums_count()</strong><br>
+<div class="line-block">         <strong>psrc_pums_count()</strong> (also includes shares, i.e. proportions by group)<br>
          <strong>psrc_pums_sum()</strong><br>
          <strong>psrc_pums_median()</strong><br>
          <strong>psrc_pums_mean()</strong><br>
@@ -141,15 +141,16 @@
 <p>The arguments for each summary function are identical:</p>
 <ul>
 <li>
-<strong>so</strong> - The srvyr object returned by <strong>get_psrc_pums()</strong>
+<strong>so</strong> - The srvyr object returned by <code>get_psrc_pums()**</code>
 </li>
 <li>
-<strong>target_var</strong> - The variable to be summarized.</li>
+<strong>stat_var</strong> - The numeric variable to be summarized.</li>
 <li>
 <strong>group_vars</strong> - Optional grouping variable/s (if multiple, as a character vector)</li>
 </ul>
 <p>Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them.</p>
-<p><strong>psrccensus</strong> does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous. The target_var argument is ignored by the count function (for which the primary variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).</p>
+<p>All result tables make use of the <code><a href="http://gdfe.co/srvyr/reference/cascade.html" class="external-link">srvyr::cascade</a></code> feature to provide totals at each grouping level; these are “peeled off” from last-grouped to first. If you have multiple grouping variables, the order in which you specify them will control how shares <code><a href="../reference/pums_stat.html">psrc_pums_count()</a></code> are nested, for example. For any result with COUNTY as one of the grouping variables, it will be shifted to the left-most position in the table.</p>
+<p><strong>psrccensus</strong> does not constrain your choice of variables, but clearly any variable to be summarized must be a number, and grouping variables should not be continuous. The <code>stat_var</code> argument is ignored by the count function (for which the primary variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map/apply functions).</p>
 <p>Since PUMS records are sampled rather than comprising a full census, <strong>psrccensus</strong> applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled ’_moe’ column.</p>
 <div class="section level3">
 <h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
@@ -161,15 +162,15 @@
                    level <span class="op">=</span> <span class="st">"h"</span>,                  <span class="co"># Unit of analysis == household ("p" used for person)</span>
                    vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HINCP"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># PUMS household income &amp; housing tenure variables; using tenure later. </span>
                                                  <span class="co">#  - You can choose as many variables as you need.</span>
-<span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, target_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>        <span class="co"># Median Household income (without regard to tenure)</span></code></pre></div>
+<span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, stat_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>        <span class="co"># Median Household income (without regard to tenure)</span></code></pre></div>
 <p>To calculate by a subgroup category (here, housing tenure–e.g. own vs. rent), use the optional grouping variable argument.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>,                              <span class="co"># the assigned result of get_psrc_pums()</span>
-                 target_var <span class="op">=</span> <span class="st">"HINCP"</span>,           <span class="co"># Summarizing household income . . .</span>
+                 stat_var <span class="op">=</span> <span class="st">"HINCP"</span>,           <span class="co"># Summarizing household income . . .</span>
                  group_vars <span class="op">=</span> <span class="st">"TEN"</span><span class="op">)</span>             <span class="co"># . . . grouped by housing tenure</span></code></pre></div>
 <p>The count function tabulates the number people or households by grouping category, depending on the level you specified in <strong>get_psrc_pums</strong>. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the ‘total’ function instead, which sums the target variable.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">x</span>, group_var<span class="op">=</span><span class="st">"TEN"</span><span class="op">)</span>              <span class="co"># If omitting target_var argument, group_var must be labeled</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">x</span>, group_var<span class="op">=</span><span class="st">"TEN"</span><span class="op">)</span>              <span class="co"># If omitting stat_var argument, group_var must be labeled</span></code></pre></div>
 <p>The summary function provides all four statistics and their margins of error in the same table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_summary</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span>, incl_counties<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
