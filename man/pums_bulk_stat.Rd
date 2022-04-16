@@ -14,8 +14,6 @@ pums_bulk_stat(so, stat_type, stat_var = NULL, group_var_list)
 \item{stat_var}{The numeric variable to summarize}
 
 \item{group_var_list}{List with each list item a grouping variable or set of grouping variables}
-
-\item{incl_counties}{Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error

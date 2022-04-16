@@ -132,13 +132,12 @@ fetch_ftp <- function(span, dyear, level){
 #' Helper to the \code{\link{get_psrc_pums}} function
 #' @inheritParams fetch_ftp
 #' @param vars PUMS variable/s as an UPPERCASE string element or list
-#' @param dollar_adj Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS
 #' @param dir Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
 #'
 #' @import data.table
-pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
+pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
@@ -171,7 +170,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
   if("BIN_AGE" %in% vars){dt %<>% psrc_bin_age()}                                                  # - "
   if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
   if("OWN_RENT" %in% vars){dt %<>% psrc_own_rent()}                                                # - "
-  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl(dyear)}                                                  # - "
+  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl(dyear)}                                             # - "
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")
@@ -179,6 +178,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
   varlist <- c(unlist(unit_key),"PUMA", unlist(vars), swgt, rwgt, adjvars) %>% unique()            # Columns to keep
   if("BIN_YBL" %in% vars){varlist <- varlist[!(varlist %in% "BIN_YBL")] %>% c("YBL")}              # Swap; to be used later
   dt %<>% .[, colnames(.) %in% varlist, with=FALSE]                                                # Keep only specified columns
+  dt[, `:=`(DATA_YEAR=get(dyear), PRODUCT=paste0("acs",get(span)), UNIT=get(level))]               # Add fields to identify the dataset
   dt[, (unit_key):=lapply(.SD, as.character), .SDcols=unit_key]                                    # Confirm datatype for keys (fread may return int for early years)
   return(dt)
 }
@@ -192,10 +192,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL){
 #' sample & replication weights, and if needed, inflation adjustments
 #'
 #' @import data.table
-pums_api_gofer <- function(span, dyear, level, vars, dollar_adj=TRUE){
-  varlist <- if(dollar_adj==TRUE){
-    unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                             # Include adjustment variables
-  }else{vars}
+pums_api_gofer <- function(span, dyear, level, vars){
+  varlist <- unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                    # Include adjustment variables
   vf         <- list(TYPE=1, SPORDER=1)
   tbl_ref    <- if(level=="p"){"person"}else{"housing"}
   dt <- tidycensus::get_pums(variables=varlist,                                                    # Include inflation adjustment fields
@@ -273,7 +271,7 @@ codes2labels <- function(dt, dyear, vars){
   recoder[[2]] <- copy(recoder[[1]]) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
     rbind(list(
       c(rep("",3)),
-      c("I", "H","M"),
+      c("I","H","M"),
       c("American Indian or Alaskan Native Alone", "Hispanic or Latino","Multiple Races"))) %>%    # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
@@ -300,7 +298,7 @@ ensure_datatypes <- function(dt){
   allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
   dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
     ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
-    .[. %not_in% c("SERIALNO","PUMA")]
+    .[. %not_in% c("SERIALNO","SPORDER","PUMA","DATA_YEAR","PRODUCT","UNIT")]
   if(length(ftr_vars)>0){
     dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                     # Ensure grouping variables are factors (required by srvyr)
   }
@@ -324,18 +322,18 @@ ensure_datatypes <- function(dt){
 #' get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))}
 #'
 #' @export
-get_psrc_pums <- function(span, dyear, level, vars, dollar_adj=TRUE, dir=NULL, labels=TRUE){
+get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
   vf <- list(TYPE=1, SPORDER=1)
   unit_var <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
-  dt <- pums_ftp_gofer(span, dyear, level, vars, dollar_adj, dir)
+  dt <- pums_ftp_gofer(span, dyear, level, vars, dir)
   swgt <- if(level=="p"){"PWGTP"}else{"WGTP"}                                                      # Specify sample weight
   rwgt <- paste0(swgt, 1:80)                                                                       # Specify replication weights
-  dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY"))
-  if(dollar_adj==TRUE){dt %<>% adjust_dollars()}                                                   # Apply standard inflation adjustment
+  dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY")) %>%
+    adjust_dollars()                                                                               # Apply standard inflation adjustment
   if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
   if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl()}
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
-  varlist <- c(unlist(unit_var), "COUNTY", unlist(vars)) %>% unique()
+  varlist <- c(unlist(unit_var), "YEAR", "PRODUCT", "UNIT", "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
     srvyr::as_survey_rep(variables=varlist,                                                        # Create srvyr object with replication weights for MOE
                          weights=swgt,
@@ -403,7 +401,6 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
 #' @param stat_var The numeric variable to summarize
 #' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
-#' @param incl_counties Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."
 #' @name pums_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
@@ -464,7 +461,6 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL){
 #' @param stat_type Desired survey statistic
 #' @param stat_var The numeric variable to summarize
 #' @param group_var_list List with each list item a grouping variable or set of grouping variables
-#' @param incl_counties Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."
 #' @return A table with the variable names and labels, summary statistic and margin of error
 #'
 #' @importFrom data.table rbindlist setDF

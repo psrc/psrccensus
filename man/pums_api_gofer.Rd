@@ -4,7 +4,7 @@
 \alias{pums_api_gofer}
 \title{PUMS API go-fer}
 \usage{
-pums_api_gofer(span, dyear, level, vars, dollar_adj = TRUE)
+pums_api_gofer(span, dyear, level, vars)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -14,8 +14,6 @@ pums_api_gofer(span, dyear, level, vars, dollar_adj = TRUE)
 \item{level}{Either "p" or "h", for "persons" or "households" respectively}
 
 \item{vars}{PUMS variable/s as an UPPERCASE string element or list}
-
-\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 }
 \value{
 data.table with all requested variables,

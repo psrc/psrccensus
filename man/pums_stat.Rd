@@ -25,8 +25,6 @@ psrc_pums_summary(so, stat_var, group_vars = NULL)
 \item{stat_var}{The numeric variable to summarize}
 
 \item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
-
-\item{incl_counties}{Default=TRUE; set to false for only regional stats, e.g. if lack of data causes srvyr to give error "missing value where TRUE/FALSE needed."}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error

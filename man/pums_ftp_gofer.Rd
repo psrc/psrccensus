@@ -4,7 +4,7 @@
 \alias{pums_ftp_gofer}
 \title{PUMS ftp go-fer}
 \usage{
-pums_ftp_gofer(span, dyear, level, vars, dollar_adj = TRUE, dir = NULL)
+pums_ftp_gofer(span, dyear, level, vars, dir = NULL)
 }
 \arguments{
 \item{span}{Either 1 for acs1 or 5 for acs5}
@@ -14,8 +14,6 @@ pums_ftp_gofer(span, dyear, level, vars, dollar_adj = TRUE, dir = NULL)
 \item{level}{Either "p" or "h", for "persons" or "households" respectively}
 
 \item{vars}{PUMS variable/s as an UPPERCASE string element or list}
-
-\item{dollar_adj}{Default TRUE; adjust income and cost values for inflation using the averaged factors provided with PUMS}
 
 \item{dir}{Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.}
 }
