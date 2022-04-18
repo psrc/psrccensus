@@ -389,7 +389,9 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
   if("COUNTY" %in% colnames(rs)){
     setcolorder(rs, c("COUNTY"))
     setorder(rs, "COUNTY")
+    rs[COUNTY=="Total", COUNTY:="Region"]
   }
+  rs[DATA_YEAR!="Total"]
   so %<>% dplyr::ungroup()
   return(rs)
 }
