@@ -2,6 +2,8 @@
 #' @author Michael Jensen
 NULL
 
+globalVariables(c(":=", "!!", ".", "enquos"))
+
 `%not_in%` <- Negate(`%in%`)
 
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
@@ -15,6 +17,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @import data.table
 #' @export
 pums_varsearch <- function(regex){
+  var_code <- var_label <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   rs <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, var_label)] %>%
   .[!grepl("flag$", var_label) & (grepl(regex, var_label, ignore.case=TRUE)|grepl(regex, var_code, ignore.case=TRUE))] %>% unique()
   return(rs)
@@ -42,6 +45,7 @@ pums_recode_na <- function(dt){
 #'
 #' @import data.table
 read_pums <- function(target_file, dyear){
+  data_type <- var_code <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
   type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
     .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
@@ -69,16 +73,17 @@ read_pums <- function(target_file, dyear){
 #'
 #' @import data.table
 filter2region <- function(dt, dyear){
-  pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # PUMA boundary version correlates to last diennial census
+  PUMA <- SERIALNO <- NULL                                                                         # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)        # PUMA boundary version correlates to last diennial census
   dt %<>% pums_recode_na() %>%
-    setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                          # Single PUMA column name
-    .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL] %>%                                      # Where multiple PUMA fields reported, use latest
-    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                   # Drop variables static to our region
+    setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                            # Single PUMA column name
+    .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL] %>%                                        # Where multiple PUMA fields reported, use latest
+    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                     # Drop variables static to our region
     setkey(SERIALNO)
   if(dyear>2011){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                        # Filter to PSRC region
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                          # Filter to PSRC region
   }else if(dyear>=2000 & dyear<2012){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(15:18)]                                          # PUMAs renumbered in 2012
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(15:18)]                                            # PUMAs renumbered in 2012
   }
   return(dt)
 }
@@ -138,6 +143,7 @@ fetch_ftp <- function(span, dyear, level){
 #'
 #' @import data.table
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
+  PRACE <- HISP <- RAC1P <- SPORDER <- SERIALNO <- HRACE <- TYPE <- VACS <- NULL                   # Bind variables locally (for documentation, not function)
   unit_key <- if(level=="p"){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
@@ -243,6 +249,7 @@ adjust_dollars <- function(dt){
 #'
 #' @import data.table
 add_county <- function(dt, dyear){
+  PUMA <- COUNTY <- NULL                                                                           # Bind variables locally (for documentation, not function)
   PUMA3 <- if(dyear>2011){c(115:118)}else if(dyear<=2011 & dyear>=2000){c(15:18)}                  # PUMAs renumbered in 2012
   county_lookup <- data.frame(PUMA3, COUNTY=as.factor(c("Pierce","King","Snohomish","Kitsap"))) %>%
     setDT() %>% setkey(PUMA3)
@@ -263,6 +270,7 @@ add_county <- function(dt, dyear){
 #'
 #' @import data.table
 codes2labels <- function(dt, dyear, vars){
+  recode <- val_min <- val_max <- var_code <- val_label <- i.val_label <- NULL                     # Bind variables locally (for documentation, not function)
   ddyear  <- if(dyear>2016){dyear}else{2017}
   recoder <- list()
   recoder[[1]] <- tidycensus::pums_variables %>% setDT() %>%                                       # Get the value-label correspondence for any/all factor variables
@@ -356,6 +364,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @importFrom rlang sym
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
+  count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
@@ -469,6 +478,7 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL){
 #' @importFrom dplyr mutate rename relocate
 #' @export
 pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list){
+  var_name <- NULL                                                                                 # Bind variables locally (for documentation, not function)
   list_stat <- function(x){
     rsub <- psrc_pums_stat(so=so,
                            stat_type=stat_type,

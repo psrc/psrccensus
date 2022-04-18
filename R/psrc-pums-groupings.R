@@ -10,6 +10,7 @@ NULL
 #' @param dt the data.table
 #' @return the data.table with an additional binned household income field, "BINCOME"
 psrc_bincome <- function(dt){
+  BINCOME <- HINCP <- NULL                                                                         # Bind variables locally (for documentation, not function)
   dt %<>% setDT() %>%
    .[, BINCOME:=factor(fcase(HINCP <  25000,"Under $25,000",
                              HINCP <  50000, "$25,000-$49,999",
@@ -31,6 +32,7 @@ psrc_bincome <- function(dt){
 #' @param dt the data.table
 #' @return the data.table with an additional binned age field, "BIN_AGE"
 psrc_bin_age <- function(dt){
+  BIN_AGE <- AGEP <- NULL                                                                          # Bind variables locally (for documentation, not function)
   dt %<>% setDT() %>%
    .[, BIN_AGE:=factor(fcase(AGEP < 5 , "under 5 years",
                              AGEP < 12, "between 5 and 11 years",
@@ -65,7 +67,8 @@ psrc_bin_age <- function(dt){
 #' @param dt the data.table
 #' @return the data.table with an additional binned age field, "BIN_POVRATIO"
 psrc_bin_povratio <- function(dt){
-  dt %<>% setDT() %>%
+  BIN_POVRATIO <- POVPIP <- NULL                                                                   # Bind variables locally (for documentation, not function)
+    dt %<>% setDT() %>%
    .[, BIN_POVRATIO:=factor(fcase(POVPIP < 50 , "under 0.50",
                                   POVPIP < 100, "0.50 to 0.99",
                                   POVPIP < 125, "1.00 to 1.24",
@@ -93,6 +96,7 @@ psrc_bin_povratio <- function(dt){
 #'
 #' @importFrom stringr str_extract
 psrc_bin_ybl<- function(dt, dyear){
+  BIN_YBL <- YBL_chr <- val_label <- val_max <- var_code <- NULL                                   # Bind variables locally (for documentation, not function)
   ddyear <- if(dyear>2016){dyear}else if(dyear>2008){2017}
   lkup <- tidycensus::pums_variables %>% setDT() %>%
     .[var_code=="YBL" & year==ddyear, .(val_max, val_label)] %>% unique() %>% setkey("val_max")
@@ -128,12 +132,13 @@ psrc_bin_ybl<- function(dt, dyear){
 #' @param dt the data.table
 #' @return the data.table with dichotomous tenure field, "OWN_RENT"
 psrc_own_rent<- function(dt){
+  OWN_RENT <- TEN <- NULL                                                                          # Bind variables locally (for documentation, not function)
   dt %<>% setDT() %>%
-   .[, OWN_RENT:=factor(fcase(as.integer(as.character(TEN)) %in% c(1,2), "Owned",
-                              as.integer(as.character(TEN)) %in% c(3,4), "Rented",
-                              !is.na(TEN), "Else"),
-                        levels=c("Owned",
-                                 "Rented",
-                                 "Else"))]
+  .[, OWN_RENT:=factor(fcase(as.integer(as.character(TEN)) %in% c(1,2), "Owned",
+                             as.integer(as.character(TEN)) %in% c(3,4), "Rented",
+                             !is.na(TEN), "Else"),
+                       levels=c("Owned",
+                                "Rented",
+                                "Else"))]
   return(dt)
 }

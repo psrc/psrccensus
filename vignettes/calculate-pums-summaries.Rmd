@@ -83,41 +83,41 @@ All result tables make use of the `srvyr::cascade` feature to provide totals at 
 Since PUMS records are sampled rather than comprising a full census, **psrccensus** applies sampling weights to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled '_moe' column. 
 
 ### Examples
-As an example, to calculate the median household income for 2019 both by county and region you would use the following function calls:
+As an example, to calculate 2019 median household income for the region you would use the following function calls:
 ```{r median, message=FALSE, eval=FALSE}
 x <- get_psrc_pums(span = 5,                     # Denoting ACS 5-year estimates; 1-year also available
                    dyear = 2019,                 # Last data year of span
                    level = "h",                  # Unit of analysis == household ("p" used for person)
                    vars = c("HINCP","TEN"))      # PUMS household income & housing tenure variables; using tenure later. 
                                                  #  - You can choose as many variables as you need.
-psrc_pums_median(x, stat_var = "HINCP")        # Median Household income (without regard to tenure)
+psrc_pums_median(x, stat_var = "HINCP")          # Median Household income (without regard to tenure)
 ```
 
 
 To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), use the optional grouping variable argument.
 ```{r  median by category, message=FALSE, eval=FALSE}
 psrc_pums_median(x,                              # the assigned result of get_psrc_pums()
-                 stat_var = "HINCP",           # Summarizing household income . . .
+                 stat_var = "HINCP",             # Summarizing household income . . .
                  group_vars = "TEN")             # . . . grouped by housing tenure
 ```
 
 
 The count function tabulates the number people or households by grouping category, depending on the level you specified in **get_psrc_pums**. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
 ```{r count by category, message=FALSE, eval=FALSE}
-psrc_pums_count(x, group_var="TEN")              # If omitting stat_var argument, group_var must be labeled
+psrc_pums_count(x, group_vars=c("COUNTY","TEN"))      # If omitting stat_var argument, group_var must be labeled
 ```
 
 
 The summary function provides all four statistics and their margins of error in the same table. 
 ```{r summary by category, message=FALSE, eval=FALSE}
-psrc_pums_summary(x, "HINCP", "TEN", incl_counties=FALSE) %>% print()
+psrc_pums_summary(x, "HINCP", "TEN") %>% print()
 ```
 
 ## Sample sizes, confidence, and error margins
 
 Although **psrccensus** allows you to specify multiple grouping variables, you'll need to keep in mind that there are limits to what can be usefully determined from small subsets of respondents within PUMS. To draw responsible conclusions from PUMS data, you'll need to examine the margins of error (MOE) **psrccensus** calculates along with the estimate. (This is when PUMS via **psrccensus** really shines, since it can be laborious to calculate the MOE without dedicated statistical software.) Margins of error in the PUMS are given in the same units as the estimate (as with ACS), so it is easy to get the bounds of the 90 percent confidence interval by both adding the MOE to the estimate and subtracting the MOE from it.
 
-If there are few respondents in a category combination, the margin of error may be beyond calculation (NaN, or 'not a number'), or so large that the estimate itself has little practical value. In these cases, you may want to consider either switching from the 1-year to 5-year span (the latter has a larger sample), potentially analyze dimensions of the data separately rather than in combination. If there are no respondents at all for one of your category combinations, the srvyr statistical functions will return an error; in that case you'll need either to shift to region-only estimates (using the `incl_counties=FALSE` option) or to aggregate/filter the problematic combination (via dplyr's `mutate` or `filter`, for example).
+If there are few respondents in a category combination, the margin of error may be beyond calculation (NaN, or 'not a number'), or so large that the estimate itself has little practical value. In these cases, you may want to consider either switching from the 1-year to 5-year span (the latter has a larger sample), potentially analyze dimensions of the data separately rather than in combination, or potentially change the categories you are using (e.g. use `dplyr::mutate` to create a less disaggregate variable).
 
 ### Determining difference
 Is there an actual difference between two statistics generated from PUMS data? To know, you'll need to examine the margins of error. As a rule of thumb, if there is overlap in the 90 percent confidence intervals of the two estimates, you cannot conclude the values are different. To perform a more careful test, you can calculate the Z score:
@@ -135,4 +135,6 @@ z_score(c1, c2)                                  # A true difference indicated b
 
 ***
 **_NOTE FOR POWER USERS:_**
-If you wish to examine the analysis and grouping variables within the srvyr object, they are stored in a dataframe as the seventh list item. When further variable transformations or groupings are necessary, you can manipulate the srvyr object directly using **dpylr**'s ***filter*** and ***mutate*** functions (potentially in combination with ***select***), which maintain the associated srvyr weights and structure (see [its vignette](http://gdfe.co/srvyr/)). You may find it convenient to call **get_psrc_pums()** with the `labels=FALSE` option, as the underlying value codes are shorter and  more easily handled with rules than are descriptive labels (use the [data dictionary](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/) to interpret value codes). Because grouping variables must be 'factor' datatype for srvyr, it is necessary to use `as.character()` to obtain the string value--factors are stored as values with text mappings in R, so comparisons without using `as.character()` first can use the underlying value rather than the factor level as intended. New or altered grouping variables must as a final step be converted back to 'factor' datatype before the statistical functions are run (generally using the `factor()` command).
+If you wish to examine the analysis and grouping variables within the srvyr object, they are stored in a dataframe as the seventh list item. When further variable transformations or groupings are necessary, you can manipulate the srvyr object directly using **dpylr**'s ***filter*** and ***mutate*** functions (potentially in combination with ***select***), which maintain the associated srvyr weights and structure (see [its vignette](http://gdfe.co/srvyr/)). 
+
+You may find it convenient to call **get_psrc_pums()** with the `labels=FALSE` option, as the underlying value codes are shorter and  more easily handled with rules than are descriptive labels (use the [data dictionary](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/) to interpret value codes). Be careful making any numerical comparisons with categorical variables: R stores them as factor datatype, so they have a hidden value that could unwittingly be compared unless you convert datatype using `as.character()` first.
