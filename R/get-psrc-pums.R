@@ -19,7 +19,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 pums_varsearch <- function(regex){
   var_code <- var_label <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   rs <- tidycensus::pums_variables %>% setDT() %>% .[, .(var_code, var_label)] %>%
-  .[!grepl("flag$", var_label) & (grepl(regex, var_label, ignore.case=TRUE)|grepl(regex, var_code, ignore.case=TRUE))] %>% unique()
+    .[!grepl("flag$", var_label) & (grepl(regex, var_label, ignore.case=TRUE)|grepl(regex, var_code, ignore.case=TRUE))] %>% unique()
   return(rs)
 }
 
@@ -60,7 +60,7 @@ read_pums <- function(target_file, dyear){
   }
   col_typelist <- list(character = chr_types, numeric = num_types)
   dt <- data.table::fread(target_file, sep=",", stringsAsFactors=FALSE, colClasses=col_typelist) %>% # The room where it happens; reads the file with correct datatypes
-   filter2region(dyear)
+    filter2region(dyear)
   return(dt)
 }
 
@@ -154,8 +154,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
     dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                          # Otherwise, ftp source
     dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>%
       .[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                   # PSRC non-overlapping race category (Hispanic its own race)
-                      RAC1P %in% c("3","4","5"), "I",
-                      !is.na(RAC1P), RAC1P)]
+                       RAC1P %in% c("3","4","5"), "I",
+                       !is.na(RAC1P), RAC1P)]
   }
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
@@ -184,7 +184,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   varlist <- c(unlist(unit_key),"PUMA", unlist(vars), swgt, rwgt, adjvars) %>% unique()            # Columns to keep
   if("BIN_YBL" %in% vars){varlist <- varlist[!(varlist %in% "BIN_YBL")] %>% c("YBL")}              # Swap; to be used later
   dt %<>% .[, colnames(.) %in% varlist, with=FALSE]                                                # Keep only specified columns
-  dt[, `:=`(DATA_YEAR=get(dyear), PRODUCT=paste0("acs",get(span)), UNIT=get(level))]               # Add fields to identify the dataset
+  dt[, `:=`(DATA_YEAR=dyear, PRODUCT=paste0("acs", span), UNIT=level)]                             # Add fields to identify the dataset
   dt[, (unit_key):=lapply(.SD, as.character), .SDcols=unit_key]                                    # Confirm datatype for keys (fread may return int for early years)
   return(dt)
 }
@@ -305,7 +305,7 @@ codes2labels <- function(dt, dyear, vars){
 ensure_datatypes <- function(dt){
   allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
   dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
-    ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
+  ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
     .[. %not_in% c("SERIALNO","SPORDER","PUMA","DATA_YEAR","PRODUCT","UNIT")]
   if(length(ftr_vars)>0){
     dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                     # Ensure grouping variables are factors (required by srvyr)
@@ -341,7 +341,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
   if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
   if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl()}
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
-  varlist <- c(unlist(unit_var), "YEAR", "PRODUCT", "UNIT", "COUNTY", unlist(vars)) %>% unique()
+  varlist <- c(unlist(unit_var), "DATA_YEAR", "PRODUCT", "UNIT", "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
     srvyr::as_survey_rep(variables=varlist,                                                        # Create srvyr object with replication weights for MOE
                          weights=swgt,
@@ -364,42 +364,43 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @importFrom rlang sym
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
+
   count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
-      so %<>% srvyr::group_by(dplyr::across(!!!enquos(group_vars)))
+    so %<>% srvyr::group_by(dplyr::across(!!!enquos(group_vars)))
   }
   if(stat_type=="count"){
     rs <- suppressMessages(cascade(so,
-            count:=survey_total(na.rm=TRUE),
-            share:=survey_prop(),
-            .fill="Total"))
+                                   count:=survey_total(na.rm=TRUE),
+                                   share:=survey_prop(),
+                                   .fill="Total"))
   }else if(stat_type=="median"){
     rs <- suppressMessages(cascade(so,
-            !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
-            .fill="Total"))
+                                   !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+                                   .fill="Total"))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(cascade(so,
-            count:=survey_total(na.rm=TRUE),
-            share:=survey_prop(),
-            !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
-            !!paste0(prefix, "mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
-            .fill="Total"))
+                                   count:=survey_total(na.rm=TRUE),
+                                   share:=survey_prop(),
+                                   !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+                                   !!paste0(prefix, "mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
+                                   .fill="Total"))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- suppressMessages(cascade(so,
-            !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
-            .fill="Total"))
+                                   !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
+                                   .fill="Total"))
   }
   rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
     setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
-  if("COUNTY" %in% colnames(rs)){
-    setcolorder(rs, c("COUNTY"))
-    setorder(rs, "COUNTY")
-    rs[COUNTY=="Total", COUNTY:="Region"]
-  }
+  if("COUNTY" %not_in% colnames(rs)){rs[,COUNTY:="Region"]}
+  if("DATA_YEAR" %not_in% colnames(rs)){rs[, DATA_YEAR:=unique(so[[7]]$DATA_YEAR)]}
+  setcolorder(rs, c("DATA_YEAR","COUNTY"))
+  setorderv(rs, c("DATA_YEAR","COUNTY"))
+  rs[COUNTY=="Total", COUNTY:="Region"]
   rs[DATA_YEAR!="Total"]
   so %<>% dplyr::ungroup()
   return(rs)
