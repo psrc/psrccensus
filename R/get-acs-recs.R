@@ -129,6 +129,32 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
   return(census.data)
 }
 
+#' Get PSRC Places
+#'
+#' Lookup table of Census Places within the PSRC Region, specific to the Census year
+#'
+#' @param years A numeric value or vector of years
+#' @author Mike Jensen
+#' @return a data frame with relevant Census Place names and codes
+#'
+#' @importFrom magrittr %>%
+#' @importFrom sf st_as_sf st_transform st_join st_buffer st_drop_geometry st_within
+#' @importFrom dplyr filter select rename
+#' @keywords internal
+get_psrc_places <- function(years){
+  county_geoms <- tigris::counties("53", cb=TRUE) %>%
+    filter(COUNTYFP %in% c("033","035","053","061")) %>%
+    st_transform(2285) # planar projection to allow intersect
+  place_lookup <- list()
+  place_lookup <- lapply(years, FUN=function(x) tigris::places("53", year=x)) %>%
+    data.table::rbindlist() %>% .[1:nrow(.)] %>% st_as_sf(sf_column_name="geometry") %>%
+    select(c(place = PLACEFP, GEOID, NAME, NAMELSAD, geometry)) %>%
+    st_transform(2285) %>%
+    st_buffer(-1) %>% # To avoid any overlap
+    st_join(county_geoms["COUNTYFP"], join=st_within, left=FALSE, largest=FALSE) %>%
+    rename(county = COUNTYFP) %>% st_drop_geometry()
+  }
+
 #' ACS Estimates by Place
 #'
 #' Generate ACS estimates for multiple tables by multiple places
@@ -137,6 +163,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #' @param table.names A character string or vector of Census table codes.
 #' @param years A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.
 #' @param acs.type A character string as either 'acs1', 'acs3' or acs5'.
+#' @param place_FIPS Character string of FIPS codes (with state prefix) for specific Census Places. If NULL, Places within the PSRC Region will be returned.
 #'
 #' @author Craig Helmann
 #'
@@ -146,18 +173,22 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #' @importFrom rlang .data
 #' @keywords internal
 
-get_acs_place <- function (state="Washington", table.names, years, acs.type) {
+get_acs_place <- function (state="Washington", table.names, years, acs.type, place_FIPS=NULL) {
 
   census.data <- NULL
+
   for (table in table.names) {
 
     yearly.data <- NULL
 
     for (year in years) {
+      # Determine Places within Region
+      if(year>2010){psrc_places <- get_psrc_places(year) %>% dplyr::pull(GEOID)}
 
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, geography='place', year=year, survey=acs.type, table=table) %>%
         tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",")
+      if(!is.null(place_FIPS)){tbl %<>% filter(GEOID %in% place_FIPS)}else if(year>2010){tbl %<>% filter(GEOID %in% psrc_places)}
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
@@ -299,14 +330,14 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'              years=c(2018,2019))
 #'
 #' @export
-get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table.names, years, FIPS = c("14740","42660"), acs.type) {
+get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table.names, years, FIPS = c("14740","42660"), place_FIPS=NULL, acs.type) {
 
   if(geography == 'county') {
     dfs <- get_acs_county(state, counties, table.names, years, acs.type)
   } else if (geography == 'msa'){
     dfs <- get_acs_msa(table.names, years, acs.type, FIPS)
   } else if(geography == 'place') {
-    dfs <- get_acs_place(state, table.names, years, acs.type)
+    dfs <- get_acs_place(state, table.names, years, acs.type, place_FIPS)
   } else if(geography == 'tract') {
     dfs <- get_acs_tract(state, counties, table.names, years)
 }

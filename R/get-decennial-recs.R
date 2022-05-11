@@ -94,7 +94,7 @@ get_decennial_msa <- function(table_codes, years, fips = NULL) {
 #'
 #' @param table_codes A character string or vector of Census table codes.
 #' @param years Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.
-#' @param fips Character value. Single code or vector of place fips codes.
+#' @param fips Character value. Single code or vector of place fips codes (including state prefix). If NULL, Places within the PSRC Region will be returned.
 #' @param state A character string state abbreviation
 #'
 #' @author Christy Lam
@@ -106,6 +106,7 @@ get_decennial_place <- function(table_codes, years, fips = NULL, state = 'WA') {
   dfs <- NULL
   for(year in years) {
     for(table_code in table_codes) {
+      if(year>2010){psrc_places <- get_psrc_places(year) %>% dplyr::pull(GEOID)}
       tryCatch(
         d <- tidycensus::get_decennial(geography = 'place',
                                        state = state,
@@ -115,6 +116,7 @@ get_decennial_place <- function(table_codes, years, fips = NULL, state = 'WA') {
       )
       if(exists('d')) {
         d$year <- year
+        if(!is.null(fips)){d %<>% filter(GEOID %in% fips)}else if(year>2010){d %<>% filter(GEOID %in% psrc_places)}
         ifelse(is.null(dfs), dfs <- d, dfs <- dplyr::bind_rows(dfs, d))
         rm(d)
       }

@@ -11,6 +11,7 @@ get_acs_recs(
   table.names,
   years,
   FIPS = c("14740", "42660"),
+  place_FIPS = NULL,
   acs.type
 )
 }

@@ -4,7 +4,13 @@
 \alias{get_acs_place}
 \title{ACS Estimates by Place}
 \usage{
-get_acs_place(state = "Washington", table.names, years, acs.type)
+get_acs_place(
+  state = "Washington",
+  table.names,
+  years,
+  acs.type,
+  place_FIPS = NULL
+)
 }
 \arguments{
 \item{state}{A character string state name or abbreviation. Defaults to Washington.}
@@ -14,6 +20,8 @@ get_acs_place(state = "Washington", table.names, years, acs.type)
 \item{years}{A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.}
 
 \item{acs.type}{A character string as either 'acs1', 'acs3' or acs5'.}
+
+\item{place_FIPS}{Character string of FIPS codes (with state prefix) for specific Census Places. If NULL, Places within the PSRC Region will be returned.}
 }
 \value{
 a tibble of acs estimates by Place for selected table codes and years. Includes detailed variable names.

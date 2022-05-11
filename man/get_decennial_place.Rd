@@ -11,7 +11,7 @@ get_decennial_place(table_codes, years, fips = NULL, state = "WA")
 
 \item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.}
 
-\item{fips}{Character value. Single code or vector of place fips codes.}
+\item{fips}{Character value. Single code or vector of place fips codes (including state prefix). If NULL, Places within the PSRC Region will be returned.}
 
 \item{state}{A character string state abbreviation}
 }
