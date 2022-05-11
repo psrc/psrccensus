@@ -146,9 +146,9 @@ get_psrc_places <- function(years){
     filter(COUNTYFP %in% c("033","035","053","061")) %>%
     st_transform(2285) # planar projection to allow intersect
   place_lookup <- list()
-  place_lookup <- lapply(years, FUN=function(x) tigris::places("53", year=x)) %>%
+  place_lookup <- lapply(years, FUN=function(x) tigris::places("53", year=x, cb=TRUE)) %>%
     data.table::rbindlist() %>% .[1:nrow(.)] %>% st_as_sf(sf_column_name="geometry") %>%
-    select(c(place = PLACEFP, GEOID, NAME, NAMELSAD, geometry)) %>%
+    select(c(place = PLACEFP, GEOID, NAME, geometry)) %>%
     st_transform(2285) %>%
     st_buffer(-1) %>% # To avoid any overlap
     st_join(county_geoms["COUNTYFP"], join=st_within, left=FALSE, largest=FALSE) %>%
