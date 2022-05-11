@@ -133,26 +133,21 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #'
 #' Lookup table of Census Places within the PSRC Region, specific to the Census year
 #'
-#' @param years A numeric value or vector of years
+#' @param year A numeric value
 #' @author Mike Jensen
 #' @return a data frame with relevant Census Place names and codes
 #'
 #' @importFrom magrittr %>%
-#' @importFrom sf st_as_sf st_transform st_join st_buffer st_drop_geometry st_within
+#' @importFrom sf st_union st_transform st_buffer st_intersects st_drop_geometry
 #' @importFrom dplyr filter select rename
 #' @keywords internal
-get_psrc_places <- function(years){
-  county_geoms <- tigris::counties("53", cb=TRUE) %>%
-    filter(COUNTYFP %in% c("033","035","053","061")) %>%
+get_psrc_places <- function(year){
+  psrc_region <- tigris::counties("53", cb=TRUE) %>%
+    filter(COUNTYFP %in% c("033","035","053","061")) %>% st_union() %>%
     st_transform(2285) # planar projection to allow intersect
-  place_lookup <- list()
-  place_lookup <- lapply(years, FUN=function(x) tigris::places("53", year=x, cb=TRUE)) %>%
-    data.table::rbindlist() %>% .[1:nrow(.)] %>% st_as_sf(sf_column_name="geometry") %>%
-    select(c(place = PLACEFP, GEOID, NAME, geometry)) %>%
-    st_transform(2285) %>%
-    st_buffer(-1) %>% # To avoid any overlap
-    st_join(county_geoms["COUNTYFP"], join=st_within, left=FALSE, largest=FALSE) %>%
-    rename(county = COUNTYFP) %>% st_drop_geometry()
+  place_lookup <- tigris::places("53", year=year, cb=TRUE) %>%
+    select(c(GEOID, NAME, geometry)) %>% st_transform(2285) %>% st_buffer(-1) %>% # To avoid any overlap
+    filter(st_intersects(., sparse = FALSE)[1,]) %>% st_drop_geometry()
   }
 
 #' ACS Estimates by Place
@@ -183,7 +178,7 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
 
     for (year in years) {
       # Determine Places within Region
-      if(year>2010){psrc_places <- get_psrc_places(year) %>% dplyr::pull(GEOID)}
+      if(is.null(place_FIPS) & year>2010){psrc_places <- get_psrc_places(year) %>% dplyr::pull(GEOID)}
 
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, geography='place', year=year, survey=acs.type, table=table) %>%

@@ -106,7 +106,7 @@ get_decennial_place <- function(table_codes, years, fips = NULL, state = 'WA') {
   dfs <- NULL
   for(year in years) {
     for(table_code in table_codes) {
-      if(year>2010){psrc_places <- get_psrc_places(year) %>% dplyr::pull(GEOID)}
+      if(is.null(fips) & year>2010){psrc_places <- get_psrc_places(year) %>% dplyr::pull(GEOID)}
       tryCatch(
         d <- tidycensus::get_decennial(geography = 'place',
                                        state = state,

@@ -4,10 +4,10 @@
 \alias{get_psrc_places}
 \title{Get PSRC Places}
 \usage{
-get_psrc_places(years)
+get_psrc_places(year)
 }
 \arguments{
-\item{years}{A numeric value or vector of years}
+\item{year}{A numeric value}
 }
 \value{
 a data frame with relevant Census Place names and codes
