@@ -160,16 +160,19 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
-  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, PRACE)]                                                                                                  #     not as.integer because non-number values exist
-  hh_me <- tmp_p[, .(HRACE=stuff(PRACE)), by=.(SERIALNO)] %>% setkey("SERIALNO")                   # Summarize households by race/ethnic composition
-  hh_me[(HRACE %like% ","), HRACE:="M"]                                                            # - Characterize multiracial
-  dt_h %<>% merge(hh_me, by="SERIALNO", all.x=TRUE)
+  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS)]
+  pp_hh <- tmp_p[, .(HRACE=stuff(PRACE), HDIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO")    # Summarize households for race/ethnic composition, disability status
+  pp_hh[(HRACE %like% ","), HRACE:="M"]                                                            # - Characterize multiracial or household-level disability
+  pp_aa <- tmp_p[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO")    # Summarize households for race/ethnic composition, disability status
+  pp_aa[(ARACE %like% ","), ARACE:="M"]                                                            # - Characterize multiracial or household-level disability
+  dt_h %<>% merge(pp_hh, by="SERIALNO", all.x=TRUE)                                                # Relate household-composition variables
+  dt_h %<>% merge(pp_aa, by="SERIALNO", all.x=TRUE)                                                # Relate adult-restricted household-composition variables
   adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
   dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]              # Adjustment factors in ftp version without decimal
-  if(level %in% c("h","households")){                                                               # For household analysis:                                                               #    filter out GQ or vacant units &
+  if(level %in% c("h","households")){                                                              # For household analysis:                                                               #    filter out GQ or vacant units &
     dt_p %<>% .[as.integer(SPORDER)==1]                                                            #  - keep only householder person attributes
     dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]                #  - filter out GQ & vacant
-  }else if(level %in% c("p","persons")){                                                            # For population analysis, keep only individuals
+  }else if(level %in% c("p","persons")){                                                           # For population analysis, keep only individuals
     dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
   }
   if("BINCOME" %in% vars){dt %<>% psrc_bincome()}                                                  # See psrc-pums-groupings for custom binned variables
@@ -283,6 +286,9 @@ codes2labels <- function(dt, dyear, vars){
       c("American Indian or Alaskan Native Alone", "Hispanic or Latino","Multiple Races"))) %>%    # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
+  recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
+  recoder[[5]] <- copy(recoder[[2]]) %>% .[, var_code:="ARACE"]
+  recoder[[6]] <- copy(recoder[[4]]) %>% .[, var_code:="ADIS"]
   recoder %<>% rbindlist() %>% setDT() %>% .[var_code %in% vars]%>% setkeyv("val_max")             # Add to label lookup; filter variables
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
