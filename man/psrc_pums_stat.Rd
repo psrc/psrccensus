@@ -4,7 +4,7 @@
 \alias{psrc_pums_stat}
 \title{Generic call for PUMS summary statistics}
 \usage{
-psrc_pums_stat(so, stat_type, stat_var, group_vars)
+psrc_pums_stat(so, stat_type, stat_var, group_vars, incl_na = TRUE)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
@@ -14,6 +14,8 @@ psrc_pums_stat(so, stat_type, stat_var, group_vars)
 \item{stat_var}{The numeric variable to summarize}
 
 \item{group_vars}{Factor variable/s for grouping, as an UPPERCASE string element or list}
+
+\item{incl_na}{option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error

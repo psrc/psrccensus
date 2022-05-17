@@ -4,7 +4,7 @@
 \alias{pums_bulk_stat}
 \title{PUMS bulk summary statistics}
 \usage{
-pums_bulk_stat(so, stat_type, stat_var = NULL, group_var_list)
+pums_bulk_stat(so, stat_type, stat_var = NULL, group_var_list, incl_na = TRUE)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}

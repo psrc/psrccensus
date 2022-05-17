@@ -368,14 +368,16 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom rlang sym
+#' @importFrom dplyr across
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
-
+psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   so %<>% dplyr::ungroup()
   if(!is.null(group_vars)){
-    so %<>% srvyr::group_by(dplyr::across(!!!enquos(group_vars)))
+    no_na_group <- function(x){droplevels(x, exclude=NA)}
+    if(incl_na==FALSE){so %<>% dplyr::mutate(across(!!!enquos(group_vars), no_na_group))}
+    so %<>% srvyr::group_by(across(!!!enquos(group_vars)))
   }
   if(stat_type=="count"){
     rs <- suppressMessages(cascade(so,
@@ -419,6 +421,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars){
 #' @param so The srvyr object returned by \code{\link{get_psrc_pums}}
 #' @param stat_var The numeric variable to summarize
 #' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
+#' @param incl_na option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)
 #' @name pums_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
@@ -426,15 +429,15 @@ NULL
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional counts
 #' @export
-psrc_pums_count <- function(so, stat_var=NULL, group_vars=NULL){
-  rs <- psrc_pums_stat(so=so, stat_type="count", stat_var=NULL, group_vars=group_vars)
+psrc_pums_count <- function(so, stat_var=NULL, group_vars=NULL, incl_na=TRUE){
+  rs <- psrc_pums_stat(so=so, stat_type="count", stat_var=NULL, group_vars=group_vars, incl_na=incl_na)
   return(rs)
 }
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional totals
 #' @export
-psrc_pums_sum <- function(so, stat_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so, stat_type="total", stat_var=stat_var, group_vars=group_vars)
+psrc_pums_sum <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
+  rs <- psrc_pums_stat(so, stat_type="total", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
   return(rs)
 }
 
@@ -449,24 +452,24 @@ psrc_pums_sum <- function(so, stat_var, group_vars=NULL){
 #' rs <- psrc_pums_median(so, "HINCP", "TEN")
 #'}
 #' @export
-psrc_pums_median <- function(so, stat_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so=so, stat_type="median", stat_var=stat_var, group_vars=group_vars)
+psrc_pums_median <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
+  rs <- psrc_pums_stat(so=so, stat_type="median", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
   return(rs)
 }
 
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional means
 #' @export
-psrc_pums_mean <- function(so, stat_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so=so, stat_type="mean", stat_var=stat_var, group_vars=group_vars)
+psrc_pums_mean <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
+  rs <- psrc_pums_stat(so=so, stat_type="mean", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
   return(rs)
 }
 
 #' @rdname pums_stat
 #' @title Generate PUMS county and regional means
 #' @export
-psrc_pums_summary <- function(so, stat_var, group_vars=NULL){
-  rs <- psrc_pums_stat(so=so, stat_type="summary", stat_var=stat_var, group_vars=group_vars)
+psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
+  rs <- psrc_pums_stat(so=so, stat_type="summary", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
   return(rs)
 }
 
@@ -484,13 +487,14 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL){
 #' @importFrom data.table rbindlist setDF
 #' @importFrom dplyr mutate rename relocate
 #' @export
-pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list){
+pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na=TRUE){
   var_name <- NULL                                                                                 # Bind variables locally (for documentation, not function)
   list_stat <- function(x){
     rsub <- psrc_pums_stat(so=so,
                            stat_type=stat_type,
                            stat_var=stat_var,
-                           group_vars=x)
+                           group_vars=x,
+                           incl_na=incl_na)
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%
