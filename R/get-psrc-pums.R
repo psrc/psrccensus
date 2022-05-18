@@ -498,8 +498,8 @@ pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%
-    lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
-    rename(var_value=colnames(.)[1]) %>% relocate(var_name)
+    lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[3])}) %>% rbindlist(use.names=FALSE) %>%
+    rename(var_value=colnames(.)[3]) %>% relocate(DATA_YEAR, COUNTY, var_name)
   return(df)
 }
 
