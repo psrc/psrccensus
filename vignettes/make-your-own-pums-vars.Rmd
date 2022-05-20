@@ -47,6 +47,10 @@ Rather than removing observations with the dplyr::filter() command, we recommend
 ### Examples
 Adding two custom variables with one mutate command:
 ```{r mutate using labels, message=FALSE, eval=FALSE}
+library(psrccensus)
+library(magrittr)
+library(dplyr)
+
 pums19_5p <- get_psrc_pums(5, 2019, "p", c("AGEP","SCHL","ESR"))                           # Pull the data; 
                                                                                            #    rather than pipe the result, use a separate assignment
 pums19_5p %<>% mutate(                                                                     #    so any issues with mutate() don't negate your download
