@@ -132,9 +132,3 @@ c2 <- rs[3,(ncol(rs)-1):ncol(rs)]                # Third-line estimate and its M
 z_score(c1, c2)                                  # A true difference indicated by score > 1
 
 ```
-
-***
-**_NOTE FOR POWER USERS:_**
-If you wish to examine the analysis and grouping variables within the srvyr object, they are stored in a dataframe as the seventh list item. When further variable transformations or groupings are necessary, you can manipulate the srvyr object directly using **dpylr**'s ***filter*** and ***mutate*** functions (potentially in combination with ***select***), which maintain the associated srvyr weights and structure (see [its vignette](http://gdfe.co/srvyr/)). 
-
-You may find it convenient to call **get_psrc_pums()** with the `labels=FALSE` option, as the underlying value codes are shorter and  more easily handled with rules than are descriptive labels (use the [data dictionary](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/) to interpret value codes). Be careful making any numerical comparisons with categorical variables: R stores them as factor datatype, so they have a hidden value that could unwittingly be compared unless you convert datatype using `as.character()` first.
