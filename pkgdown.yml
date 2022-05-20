@@ -4,8 +4,9 @@ pkgdown_sha: ~
 articles:
   calculate-pums-summaries: calculate-pums-summaries.html
   get-data: get-data.html
+  make-your-own-pums-vars: make-your-own-pums-vars.html
   psrccensus: psrccensus.html
-last_built: 2022-05-20T04:32Z
+last_built: 2022-05-20T21:05Z
 urls:
   reference: https://psrc.github.io/psrccensus/reference
   article: https://psrc.github.io/psrccensus/articles
