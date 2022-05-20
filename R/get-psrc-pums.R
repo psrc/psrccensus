@@ -368,16 +368,16 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom rlang sym
-#' @importFrom dplyr across
+#' @importFrom tidyselect all_of
+#' @importFrom dplyr across if_all ungroup
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
-  so %<>% dplyr::ungroup()
+  so %<>% ungroup()
   if(!is.null(group_vars)){
-    no_na_group <- function(x){droplevels(x, exclude=NA)}
-    if(incl_na==FALSE){so %<>% dplyr::mutate(across(!!!enquos(group_vars), no_na_group))}
-    so %<>% srvyr::group_by(across(!!!enquos(group_vars)))
+    if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}
+    so %<>% srvyr::group_by(across(all_of(group_vars)))
   }
   if(stat_type=="count"){
     rs <- suppressMessages(cascade(so,
@@ -410,7 +410,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   setorderv(rs, c("DATA_YEAR","COUNTY"))
   rs[COUNTY=="Total", COUNTY:="Region"]
   rs[DATA_YEAR!="Total"]
-  so %<>% dplyr::ungroup()
+  so %<>% ungroup()
   return(rs)
 }
 
