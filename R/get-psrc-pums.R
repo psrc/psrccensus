@@ -151,9 +151,9 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
     dt_h  <- suppressWarnings(read_pums(hfile, dyear))
     dt_p  <- suppressWarnings(read_pums(pfile, dyear))
   }else{
-    dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h"))                                          # Otherwise, ftp source
-    dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>%
-      .[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                   # PSRC non-overlapping race category (Hispanic its own race)
+    dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setDT()                              # Otherwise, ftp source
+    dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setDT()
+    dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
                        RAC1P %in% c("3","4","5"), "I",
                        !is.na(RAC1P), RAC1P)]
   }

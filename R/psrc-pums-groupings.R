@@ -45,7 +45,7 @@ psrc_bin_age <- function(dt){
                              AGEP < 65, "between 55 and 65 years",
                              AGEP < 75, "between 65 and 75 years",
                              AGEP < 85, "between 75 and 85 years",
-                             AGEP >=85, "85 years and over",
+                             AGEP > 84, "85 years and over",
                              !is.na(AGEP), "Else / Prefer not to answer"),
                       levels=c("under 5 years",
                                "between 5 and 11 years",
@@ -58,6 +58,7 @@ psrc_bin_age <- function(dt){
                                "between 55 and 65 years",
                                "between 65 and 75 years",
                                "between 75 and 85 years",
+                               "85 years and over",
                                "Else / Prefer not to answer"))]
   return(dt)
 }
