@@ -143,7 +143,7 @@ fetch_ftp <- function(span, dyear, level){
 #'
 #' @import data.table
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
-  PRACE <- HISP <- RAC1P <- SPORDER <- SERIALNO <- HRACE <- TYPE <- VACS <- NULL                   # Bind variables locally (for documentation, not function)
+  PRACE <- HISP <- RAC1P <- SPORDER <- SERIALNO <- HRACE <- TYPE <- TYPEHUGQ <- VACS <- NULL       # Bind variables locally (for documentation, not function)
   unit_key <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
@@ -157,13 +157,14 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
                        RAC1P %in% c("3","4","5"), "I",
                        !is.na(RAC1P), RAC1P)]
   }
+  if("TYPE" %in% colnames(dt_h)){setnames(dt_h,"TYPEHUGQ","TYPE")}
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
   tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS)]
   pp_hh <- tmp_p[, .(HRACE=stuff(PRACE), HDIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO")    # Summarize households for race/ethnic composition, disability status
   pp_hh[(HRACE %like% ","), HRACE:="M"]                                                            # - Characterize multiracial or household-level disability
-  pp_aa <- tmp_p[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO")    # Summarize households for race/ethnic composition, disability status
+  pp_aa <- tmp_p[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO") # Summarize households for race/ethnic composition, disability status
   pp_aa[(ARACE %like% ","), ARACE:="M"]                                                            # - Characterize multiracial or household-level disability
   dt_h %<>% merge(pp_hh, by="SERIALNO", all.x=TRUE)                                                # Relate household-composition variables
   dt_h %<>% merge(pp_aa, by="SERIALNO", all.x=TRUE)                                                # Relate adult-restricted household-composition variables
@@ -171,7 +172,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   dt_h[, (adjvars):=lapply(.SD, function(x){as.numeric(x)/1000000}), .SDcols=adjvars]              # Adjustment factors in ftp version without decimal
   if(level %in% c("h","households")){                                                              # For household analysis:                                                               #    filter out GQ or vacant units &
     dt_p %<>% .[as.integer(SPORDER)==1]                                                            #  - keep only householder person attributes
-    dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPE==1 & is.na(VACS)]                #  - filter out GQ & vacant
+    dt <- merge(dt_h, dt_p, by="SERIALNO", all.x=TRUE) %>% .[TYPEHUGQ==1 & is.na(VACS)]            #  - filter out GQ & vacant
   }else if(level %in% c("p","persons")){                                                           # For population analysis, keep only individuals
     dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
   }
@@ -180,7 +181,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
   if("OWN_RENT" %in% vars){dt %<>% psrc_own_rent()}                                                # - "
   if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl(dyear)}                                             # - "
-  swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                      # Specify sample weight
+  swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")
   rwgt <- grep(wgtrgx, colnames(dt), value=TRUE)                                                   # Specify replication weights
@@ -203,7 +204,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
 #' @import data.table
 pums_api_gofer <- function(span, dyear, level, vars){
   varlist <- unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                    # Include adjustment variables
-  vf         <- list(TYPE=1, SPORDER=1)
+  vf <- if(dyear<2020){list(TYPE=1, SPORDER=1)}else{list(TYPEHUGQ=1, SPORDER=1)}
   tbl_ref    <- if(level %in% c("p","persons")){"person"}else{"housing"}
   dt <- tidycensus::get_pums(variables=varlist,                                                    # Include inflation adjustment fields
                              state="WA",
@@ -337,10 +338,9 @@ ensure_datatypes <- function(dt){
 #'
 #' @export
 get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
-  vf <- list(TYPE=1, SPORDER=1)
   unit_var <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   dt <- pums_ftp_gofer(span, dyear, level, vars, dir)
-  swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                      # Specify sample weight
+  swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
   rwgt <- paste0(swgt, 1:80)                                                                       # Specify replication weights
   dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY")) %>%
     adjust_dollars()                                                                               # Apply standard inflation adjustment
