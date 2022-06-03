@@ -157,7 +157,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
                        RAC1P %in% c("3","4","5"), "I",
                        !is.na(RAC1P), RAC1P)]
   }
-  if("TYPE" %in% colnames(dt_h)){setnames(dt_h,"TYPEHUGQ","TYPE")}
+  if("TYPE" %in% colnames(dt_h)){setnames(dt_h,"TYPE","TYPEHUGQ")}
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
