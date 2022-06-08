@@ -155,7 +155,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
     dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setDT()
     dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
                        RAC1P %in% c("3","4","5"), "I",
-                       !is.na(RAC1P), RAC1P)]
+                       !is.na(RAC1P), as.character(RAC1P))]
   }
   if("TYPE" %in% colnames(dt_h)){setnames(dt_h,"TYPE","TYPEHUGQ")}
   setkeyv(dt_h, "SERIALNO")
@@ -349,9 +349,9 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
   varlist <- c(unlist(unit_var), "DATA_YEAR", "PRODUCT", "UNIT", "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
-    srvyr::as_survey_rep(variables=varlist,                                                        # Create srvyr object with replication weights for MOE
-                         weights=swgt,
-                         repweights=rwgt,
+    srvyr::as_survey_rep(variables=all_of(varlist),                                                # Create srvyr object with replication weights for MOE
+                         weights=all_of(swgt),
+                         repweights=all_of(rwgt),
                          combined_weights=TRUE,
                          mse=TRUE,
                          type="other",
