@@ -143,7 +143,7 @@ fetch_ftp <- function(span, dyear, level){
 #'
 #' @import data.table
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
-  PRACE <- HISP <- RAC1P <- SPORDER <- SERIALNO <- HRACE <- TYPE <- TYPEHUGQ <- VACS <- NULL       # Bind variables locally (for documentation, not function)
+  PRACE <- HISP <- RAC1P <- SPORDER <- SERIALNO <- HRACE <- TYPE <- TYPEHUGQ <- VACS <- DIS <- COW <- NULL # Bind variables locally (for documentation, not function)
   unit_key <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
@@ -161,10 +161,15 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
-  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS)]
-  pp_hh <- tmp_p[, .(HRACE=stuff(PRACE), HDIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO")    # Summarize households for race/ethnic composition, disability status
+  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS, COW)]
+  tmp_p[COW>0 & COW<9, WORKER:=1L]
+  pp_hh <- tmp_p[, .(HRACE=stuff(PRACE),
+                     HDIS=min(DIS, na.rm=TRUE),
+                     NWRK=sum(WORKER, na.rm=TRUE)), by=.(SERIALNO)] %>%                            # Summarize households for race/ethnic composition, disability status
+    setkey("SERIALNO")
   pp_hh[(HRACE %like% ","), HRACE:="M"]                                                            # - Characterize multiracial or household-level disability
-  pp_aa <- tmp_p[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>% setkey("SERIALNO") # Summarize households for race/ethnic composition, disability status
+  pp_aa <- tmp_p[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>%              # Summarize households for race/ethnic composition, disability status
+    setkey("SERIALNO")
   pp_aa[(ARACE %like% ","), ARACE:="M"]                                                            # - Characterize multiracial or household-level disability
   dt_h %<>% merge(pp_hh, by="SERIALNO", all.x=TRUE)                                                # Relate household-composition variables
   dt_h %<>% merge(pp_aa, by="SERIALNO", all.x=TRUE)                                                # Relate adult-restricted household-composition variables
@@ -290,7 +295,7 @@ codes2labels <- function(dt, dyear, vars){
   recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
   recoder[[5]] <- copy(recoder[[2]]) %>% .[, var_code:="ARACE"]
   recoder[[6]] <- copy(recoder[[4]]) %>% .[, var_code:="ADIS"]
-  recoder %<>% rbindlist() %>% setDT() %>% .[var_code %in% vars]%>% setkeyv("val_max")             # Add to label lookup; filter variables
+  recoder %<>% rbindlist() %>% setDT() %>% .[var_code %in% vars] %>% setkeyv("val_max")            # Add to label lookup; filter variables
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
     for (v in recode_vars){
@@ -374,8 +379,8 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
-  so %<>% ungroup()
-  if(!is.null(group_vars)){
+  if(group_vars!="keep_existing"){so %<>% ungroup()}
+  if(!is.null(group_vars) & group_vars!="keep_existing"){
     if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}
     so %<>% srvyr::group_by(across(all_of(group_vars)))
   }
