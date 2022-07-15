@@ -1,12 +1,12 @@
 pandoc: 2.7.3
-pkgdown: 2.0.3
+pkgdown: 2.0.5
 pkgdown_sha: ~
 articles:
   calculate-pums-summaries: calculate-pums-summaries.html
   get-data: get-data.html
   make-your-own-pums-vars: make-your-own-pums-vars.html
   psrccensus: psrccensus.html
-last_built: 2022-06-08T01:06Z
+last_built: 2022-07-15T18:50Z
 urls:
   reference: https://psrc.github.io/psrccensus/reference
   article: https://psrc.github.io/psrccensus/articles
