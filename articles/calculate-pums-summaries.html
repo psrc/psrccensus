@@ -110,6 +110,8 @@
 <li>
 <strong>HRACE</strong> - household-level race/ethnicity considering all members; ‘Multiple Races’ category as well as Hispanic/Latino</li>
 <li>
+<strong>NWRK</strong> - number of workers in household (from composition of persons)</li>
+<li>
 <strong>BINCOME</strong> - household income (HINCP) grouped by standard PSRC breakpoints</li>
 <li>
 <strong>BIN_AGE</strong> - age (AGEP) grouped by standard PSRC breakpoints</li>
@@ -120,7 +122,7 @@
 <li>
 <strong>OWN_RENT</strong> - dichotomous tenure (simplified from TEN)</li>
 </ul>
-<p><strong>DATA_YEAR, PRODUCT, UNIT,</strong> and <strong>COUNTY</strong> variables are always included in the table without you having to specify them; the first three of these can be used to identify the dataset.</p>
+<p><strong>DATA_YEAR, PRODUCT, UNIT,</strong> and <strong>COUNTY</strong> variables are always included in the table without you having to specify them; the first three of these can be used to identify the dataset. It is also possible to define your own variables, as described in <a href="make-your-own-pums-vars.html">this accompanying article</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="built-in-inflation-adjustment">Built-in inflation adjustment<a class="anchor" aria-label="anchor" href="#built-in-inflation-adjustment"></a>
@@ -142,7 +144,7 @@
 <p>The arguments for each summary function are identical:</p>
 <ul>
 <li>
-<strong>so</strong> - The srvyr object returned by <code>get_psrc_pums()**</code>
+<strong>so</strong> - The srvyr data object returned by <code>get_psrc_pums()**</code>
 </li>
 <li>
 <strong>stat_var</strong> - The numeric variable to be summarized.</li>
@@ -175,6 +177,7 @@
 <p>The summary function provides all four statistics and their margins of error in the same table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_summary</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Notice the statistical functions leave the data object itself unchanged, so if desired it can be used repeatedly, with various grouping variable combinations (as long as they share the same unit of analysis–i.e. persons or households). As described in <a href="make-your-own-pums-vars.html#handle-subsets-via-a-universal-variable-the-incl_nafalse-option">the accompanying article</a>, the recommended workflow maintains the data object whole (rather than discarding observations specific to one analysis or another).</p>
 </div>
 </div>
 <div class="section level2">
