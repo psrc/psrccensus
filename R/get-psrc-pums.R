@@ -379,8 +379,8 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
-  if(group_vars!="keep_existing"){so %<>% ungroup()}                                               # "keep_existing" is power-user option for srvyr::combine() groupings;
-  if(!is.null(group_vars) & group_vars!="keep_existing"){                                          # -- otherwise the package ungroups before and afterward
+  if(all(group_vars!="keep_existing")){so %<>% ungroup()}                                          # "keep_existing" is power-user option for srvyr::combine() groupings;
+  if(all(!is.null(group_vars) & group_vars!="keep_existing")){                                     # -- otherwise the package ungroups before and afterward
     if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}                    # Allows users to exclude w/o removing observations from the data object itself
     so %<>% srvyr::group_by(across(all_of(group_vars)))
   }
