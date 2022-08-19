@@ -240,8 +240,8 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
     for (year in years) {
 
       # Download ACS Data
-      tbl <- tidycensus::get_acs(state=state, counties=counties, geography='tract', year=year, survey="acs5", table=table) %>%
-        tbl%<>%   tidyr::separate(col=.data$NAME, into=c("name", "county", "state"),sep=",")
+      tbl <- tidycensus::get_acs(state=state, county=counties, geography='tract', year=year, survey="acs5", table=table) %>%
+        tidyr::separate(col=.data$NAME, into=c("name", "county", "state"),sep=",")
       tbl$county <- trimws(tbl$county, "l")
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
