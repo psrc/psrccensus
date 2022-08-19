@@ -240,13 +240,11 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
     for (year in years) {
 
       # Download ACS Data
-      tbl <- tidycensus::get_acs(state=state, geography='tract', year=year, survey="acs5", table=table) %>%
-        tidyr::separate(col=.data$NAME, into=c("name","county", "state"),sep=",")
+      tbl <- tidycensus::get_acs(state=state, counties=counties, geography='tract', year=year, survey="acs5", table=table) %>%
+        tbl%<>%   tidyr::separate(col=.data$NAME, into=c("name", "county", "state"),sep=",")
       tbl$county <- trimws(tbl$county, "l")
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
-      tbl <- tbl %>%
-        dplyr::filter(.data$county %in% county.names)
 
       # Add labels to the data - The labels can differ for each year so loading now
       labels <- tidycensus::load_variables(year=year, dataset="acs5")
@@ -272,7 +270,61 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
   return(census.data)
 }
 
+#' ACS Estimates by Census Block Group
+#'
+#' Generate ACS 5yr estimates for multiple tables by Census Block Groups in multiple counties
+#'
+#' @param state A character string state name or abbreviation. Defaults to Washington.
+#' @param counties A character string or vector of counties. Defaults to PSRC counties.
+#' @param table.names A character string or vector of Census table codes.
+#' @param years A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.
+#'
+#' @author Craig Helmann
+#'
+#' @return a tibble of acs estimates by tracts for selected table codes. Includes detailed variable names.
+#'
+#'@importFrom magrittr %>%
+#'@importFrom rlang .data
+#'@keywords internal
+get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years) {
 
+  census.data <- NULL
+  for (table in table.names) {
+
+    yearly.data <- NULL
+
+    for (year in years) {
+
+      # Download ACS Data
+      tbl <- suppressMessages(tidycensus::get_acs(state=state, county=counties, geography="block group", year=year, survey="acs5", table=table) %>%
+        tidyr::separate(col=.data$NAME, into=c("name", "tract", "county", "state"),sep=","))
+      tbl$county <- trimws(tbl$county, "l")
+      tbl$state <- trimws(tbl$state, "l")
+      county.names <- paste(counties,"County")
+
+      # Add labels to the data - The labels can differ for each year so loading now
+      labels <- tidycensus::load_variables(year=year, dataset="acs5")
+      labels <- labels %>%
+        dplyr::rename(variable = .data$name)
+      tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
+
+      # Add column for Census Geography, Type and Year of Data
+      tbl <- tbl %>%
+        dplyr::mutate(census_geography="Block_group", acs_type = "acs5", year=year) %>%
+        dplyr::select(-.data$county)
+
+      # Store yearly data into final yearly data for current table - append if a year already exists
+      ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
+
+    }
+
+    # Store table data into final census data - append if a table set already exists
+    ifelse(is.null(census.data), census.data <- yearly.data, census.data <- dplyr::bind_rows(census.data, yearly.data))
+
+  }
+
+  return(census.data)
+}
 
 #' ACS Estimates
 #'
@@ -324,6 +376,11 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'              table.names = c('B03002'),
 #'              years=c(2018,2019))
 #'
+#' get_acs_recs(geography = 'block group',
+#'              counties=c("Pierce"),
+#'              table.names = c('B03002'),
+#'              years=c(2018,2019))
+#'
 #' @export
 get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table.names, years, FIPS = c("14740","42660"), place_FIPS=NULL, acs.type) {
 
@@ -335,6 +392,8 @@ get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Ki
     dfs <- get_acs_place(state, table.names, years, acs.type, place_FIPS)
   } else if(geography == 'tract') {
     dfs <- get_acs_tract(state, counties, table.names, years)
+  } else if(geography == 'block group') {
+    dfs <- get_acs_blockgroup(state, counties, table.names, years)
 }
 
   return(dfs)
