@@ -143,3 +143,25 @@ psrc_own_rent<- function(dt){
                                 "Else"))]
   return(dt)
 }
+
+#' PSRC educational attainment groupings
+#'
+#' @param dt the data.table
+#' @return the data.table with educational attainment field, "ED_ATTAIN"
+psrc_ed_attain<- function(dt, dyear){
+  ED_ATTAIN <- SCHL <- SCHL_chr <- val_label <- val_max <- var_code <- NULL                          # Bind variables locally (for documentation, not function)
+  ddyear <- if(dyear>2016){dyear}else{2017}
+  lkup <- tidycensus::pums_variables %>% setDT() %>%
+    .[var_code=="SCHL" & year==ddyear, .(val_max, val_label)] %>% unique() %>% setkey("val_max")
+  dt[lkup , SCHL_chr:=val_label, on=c(SCHL="val_max")]
+  dt %<>% setDT() %>%
+    .[, ED_ATTAIN:=factor(fcase(grepl("^Master|^Professional|^Doctorate", SCHL_chr), "Postgraduate Degree",
+                                grepl("^Bachelor", SCHL_chr), "Bachelor Degree",
+                                grepl("college", SCHL_chr), "Some College",
+                                grepl("GED|diploma|graduate", SCHL_chr), "HS Diploma/GED",
+                                grepl("school |grade", SCHL_chr, ignore.case=TRUE), "Some K-12",
+                                !is.na(SCHL_chr), "Else"),
+                          levels=c("Some K-12","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree",
+                                   "Else"))]
+  return(dt)
+}

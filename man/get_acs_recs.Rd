@@ -71,6 +71,10 @@ get_acs_recs(geography = 'tract',
              table.names = c('B03002'),
              years=c(2018,2019))
 
+get_acs_recs(geography = 'block group',
+             counties=c("Pierce"),
+             table.names = c('B03002'),
+             years=c(2018,2019))
 
 }
 \author{

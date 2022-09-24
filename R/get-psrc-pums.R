@@ -185,6 +185,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   if("BIN_AGE" %in% vars){dt %<>% psrc_bin_age()}                                                  # - "
   if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
   if("OWN_RENT" %in% vars){dt %<>% psrc_own_rent()}                                                # - "
+  if("ED_ATTAIN" %in% vars){dt %<>% psrc_ed_attain(dyear)}                                         # - "
   if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl(dyear)}                                             # - "
   swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
@@ -192,6 +193,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   rwgt <- grep(wgtrgx, colnames(dt), value=TRUE)                                                   # Specify replication weights
   varlist <- c(unlist(unit_key),"PUMA", unlist(vars), swgt, rwgt, adjvars) %>% unique()            # Columns to keep
   if("BIN_YBL" %in% vars){varlist <- varlist[!(varlist %in% "BIN_YBL")] %>% c("YBL")}              # Swap; to be used later
+  if("ED_ATTAIN" %in% vars){varlist <- varlist[!(varlist %in% "ED_ATTAIN")] %>% c("SCHL")}         # Swap; to be used later
   dt %<>% .[, colnames(.) %in% varlist, with=FALSE]                                                # Keep only specified columns
   dt[, `:=`(DATA_YEAR=dyear, PRODUCT=paste0("acs", span), UNIT=level)]                             # Add fields to identify the dataset
   dt[, (unit_key):=lapply(.SD, as.character), .SDcols=unit_key]                                    # Confirm datatype for keys (fread may return int for early years)
@@ -350,7 +352,8 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
   dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY")) %>%
     adjust_dollars()                                                                               # Apply standard inflation adjustment
   if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
-  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl()}
+  if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl(dyear)}
+  if("ED_ATTAIN" %in% vars){dt %<>% psrc_ed_attain(dyear)}
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
   varlist <- c(unlist(unit_var), "DATA_YEAR", "PRODUCT", "UNIT", "COUNTY", unlist(vars)) %>% unique()
   dt %<>% setDF() %>% dplyr::relocate(all_of(varlist)) %>%
