@@ -4,13 +4,13 @@
 \alias{psrc_mi_jobsector}
 \title{PSRC manufacturing-industrial groupings}
 \usage{
-psrc_mi_jobsector(dt, dyear)
+psrc_mi_jobsector(dt)
 }
 \arguments{
 \item{dt}{the data.table}
 }
 \value{
-the data.table with educational attainment field, "MI_SECTOR"                           # When NAICS changes, new dyear/definition set should be added
+the data.table with educational attainment field, "MI_JOBSECTOR"                        # When NAICS changes, new dyear/definition set should be added
 }
 \description{
 PSRC manufacturing-industrial groupings

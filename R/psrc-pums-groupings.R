@@ -177,33 +177,22 @@ psrc_ed_attain<- function(dt, dyear){
 #' PSRC manufacturing-industrial groupings
 #'
 #' @param dt the data.table
-#' @return the data.table with educational attainment field, "MI_SECTOR"                           # When NAICS changes, new dyear/definition set should be added
-psrc_mi_jobsector <- function(dt, dyear){
-  MI_JOBSECTOR <- NAICSP <- INDP <- NULL                                                           # Bind variables locally (for documentation, not function)
-  dt <- if(dyear>2010){
-    dt %<>% setDT() %>%
-      .[, MI_JOBSECTOR:=factor(fcase(grepl("^221|^45411|^5121|^515|^517|^5616|^56173|^562|^6242|^8113|^8114|^8123",
-                                      as.character(NAICSP)),               "Other Industrial",
-                                    grepl("^42", as.character(NAICSP)),    "Warehousing & Wholesale",
-                                    grepl("^48|^49", as.character(NAICSP)),"Transportation, Distribution & Logistics (TDL)",
-                                    grepl("^23$", as.character(NAICSP)),   "Construction",
-                                    grepl("^33|^3M", as.character(NAICSP)),"Manufacturing",
-                                    !is.na(NAICSP),                         NA_character_),
-                              levels=c("Construction","Manufacturing","Warehousing & Wholesale",
-                                       "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
-  }else{
-    dt %<>% setDT()
-    setnames(dt, gsub("^INDP\\d+$", "INDP", names(dt)))
-    dt %<>% .[, MI_JOBSECTOR:=factor(fcase(grepl("^05|^067|^068|^559|^65|^6670,6680,6690,7680,7770,7790,8380,8870,8880,9070",
-                                             as.character(INDP)),                                "Other Industrial",
-                                           grepl("^33|^3M", as.character(INDP)),                 "Manufacturing",
-                                           between(as.integer(as.character(INDP)), 6070, 6390),  "Transportation, Distribution & Logistics (TDL)",
-                                           grepl("^0770$", as.character(INDP)),                  "Construction",
-                                           (between(as.integer(as.character(INDP)), 2670, 3690) |
-                                           between(as.integer(as.character(INDP)), 4070, 4590)), "Warehousing & Wholesale",
-                                           !is.na(INDP),                                          NA_character_),
-                                     levels=c("Construction","Manufacturing","Warehousing & Wholesale",
-                                              "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
+#' @return the data.table with educational attainment field, "MI_JOBSECTOR"                        # When NAICS changes, new dyear/definition set should be added
+psrc_mi_jobsector <- function(dt){
+  MI_JOBSECTOR <- NAICSP <- NULL                                                                   # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
+    dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
+    dt[, NAICSP:=factor(fcoalesce(.SD)), .SDcols=patterns("^NAICSP\\d+$")]
   }
+  dt[, MI_JOBSECTOR:=factor(fcase(grepl("^221|^45411|^5121|^515|^517|^5616|^56173|^562|^6242|^8113|^8114|^8123",
+                              as.character(NAICSP)),               "Other Industrial",
+                                  grepl("^42", as.character(NAICSP)),    "Warehousing & Wholesale",
+                                  grepl("^48|^49", as.character(NAICSP)),"Transportation, Distribution & Logistics (TDL)",
+                                  grepl("^23", as.character(NAICSP)),    "Construction",
+                                  grepl("^33|^3M", as.character(NAICSP)),"Manufacturing",
+                                  !is.na(NAICSP),                         NA_character_),
+                            levels=c("Construction","Manufacturing","Warehousing & Wholesale",
+                                     "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
   return(dt)
 }
