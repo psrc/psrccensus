@@ -51,6 +51,9 @@ In addition to variables listed in the Census PUMS data dictionary, you can also
   * **BIN_YBL** - year structure was built, by current ACS breakpoints
   * **OWN_RENT** - dichotomous tenure (simplified from TEN)
   * **ED_ATTAIN** - educational attainment (simplified from SCHL)
+  * **MI_JOBSECTOR** - PSRC-defined Manufacturing-Industrial grouping (based on either NAICSP or INDP, depending on year)
+
+If codes change (and they have in the past), it may be necessary to confirm these custom variable definitions match the new data dictionary.
   
 **DATA_YEAR, PRODUCT, UNIT,** and **COUNTY** variables are always included in the table without you having to specify them; the first three of these can be used to identify the dataset. It is also possible to define your own variables, as described in [this accompanying article](make-your-own-pums-vars.html).
   

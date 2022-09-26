@@ -4,13 +4,13 @@
 \alias{psrc_ed_attain}
 \title{PSRC educational attainment groupings}
 \usage{
-psrc_ed_attain(dt)
+psrc_ed_attain(dt, dyear)
 }
 \arguments{
 \item{dt}{the data.table}
 }
 \value{
-the data.table with dichotomous tenure field, "ED_ATTAIN"
+the data.table with educational attainment field, "ED_ATTAIN"
 }
 \description{
 PSRC educational attainment groupings

@@ -149,19 +149,61 @@ psrc_own_rent<- function(dt){
 #' @param dt the data.table
 #' @return the data.table with educational attainment field, "ED_ATTAIN"
 psrc_ed_attain<- function(dt, dyear){
-  ED_ATTAIN <- SCHL <- SCHL_chr <- val_label <- val_max <- var_code <- NULL                          # Bind variables locally (for documentation, not function)
-  ddyear <- if(dyear>2016){dyear}else{2017}
-  lkup <- tidycensus::pums_variables %>% setDT() %>%
-    .[var_code=="SCHL" & year==ddyear, .(val_max, val_label)] %>% unique() %>% setkey("val_max")
-  dt[lkup , SCHL_chr:=val_label, on=c(SCHL="val_max")]
-  dt %<>% setDT() %>%
-    .[, ED_ATTAIN:=factor(fcase(grepl("^Master|^Professional|^Doctorate", SCHL_chr), "Postgraduate Degree",
-                                grepl("^Bachelor", SCHL_chr), "Bachelor Degree",
-                                grepl("college", SCHL_chr), "Some College",
-                                grepl("GED|diploma|graduate", SCHL_chr), "HS Diploma/GED",
-                                grepl("school |grade", SCHL_chr, ignore.case=TRUE), "Some K-12",
-                                !is.na(SCHL_chr), "Else"),
-                          levels=c("Some K-12","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree",
-                                   "Else"))]
+  ED_ATTAIN <- SCHL <- NULL                                                                        # Bind variables locally (for documentation, not function)
+  if(dyear>2011){
+    dt %<>% setDT() %>%
+      .[, ED_ATTAIN:=factor(fcase(between(as.integer(as.character(SCHL)),22,24), "Postgraduate Degree",
+                                  as.integer(as.character(SCHL))==21,            "Bachelor Degree",
+                                  between(as.integer(as.character(SCHL)),18,20), "Some College",
+                                  between(as.integer(as.character(SCHL)),16,17), "HS Diploma/GED",
+                                  between(as.integer(as.character(SCHL)),2,15),  "Some K-12",
+                                  !is.na(SCHL),                                  "Else"),
+                            levels=c("Some K-12","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree",
+                                     "Else"))]
+  }else{
+    dt %<>% setDT() %>%
+      .[, ED_ATTAIN:=factor(fcase(between(as.integer(as.character(SCHL)),14,16), "Postgraduate Degree",
+                                  as.integer(as.character(SCHL))==13,            "Bachelor Degree",
+                                  between(as.integer(as.character(SCHL)),10,11), "Some College",
+                                  as.integer(as.character(SCHL))==9,             "HS Diploma/GED",
+                                  between(as.integer(as.character(SCHL)),2,8),   "Some K-12",
+                                  !is.na(SCHL),                                  "Else"),
+                            levels=c("Some K-12","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree",
+                                     "Else"))]
+  }
+  return(dt)
+}
+
+#' PSRC manufacturing-industrial groupings
+#'
+#' @param dt the data.table
+#' @return the data.table with educational attainment field, "MI_SECTOR"                           # When NAICS changes, new dyear/definition set should be added
+psrc_mi_jobsector <- function(dt, dyear){
+  MI_JOBSECTOR <- NAICSP <- INDP <- NULL                                                           # Bind variables locally (for documentation, not function)
+  dt <- if(dyear>2010){
+    dt %<>% setDT() %>%
+      .[, MI_JOBSECTOR:=factor(fcase(grepl("^221|^45411|^5121|^515|^517|^5616|^56173|^562|^6242|^8113|^8114|^8123",
+                                      as.character(NAICSP)),               "Other Industrial",
+                                    grepl("^42", as.character(NAICSP)),    "Warehousing & Wholesale",
+                                    grepl("^48|^49", as.character(NAICSP)),"Transportation, Distribution & Logistics (TDL)",
+                                    grepl("^23$", as.character(NAICSP)),   "Construction",
+                                    grepl("^33|^3M", as.character(NAICSP)),"Manufacturing",
+                                    !is.na(NAICSP),                         NA_character_),
+                              levels=c("Construction","Manufacturing","Warehousing & Wholesale",
+                                       "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
+  }else{
+    dt %<>% setDT()
+    setnames(dt, gsub("^INDP\\d+$", "INDP", names(dt)))
+    dt %<>% .[, MI_JOBSECTOR:=factor(fcase(grepl("^05|^067|^068|^559|^65|^6670,6680,6690,7680,7770,7790,8380,8870,8880,9070",
+                                             as.character(INDP)),                                "Other Industrial",
+                                           grepl("^33|^3M", as.character(INDP)),                 "Manufacturing",
+                                           between(as.integer(as.character(INDP)), 6070, 6390),  "Transportation, Distribution & Logistics (TDL)",
+                                           grepl("^0770$", as.character(INDP)),                  "Construction",
+                                           (between(as.integer(as.character(INDP)), 2670, 3690) |
+                                           between(as.integer(as.character(INDP)), 4070, 4590)), "Warehousing & Wholesale",
+                                           !is.na(INDP),                                          NA_character_),
+                                     levels=c("Construction","Manufacturing","Warehousing & Wholesale",
+                                              "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
+  }
   return(dt)
 }
