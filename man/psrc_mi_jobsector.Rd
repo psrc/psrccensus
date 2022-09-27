@@ -2,7 +2,7 @@
 % Please edit documentation in R/psrc-pums-groupings.R
 \name{psrc_mi_jobsector}
 \alias{psrc_mi_jobsector}
-\title{PSRC manufacturing-industrial groupings}
+\title{PSRC manufacturing-industrial category}
 \usage{
 psrc_mi_jobsector(dt)
 }
@@ -10,8 +10,8 @@ psrc_mi_jobsector(dt)
 \item{dt}{the data.table}
 }
 \value{
-the data.table with educational attainment field, "MI_JOBSECTOR"                        # When NAICS changes, new dyear/definition set should be added
+the data.table with manufacturing-industrial category field, "MI_JOBSECTOR"             # When NAICS changes, new dyear/definition set should be added
 }
 \description{
-PSRC manufacturing-industrial groupings
+PSRC manufacturing-industrial category
 }

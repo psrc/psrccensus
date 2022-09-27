@@ -174,19 +174,19 @@ psrc_ed_attain<- function(dt, dyear){
   return(dt)
 }
 
-#' PSRC manufacturing-industrial groupings
+#' PSRC manufacturing-industrial category
 #'
 #' @param dt the data.table
-#' @return the data.table with educational attainment field, "MI_JOBSECTOR"                        # When NAICS changes, new dyear/definition set should be added
+#' @return the data.table with manufacturing-industrial category field, "MI_JOBSECTOR"             # When NAICS changes, new dyear/definition set should be added
 psrc_mi_jobsector <- function(dt){
   MI_JOBSECTOR <- NAICSP <- NULL                                                                   # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
   if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
     dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
-    dt[, NAICSP:=factor(fcoalesce(.SD)), .SDcols=patterns("^NAICSP\\d+$")]
+    dt[, NAICSP:=fcoalesce(.SD), .SDcols=patterns("^NAICSP\\d+$")]
   }
   dt[, MI_JOBSECTOR:=factor(fcase(grepl("^221|^45411|^5121|^515|^517|^5616|^56173|^562|^6242|^8113|^8114|^8123",
-                              as.character(NAICSP)),               "Other Industrial",
+                                    as.character(NAICSP)),               "Other Industrial",
                                   grepl("^42", as.character(NAICSP)),    "Warehousing & Wholesale",
                                   grepl("^48|^49", as.character(NAICSP)),"Transportation, Distribution & Logistics (TDL)",
                                   grepl("^23", as.character(NAICSP)),    "Construction",

@@ -83,7 +83,7 @@ filter2region <- function(dt, dyear){
   if(dyear>2011){
     dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                          # Filter to PSRC region
   }else if(dyear>=2000 & dyear<2012){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(15:18)]                                            # PUMAs renumbered in 2012
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(14,10,17,20)]                                            # PUMAs renumbered in 2012
   }
   return(dt)
 }
