@@ -261,7 +261,7 @@ adjust_dollars <- function(dt){
 #' @import data.table
 add_county <- function(dt, dyear){
   PUMA <- COUNTY <- NULL                                                                           # Bind variables locally (for documentation, not function)
-  PUMA3 <- if(dyear>2011){c(115:118)}else if(dyear<=2011 & dyear>=2000){c(15:18)}                  # PUMAs renumbered in 2012
+  PUMA3 <- if(dyear>2011){c(115:118)}else if(dyear<=2011 & dyear>=2000){c(14,20,10,17)}            # PUMAs renumbered in 2012
   county_lookup <- data.frame(PUMA3, COUNTY=as.factor(c("Pierce","King","Snohomish","Kitsap"))) %>%
     setDT() %>% setkey(PUMA3)
   dt %<>% .[, PUMA3:=(as.integer(PUMA) %/% 100)] %>%
