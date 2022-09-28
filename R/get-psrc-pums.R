@@ -96,7 +96,7 @@ filter2region <- function(dt, dyear){
 #' @param dyear The data year
 #' @return unzipped table
 fetch_zip <- function(zip_filepath, target_file, dyear){
-  temp <- tempfile()
+  temp <- tempfile(fileext=".csv")
   download.file(zip_filepath, temp)
   unzip(temp, files=target_file, exdir=getwd())
   csv_target <- paste0(getwd(),"/", target_file)
@@ -150,6 +150,9 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
     pfile <- paste0(dir,"/", dyear, "p", span, ".gz")
     dt_h  <- suppressWarnings(read_pums(hfile, dyear))
     dt_p  <- suppressWarnings(read_pums(pfile, dyear))
+    dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
+                        RAC1P %in% c("3","4","5"), "I",
+                        !is.na(RAC1P), as.character(RAC1P))]
   }else{
     dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setDT()                              # Otherwise, ftp source
     dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setDT()
