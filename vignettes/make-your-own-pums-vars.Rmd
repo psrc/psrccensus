@@ -1,10 +1,10 @@
 ---
-title: "Make your own PUMS variables"
+title: "Using microdata 2:  \nMake your own PUMS variables"
 description: >
   Hints & cautions for moving beyond PUMS-provided variables
 output: html_vignette
 vignette: >
-  %\VignetteIndexEntry{Make your own PUMS variables}
+  %\VignetteIndexEntry{"PUMS 2: Make your own variables"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,7 +22,7 @@ library(knitr)
 
 Why aren't the variables included in the PUMS dataset enough? Many PUMS categories offer more detail than is useful for an analysis, and so need to be simplified to reflect its purpose (and to increase sample sizes per category). Other cases may require defining a new variable conditioned on multiple original variables. And finally, at times the analysis may apply only to part of the population.
 
-The srvyr object delivered by get_psrc_pums() can be altered **dpylr** commands while maintaining the associated weights and structure (see [its vignette](http://gdfe.co/srvyr/)). We recommend using the `mutate()` command, in combination with `case_when()` or `ifelse()` to define a variable that directly captures the needs of your analysis, so **psrccensus** can deliver your intended statistics--and especially, the associated margin of error--rather than attempting to re-aggregate these from summary results.
+The srvyr object delivered by get_psrc_pums() can be altered **dplyr** commands while maintaining the associated weights and structure (see [its vignette](http://gdfe.co/srvyr/)). We recommend using the `mutate()` command, in combination with `case_when()` or `ifelse()` to define a variable that directly captures the needs of your analysis, so **psrccensus** can deliver your intended statistics--and especially, the associated margin of error--rather than attempting to re-aggregate these from summary results.
 
 ### Hints and things to watch out for when recoding PUMS variables:
 

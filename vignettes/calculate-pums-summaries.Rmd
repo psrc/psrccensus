@@ -1,10 +1,10 @@
 ---
-title: "Calculate PUMS summaries"
+title: "Using microdata 1:  \nCalculate basic PUMS summaries"
 description: >
-  Learn how to utilize Census microdata to go beyond Census-published statistics
+  Utilize Census microdata to go beyond Census-published statistics
 output: html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calculate PUMS summaries}
+  %\VignetteIndexEntry{PUMS 1: Calculate basic summaries}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -48,10 +48,10 @@ In addition to variables listed in the Census PUMS data dictionary, you can also
   * **BINCOME** - household income (HINCP) grouped by standard PSRC breakpoints
   * **BIN_AGE** - age (AGEP) grouped by standard PSRC breakpoints
   * **BIN_POVRATIO** - ratio of household income to the poverty level (POVPIP) w/ PSRC breakpoints (fraction, not percent)
-  * **BIN_YBL** - year structure was built, by current ACS breakpoints
+  * **BIN_YBL** - year structure was built, by current ACS breakpoints (simplified from YBL)
   * **OWN_RENT** - dichotomous tenure (simplified from TEN)
   * **ED_ATTAIN** - educational attainment (simplified from SCHL)
-  * **MI_JOBSECTOR** - PSRC-defined Manufacturing-Industrial grouping (based on either NAICSP or INDP, depending on year)
+  * **MI_JOBSECTOR** - PSRC-defined Manufacturing-Industrial groups (from NAICSP)
 
 If codes change (and they have in the past), it may be necessary to confirm these custom variable definitions match the new data dictionary.
   
