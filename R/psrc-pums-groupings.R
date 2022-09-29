@@ -156,20 +156,16 @@ psrc_ed_attain<- function(dt, dyear){
                                   as.integer(as.character(SCHL))==21,            "Bachelor Degree",
                                   between(as.integer(as.character(SCHL)),18,20), "Some College",
                                   between(as.integer(as.character(SCHL)),16,17), "HS Diploma/GED",
-                                  between(as.integer(as.character(SCHL)),1,15),  "Less than HS diploma",
-                                  !is.na(SCHL),                                  "Else"),
-                            levels=c("Some K-12","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree",
-                                     "Else"))]
+                                  between(as.integer(as.character(SCHL)),1,15),  "Less than HS diploma"),
+                            levels=c("Less than HS diploma","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree"))]
   }else{
     dt %<>% setDT() %>%
       .[, ED_ATTAIN:=factor(fcase(between(as.integer(as.character(SCHL)),14,16), "Postgraduate Degree",
                                   as.integer(as.character(SCHL))==13,            "Bachelor Degree",
                                   between(as.integer(as.character(SCHL)),10,11), "Some College",
                                   as.integer(as.character(SCHL))==9,             "HS Diploma/GED",
-                                  between(as.integer(as.character(SCHL)),1,8),   "Less than HS diploma",
-                                  !is.na(SCHL),                                  "Else"),
-                            levels=c("Some K-12","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree",
-                                     "Else"))]
+                                  between(as.integer(as.character(SCHL)),1,8),   "Less than HS diploma"),
+                            levels=c("Less than HS diploma","HS Diploma/GED","Some College","Bachelor Degree","Postgraduate Degree"))]
   }
   return(dt)
 }
