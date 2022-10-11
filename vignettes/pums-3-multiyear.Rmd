@@ -1,0 +1,47 @@
+---
+title: "Using microdata 3:  \nScript multiyear PUMS functions"
+description: >
+  Suggestions for applying PUMS functions longitudinally
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{"Using microdata 3:  \nScript multiyear PUMS functions"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(psrccensus)
+library(magrittr)
+library(dplyr)
+library(srvyr)
+library(knitr)
+```
+
+## Time: the next dimension
+
+Now that you've learned to calculate single-survey results from the PUMS microdata, what's to stop you from calculating trends across multiple surveys? As it turns out, there are a few potholes in that road to avoid.
+
+### Hint #1: Be mindful of span
+
+This item relates to confidence levels: the Census Bureau strongly advises against drawing comparisons from surveys with overlapping spans (e.g. 2015-19 & 2016-20 5yr data), since identical observations are present in both surveys, which means you may underestimate change or overestimate certainty. 5-year data are best if 5-year intervals answer the need; to get annual trends, you'll need to use the 1yr data (which involves more uncertainty). Remember to use Z-scores to determine whether trend values can be considered statistically distinct.
+
+### Hint #2: Compare data dictionaries 
+
+Although they may seem consistent at first blush, many PUMS variable codes, values, and labels have changed during the course of the program. If you plan to compare data across multiple surveys, you'll either want to confirm the variables of interest have remained consistent, or write your code to handle the differences among them. In some cases, the way data were reported--or the way the question was asked--might preclude accurate multi-year comparisons at your desired level of detail.
+
+### Hint #3: Minimize downloads
+
+While writing multi-year functions, it's helpful to keep in mind that get_psrc_pums() downloads and combines all possible variables before filtering just the ones you want--so it makes sense to include all the variables of interest for that survey-level combination (e.g. 2016-20 households), and run all relevant calculations on the same srvyr data object, rather than calling get_psrc_pums() separately for each desired measure. As a result, you should batch calculations performed on the same survey into a single function, which can then be called on more than one survey; by doing so, you'll only need as many downloads as you have surveys.
+
+### Examples
+Adding two custom variables with one mutate command:
+  ```{r assemble analyses within a year, message=FALSE, eval=FALSE}
+library(psrccensus)
+library(magrittr)
+library(dplyr)
+libary(srvyr)
+
+
+
+```
