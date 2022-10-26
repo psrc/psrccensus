@@ -34,14 +34,57 @@ Although they may seem consistent at first blush, many PUMS variable codes, valu
 
 While writing multi-year functions, it's helpful to keep in mind that get_psrc_pums() downloads and combines all possible variables before filtering just the ones you want--so it makes sense to include all the variables of interest for that survey-level combination (e.g. 2016-20 households), and run all relevant calculations on the same srvyr data object, rather than calling get_psrc_pums() separately for each desired measure. As a result, you should batch calculations performed on the same survey into a single function, which can then be called on more than one survey; by doing so, you'll only need as many downloads as you have surveys.
 
-### Examples
-Adding two custom variables with one mutate command:
-  ```{r assemble analyses within a year, message=FALSE, eval=FALSE}
+### Hint #4: Adjust dollar values for inflation
+
+Monetary values in PUMS are reported in the dollar terms of the final year (last year for 5-year data), so you must apply a deflator 
+
+### Example
+
+  ```{r apply function across PUMS years, message=FALSE, eval=FALSE}
 library(psrccensus)
 library(magrittr)
 library(dplyr)
-libary(srvyr)
+library(srvyr)
+library(data.table)
 
+# Adjust for inflation
+# --requires FRED key in .Renviron, see fredr documentation
+deflate_multiyr <- function(data, dyear, refyear){
+  x <- fredr(series_id = "DPCERG3A086NBEA",                                                        
+             observation_start = as_date(paste0(dyear,"-01-01")),
+             observation_end = as_date(paste0(refyear,"-01-01")))
+  factor <- last(x$value) / first(x$value)
+  rs <- setDT(data) %>% .[, grep("sum|median|mean", colnames(.)):=lapply(.SD, function(x) round(x * factor)),
+                   .SDcols=grep("sum|median|mean", colnames(.))] %>% setDF()
+  return(rs)
+}
 
+# Build a single year function first
+# -- it can include as many individual stat analyses as needed (see list items at end)
+pums_singleyear <- function(dyear, refyear, span=1){
+  hh_df <- get_psrc_pums(span, dyear, "h", c("HINCP","AGEP","HRACE","LNGI","SCHL"))
+  hh_df %<>% mutate(
+    ed_attain = factor(case_when(grepl("(Bach|Mast|Prof|Doct)", SCHL)  ~ "Bachelor's degree or higher",
+                                 !is.na(SCHL)                          ~ "Less than a Bachelor's degree")),
+    lmtd_engl = factor(case_when(grepl("^No one", LNGI) ~ "Limited English proficiency",
+                                 !is.na(LNGI)           ~ "English proficient")))
+  dvars <- c("HRACE","lmtd_engl","ed_attain") %>% as.list()
+  singleyr_rs <- list()
+  singleyr_rs[[1]] <- pums_bulk_stat(hh_df, "count", group_var_list=dvars, incl_na=FALSE)
+  singleyr_rs[[2]] <- pums_bulk_stat(hh_df, "median", "HINCP", dvars, incl_na=FALSE) %>% 
+    deflate_multiyr(dyear, refyear)
+  # singleyr_rs[[3]] <- ...
+  return(singleyr_rs)
+}
+
+# Multiyear function runs the single-year function across years and combines results
+pums_multiyear <- function(dyears){
+  refyear <- max(dyears)
+  multiyear_rs <- mapply(pums_singleyear, dyears, refyear) %>% lapply(as.vector) %>% 
+    do.call(rbind, .) %>% as.data.frame() %>% setDT() %>% lapply(rbindlist)
+  return(multiyear_rs)
+}
+
+x <- pums_multiyear(2015:2019)
 
 ```
