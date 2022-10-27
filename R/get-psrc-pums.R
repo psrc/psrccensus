@@ -525,3 +525,35 @@ z_score <- function(x, y){
   z <- abs(x[1] - y[1]) / sqrt(x[2]^2 - y[2]^2)
   return(z)
 }
+
+#' Inflation adjustment to a year other than the survey year
+#'
+#' Applies PCE deflator to yield real values in specified dollar-year terms
+#' Helpful when comparing between separate surveys
+#' Requires [St. Louis Federal Reserve (FRED) API key](http://sboysel.github.io/fredr/articles/fredr.html#authentication)
+#'
+#' @param so srvyr object returned by get_psrc_pums
+#' @param refyear dollar year in which value should be returned be returned
+#' @importFrom lubridate as_date
+#' @importFrom dplyr mutate across all_of
+#'
+#' @export
+real_dollars <- function(so, refyear){
+  if(fredr::fredr_has_key()){
+    dyear <- unique(so[[7]]$DATA_YEAR)
+    x <- fredr::fredr(series_id = "DPCERG3A086NBEA",                                               # Requires FRED key in .Renviron, see fredr documentation
+               observation_start = as_date(paste0(dyear,"-01-01")),
+               observation_end = as_date(paste0(refyear,"-01-01")))
+    deflator <- last(x$value) / first(x$value)
+    income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(so), value=TRUE)
+    cost_cols <- grep("^CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(so), value=TRUE)
+    dollar_cols <- c(income_cols, cost_cols)
+    if(length(dollar_cols)>0){
+      so %<>% mutate(across(all_of(dollar_cols), ~ .x * deflator, .names=paste0("{.col}", refyear)))
+    }
+  return(so)
+  }else{
+    warning("You are missing a FRED key (see fredr documentation). No change made.")
+    return(so)
+  }
+}

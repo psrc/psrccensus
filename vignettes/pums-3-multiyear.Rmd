@@ -30,9 +30,9 @@ This item relates to confidence levels: the Census Bureau strongly advises again
 
 Although they may seem consistent at first blush, many PUMS variable codes, values, and labels have changed during the course of the program. If you plan to compare data across multiple surveys, you'll either want to confirm the variables of interest have remained consistent, or write your code to handle the differences among them. In some cases, the way data were reported--or the way the question was asked--might preclude accurate multi-year comparisons at your desired level of detail.
 
-### <a id="inter-year-inflation"></a>Hint #3 - Adjust dollar values for inter-year inflation
+### Hint #3 - Use real dollar variables
 
-Due to inflation, the value of a dollar declines over time; to achieve a true multi-year comparison of price or income variables, these must be adjusted to be in terms of a common reference year (typically, the most recent year for which data is available). This is done by multiplying by a ratio of the relevant annual values of a price index (the ratio is known as a 'deflator'). We recommend the Personal Consumption Expenditures (PCE) Index, as it is updated to remain valid across years, while the more famous Consumer Price Index (CPI) is left unchanged after its initial release. The [example](#example) illustrates how aggregate median household income and its MOE can be adjusted to a common dollar year.
+Due to inflation, the value of a dollar declines over time; to achieve a true multi-year comparison of price or income variables, these must be adjusted to real terms--i.e., adjusted to reflect a common reference year dollar value. This involves multiplying by a ratio (known as a 'deflator') of the relevant annual values of a price index, generally the Personal Consumption Expenditures (PCE) Index, as it is updated to remain valid across years. Prior to running the statistical functions, use the **psrccensus** function `real_dollars()` on your survey data object to create real versions of your monetary variables. This leaves the original variables intact; the real versions will be suffixed with the reference year you specify (i.e., if converting HINCP in the 2015 survey to 2020 values, the new variable will be HINCP2020). Note you will need a [St. Louis Federal Reserve (FRED) API key](http://sboysel.github.io/fredr/articles/fredr.html#authentication).
 
 ### Hint #4 - Minimize downloads
 
@@ -48,23 +48,13 @@ library(dplyr)
 library(srvyr)
 library(data.table)
 
-# Adjust for inflation
-# --requires FRED key in .Renviron, see fredr documentation
-deflate_multiyr <- function(data, dyear, refyear){
-  x <- fredr(series_id = "DPCERG3A086NBEA",                                                        
-             observation_start = as_date(paste0(dyear,"-01-01")),
-             observation_end = as_date(paste0(refyear,"-01-01")))
-  factor <- last(x$value) / first(x$value)
-  rs <- setDT(data) %>% .[, grep("sum|median|mean", colnames(.)):=lapply(.SD, function(x) round(x * factor)),
-                   .SDcols=grep("sum|median|mean", colnames(.))] %>% setDF()
-  return(rs)
-}
-
 # Build a single year function first
 # -- it can include as many individual stat analyses as needed (see list items at end)
-pums_singleyear <- function(dyear, refyear, span=1){
+# -- notice `real_dollars()` creates the variable HINCP2020 later used for median statistic
+
+pums_singleyear <- function(dyear, span=1){
   hh_df <- get_psrc_pums(span, dyear, "h", c("HINCP","AGEP","HRACE","LNGI","SCHL"))
-  hh_df %<>% mutate(
+  hh_df %<>% real_dollars(2020) %>% mutate(
     ed_attain = factor(case_when(grepl("(Bach|Mast|Prof|Doct)", SCHL)  ~ "Bachelor's degree or higher",
                                  !is.na(SCHL)                          ~ "Less than a Bachelor's degree")),
     lmtd_engl = factor(case_when(grepl("^No one", LNGI) ~ "Limited English proficiency",
@@ -72,16 +62,14 @@ pums_singleyear <- function(dyear, refyear, span=1){
   dvars <- c("HRACE","lmtd_engl","ed_attain") %>% as.list()
   singleyr_rs <- list()
   singleyr_rs[[1]] <- pums_bulk_stat(hh_df, "count", group_var_list=dvars, incl_na=FALSE)
-  singleyr_rs[[2]] <- pums_bulk_stat(hh_df, "median", "HINCP", dvars, incl_na=FALSE) %>% 
-    deflate_multiyr(dyear, refyear)
-  # singleyr_rs[[3]] <- ...
+  singleyr_rs[[2]] <- pums_bulk_stat(hh_df, "median", "HINCP2020", dvars, incl_na=FALSE)
+# singleyr_rs[[3]] <- ...
   return(singleyr_rs)
 }
 
 # Multiyear function runs the single-year function across years and combines results
 pums_multiyear <- function(dyears){
-  refyear <- max(dyears)
-  multiyear_rs <- mapply(pums_singleyear, dyears, refyear) %>% lapply(as.vector) %>% 
+  multiyear_rs <- lapply(dyears, pums_singleyear) %>% lapply(as.vector) %>% 
     do.call(rbind, .) %>% as.data.frame() %>% setDT() %>% lapply(rbindlist)
   return(multiyear_rs)
 }
