@@ -6,12 +6,12 @@ globalVariables(c(":=", "!!", ".", "enquos"))
 
 `%not_in%` <- Negate(`%in%`)
 
-#' List Census Places within the PSRC region
+#' Retrieve set of Census Places within the PSRC region
 #'
 #' @param year of census geography
 #' @return string vector of Place FIPS codes
 #'
-#' @importFrom sf st_transform st_buffer st_join st_intersects st_drop_geometry
+#' @importFrom sf st_transform st_buffer st_join st_intersects
 #' @importFrom dplyr filter select rename
 #' @export
 get_psrc_places <- function(year){
