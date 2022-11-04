@@ -419,7 +419,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   setorderv(rs, c("DATA_YEAR","COUNTY"))
   rs[COUNTY=="Total", COUNTY:="Region"]
   rs[DATA_YEAR!="Total"]
-  so %<>% ungroup()
+  if(all(group_vars!="keep_existing")){so %<>% ungroup()}                                          # "keep_existing" is power-user option for srvyr::combine() groupings;
   return(rs)
 }
 
@@ -436,14 +436,14 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
 NULL
 
 #' @rdname pums_stat
-#' @title Generate PUMS county and regional counts
+#' @title Generate PUMS counts
 #' @export
 psrc_pums_count <- function(so, stat_var=NULL, group_vars=NULL, incl_na=TRUE){
   rs <- psrc_pums_stat(so=so, stat_type="count", stat_var=NULL, group_vars=group_vars, incl_na=incl_na)
   return(rs)
 }
 #' @rdname pums_stat
-#' @title Generate PUMS county and regional totals
+#' @title Generate PUMS sums
 #' @export
 psrc_pums_sum <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
   rs <- psrc_pums_stat(so, stat_type="total", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
@@ -451,7 +451,7 @@ psrc_pums_sum <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
 }
 
 #' @rdname pums_stat
-#' @title Generate PUMS county and regional medians
+#' @title Generate PUMS medians
 #'
 #' @examples
 #' \dontrun{
@@ -467,7 +467,7 @@ psrc_pums_median <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
 }
 
 #' @rdname pums_stat
-#' @title Generate PUMS county and regional means
+#' @title Generate PUMS means
 #' @export
 psrc_pums_mean <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
   rs <- psrc_pums_stat(so=so, stat_type="mean", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
@@ -475,7 +475,7 @@ psrc_pums_mean <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
 }
 
 #' @rdname pums_stat
-#' @title Generate PUMS county and regional means
+#' @title Generate PUMS counts, sums, medians and means with one command
 #' @export
 psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
   rs <- psrc_pums_stat(so=so, stat_type="summary", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
