@@ -1,11 +1,12 @@
 ---
-title: "Using microdata 1:  \nCalculate basic PUMS summaries"
+title: "PUMS 1: Calculate basic summaries"
 description: >
   Utilize Census microdata to go beyond Census-published statistics
 output: html_vignette
 vignette: >
   %\VignetteIndexEntry{PUMS 1: Calculate basic summaries}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
   %\VignetteEncoding{UTF-8}
 ---
 

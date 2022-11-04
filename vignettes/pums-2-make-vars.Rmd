@@ -1,10 +1,10 @@
 ---
-title: "Using microdata 2:  \nMake your own PUMS variables"
+title: "PUMS 2: Make your own variables"
 description: >
   Hints & cautions for moving beyond PUMS-provided variables
 output: html_vignette
 vignette: >
-  %\VignetteIndexEntry{"PUMS 2: Make your own variables"}
+  %\VignetteIndexEntry{PUMS 2: Make your own variables}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

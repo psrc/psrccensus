@@ -1,10 +1,10 @@
 ---
-title: "Using microdata 3:  \nScript multiyear PUMS functions"
+title: "PUMS 3: Script multiyear functions"
 description: >
   Suggestions for applying PUMS functions longitudinally
 output: html_vignette
 vignette: >
-  %\VignetteIndexEntry{"Using microdata 3:  \nScript multiyear PUMS functions"}
+  %\VignetteIndexEntry{PUMS 3: Script multiyear functions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -41,7 +41,7 @@ While writing multi-year functions, keep in mind `get_psrc_pums()` downloads and
 
 ### Example
 
-  ```{r apply function across PUMS years, message=FALSE, eval=FALSE}
+```{r apply function across PUMS years, message=FALSE, eval=FALSE}
 library(psrccensus)
 library(magrittr)
 library(dplyr)
