@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Calculate PUMS summaries</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Calculate PUMS summaries</h1>
+
+
+
+<div id="what-is-census-microdata" class="section level2">
+<h2>What is Census microdata?</h2>
+<p>Along with publishing summary statistics from the diennial Census or
+American Community Survey (ACS), the Census Bureau also makes available
+a subset of individual person and housing (incl. household) records,
+called the Public Use Microdata Sample (PUMS). These can be used to
+estimate models or to tabulate custom statistics unavailable in
+Census-published summary statistics. Partly to safeguard privacy, PUMS
+data is not categorized by standard Census geographies such as block,
+block group or tract; instead the unit is the Public Use Microdata Area
+(PUMA), an aggregation of tracts with total population between
+100,000-200,000. In the past there were more than one set of PUMAs,
+corresponding to different sampling rates; that is no longer the case
+(PUMAs now consistently represent a 5 percent sample).</p>
+<p>PUMS data include sampling weights in order to be extrapolated to a
+larger population, and replication weights in order to calculate margins
+of error. When PUMS is used to drill down to small subsets of the
+population, particular attention should be paid to the margins of error
+in drawing any conclusions from the data; see <a href="#Sample-sizes,-confidence,-and%20error%20margins">section
+below</a>. The Census Bureau resource <a href="https://www.census.gov/programs-surveys/acs/guidance/handbooks/pums.html">What
+ACS Public Use Microdata Sample File Users Need to Know</a> is a helpful
+resource if you have further questions about PUMS itself.</p>
+</div>
+<div id="retrieve-pums-data-get_psrc_pums" class="section level2">
+<h2>Retrieve PUMS data: <em>get_psrc_pums()</em></h2>
+<p>The PSRC census package makes it easy to calculate standard summary
+statistics by county and for the region as a whole. Data analysis with
+the <strong>psrccensus</strong> package involves two steps:</p>
+<p>The first step consists of retrieving the data of interest via the
+<strong>get_psrc_pums()</strong> function. The arguments are:</p>
+<ul>
+<li><strong>span</strong> - either 1 ,3 or 5, denoting the span of the
+desired ACS survey (1yr from 2000-present; 3yr from 2007-13; 5yr from
+2009-present)</li>
+<li><strong>dyear</strong> - aka data year (concluding year for 3- or
+5-yr ACS)</li>
+<li><strong>level</strong> - the unit of analysis, i.e. “p” for
+“persons” or “h” for “households”</li>
+<li><strong>vars</strong> - one or more PUMS variables in UPPERCASE (if
+multiple, as a character vector)</li>
+</ul>
+<p>The result of <strong><code>get_psrc_pums()</code></strong> is a
+structured data object (per the <strong>srvyr</strong> package) that has
+sampling and replication weights built in.</p>
+<p><strong><code>get_psrc_pums()</code></strong> must be called
+separately for each combination of <strong>span - dyear - level</strong>
+you intend to use. For example, if you want to calculate both household
+statistics and population statistics from the same survey (span and
+year), you will still need to use
+<strong><code>get_psrc_pums()</code></strong> once for households
+(level=“h”) and a second time for persons (‘level’=“p”). This is
+necessary because in PUMS, households and persons are not perfectly
+coextensive: household-level datasets do not contain persons living in
+group quarters and person-level datasets are not filtered to households.
+(Household datasets are further filtered to remove vacant units.) When
+you invoke <strong><code>get_psrc_pums()</code></strong> we suggest you
+assign a name that helps you differentiate between whatever <strong>span
+- dyear - level</strong> combinations are relevant to your analysis.</p>
+<p>Although PUMS variables are measured specific to either persons or
+households, either unit of analysis can be associated with all
+variables–persons inherit their respective household attributes (albeit
+missing in the case of for group quarters), and households are, per
+Census Bureau convention, assigned the person attributes of the adult
+respondent (aka “householder; this is also true of published American
+Community Survey estimates). Variables must be typed exactly, so it is
+recommended to consult a PUMS data directory, especially since some
+variables may differ between data years. The PUMS data dictionary from
+2017- forward is captured in the R object
+<strong><code>tidycensus::pums_variables</code></strong> (filter by year
+and survey). The Census Bureau also publishes <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/">each
+separate data dictionary online in html, pdf or txt</a>, which can be
+easily searched via web browser.</p>
+<div id="built-in-psrc-variables" class="section level3">
+<h3>Built-in PSRC variables</h3>
+<p>In addition to variables listed in the Census PUMS data dictionary,
+you can also select the following custom PSRC variables:</p>
+<ul>
+<li><strong>PRACE</strong> - person-level race/ethnicity in which
+Hispanic/Latino is its own race category (non-overlapping with other
+races)</li>
+<li><strong>HRACE</strong> - household-level race/ethnicity considering
+all members; ‘Multiple Races’ category as well as Hispanic/Latino</li>
+<li><strong>BINCOME</strong> - household income (HINCP) grouped by
+standard PSRC breakpoints</li>
+<li><strong>BIN_AGE</strong> - age (AGEP) grouped by standard PSRC
+breakpoints</li>
+<li><strong>BIN_POVRATIO</strong> - ratio of household income to the
+poverty level (POVPIP) w/ PSRC breakpoints (fraction, not percent)</li>
+<li><strong>BIN_YBL</strong> - year structure was built, by current ACS
+breakpoints</li>
+<li><strong>OWN_RENT</strong> - dichotomous tenure (simplified from
+TEN)</li>
+</ul>
+<p><strong>DATA_YEAR, PRODUCT, UNIT,</strong> and
+<strong>COUNTY</strong> variables are always included in the table
+without you having to specify them; the first three of these can be used
+to identify the dataset.</p>
+</div>
+<div id="built-in-inflation-adjustment" class="section level3">
+<h3>Built-in inflation adjustment</h3>
+<p>Because the ACS (from which the PUMS records are developed) is a
+rolling survey, responses are collected at different times throughout
+the year and the value of money may have changed slightly during that
+time. Published ACS estimates have a ‘baked-in’ inflation adjustment
+(derived from the Federal Consumer Price Index, or CPI) to account for
+this. Dollar amounts in the PUMS dataset, however, are provided raw–as
+they were reported–along with an average inflation adjustment factor.
+Inflation adjustment is particularly important for multi-year (3- and
+5-yr) datasets. <strong>psrccensus</strong> applies the correct
+adjustment for you. PUMS estimates will not match their ACS counterparts
+precisely, but the adjustment brings them closer.</p>
+</div>
+</div>
+<div id="generate-summary-statistics" class="section level2">
+<h2>Generate summary statistics</h2>
+<p>The second step in an analysis involves calculating summary
+statistics from the result of the prior step. Because PUMS are sampled,
+summary statistics must use the sampling weight in order to be expanded
+to the full population. Although PUMS data exists for the entire
+country, results of <strong>psrccensus</strong> are filtered to the
+4-county PSRC region for simplicity.</p>
+<p>There are four relevant statistical functions, along with a summary
+function that gives all four in the same table.</p>
+<div class="line-block">         <strong>psrc_pums_count()</strong>
+(also includes shares, i.e. proportions by group)<br />
+         <strong>psrc_pums_sum()</strong><br />
+         <strong>psrc_pums_median()</strong><br />
+         <strong>psrc_pums_mean()</strong><br />
+         <strong>psrc_pums_summary()</strong></div>
+<p>The arguments for each summary function are identical:</p>
+<ul>
+<li><strong>so</strong> - The srvyr object returned by
+<code>get_psrc_pums()**</code></li>
+<li><strong>stat_var</strong> - The numeric variable to be
+summarized.</li>
+<li><strong>group_vars</strong> - Optional grouping variable/s (if
+multiple, as a character vector)</li>
+</ul>
+<p>Argument names can be omitted (saving keystrokes) if arguments are
+provided in proper sequence; you may prefer to be explicit to avoid
+confusing them.</p>
+<p>All result tables make use of the <code>srvyr::cascade</code> feature
+to provide totals at each grouping level; these are “peeled off” from
+last-grouped to first. If you have multiple grouping variables, the
+order in which you specify them will control how shares
+<code>psrc_pums_count()</code> are nested, for example. For any result
+with COUNTY as one of the grouping variables, it will be shifted to the
+left-most position in the table.</p>
+<p><strong>psrccensus</strong> does not constrain your choice of
+variables, but clearly any variable to be summarized must be a number,
+and grouping variables should not be continuous. The
+<code>stat_var</code> argument is ignored by the count function (for
+which the primary variable is implicit), but is allowed since some
+scripting will use identical arguments (e.g. map/apply functions).</p>
+<p>Since PUMS records are sampled rather than comprising a full census,
+<strong>psrccensus</strong> applies sampling weights to deliver
+estimates of the full population. It also provides the tabulated margin
+of error (MOE) for each estimate in a separately labeled ’_moe’
+column.</p>
+<div id="examples" class="section level3">
+<h3>Examples</h3>
+<p>As an example, to calculate 2019 median household income for the
+region you would use the following function calls:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">get_psrc_pums</span>(<span class="at">span =</span> <span class="dv">5</span>,                     <span class="co"># Denoting ACS 5-year estimates; 1-year also available</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">dyear =</span> <span class="dv">2019</span>,                 <span class="co"># Last data year of span</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">level =</span> <span class="st">&quot;h&quot;</span>,                  <span class="co"># Unit of analysis == household (&quot;p&quot; used for person)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;HINCP&quot;</span>,<span class="st">&quot;TEN&quot;</span>))      <span class="co"># PUMS household income &amp; housing tenure variables; using tenure later. </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                                                 <span class="co">#  - You can choose as many variables as you need.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">psrc_pums_median</span>(x, <span class="at">stat_var =</span> <span class="st">&quot;HINCP&quot;</span>)          <span class="co"># Median Household income (without regard to tenure)</span></span></code></pre></div>
+<p>To calculate by a subgroup category (here, housing tenure–e.g. own
+vs. rent), use the optional grouping variable argument.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">psrc_pums_median</span>(x,                              <span class="co"># the assigned result of get_psrc_pums()</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stat_var =</span> <span class="st">&quot;HINCP&quot;</span>,             <span class="co"># Summarizing household income . . .</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">group_vars =</span> <span class="st">&quot;TEN&quot;</span>)             <span class="co"># . . . grouped by housing tenure</span></span></code></pre></div>
+<p>The count function tabulates the number people or households by
+grouping category, depending on the level you specified in
+<strong>get_psrc_pums</strong>. The result represents the population
+(via weighting), not the survey sample. If you intend to count things
+other than people or households, such as number of bedrooms, you should
+use the ‘total’ function instead, which sums the target variable.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">psrc_pums_count</span>(x, <span class="at">group_vars=</span><span class="fu">c</span>(<span class="st">&quot;COUNTY&quot;</span>,<span class="st">&quot;TEN&quot;</span>))      <span class="co"># If omitting stat_var argument, group_var must be labeled</span></span></code></pre></div>
+<p>The summary function provides all four statistics and their margins
+of error in the same table.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">psrc_pums_summary</span>(x, <span class="st">&quot;HINCP&quot;</span>, <span class="st">&quot;TEN&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">print</span>()</span></code></pre></div>
+</div>
+</div>
+<div id="sample-sizes-confidence-and-error-margins" class="section level2">
+<h2>Sample sizes, confidence, and error margins</h2>
+<p>Although <strong>psrccensus</strong> allows you to specify multiple
+grouping variables, you’ll need to keep in mind that there are limits to
+what can be usefully determined from small subsets of respondents within
+PUMS. To draw responsible conclusions from PUMS data, you’ll need to
+examine the margins of error (MOE) <strong>psrccensus</strong>
+calculates along with the estimate. (This is when PUMS via
+<strong>psrccensus</strong> really shines, since it can be laborious to
+calculate the MOE without dedicated statistical software.) Margins of
+error in the PUMS are given in the same units as the estimate (as with
+ACS), so it is easy to get the bounds of the 90 percent confidence
+interval by both adding the MOE to the estimate and subtracting the MOE
+from it.</p>
+<p>If there are few respondents in a category combination, the margin of
+error may be beyond calculation (NaN, or ‘not a number’), or so large
+that the estimate itself has little practical value. In these cases, you
+may want to consider either switching from the 1-year to 5-year span
+(the latter has a larger sample), potentially analyze dimensions of the
+data separately rather than in combination, or potentially change the
+categories you are using (e.g. use <code>dplyr::mutate</code> to create
+a less disaggregate variable).</p>
+<div id="determining-difference" class="section level3">
+<h3>Determining difference</h3>
+<p>Is there an actual difference between two statistics generated from
+PUMS data? To know, you’ll need to examine the margins of error. As a
+rule of thumb, if there is overlap in the 90 percent confidence
+intervals of the two estimates, you cannot conclude the values are
+different. To perform a more careful test, you can calculate the Z
+score: <span class="math display">\[\frac{|Est_{1} -
+Est_{2}|}{\sqrt{MOE_{est1}^2 + MOE_{est2}^2}}\]</span> There is only a
+meaningful difference between two estimates if the Z score is greater
+than 1. This test can be applied between different years, or between
+PUMS and ACS. However, please remember Census warns against drawing
+comparisons between estimates generated from different spans (e.g. 1yr
+with 5yr), especially if they overlap (as the same observations may be
+exist in both).</p>
+<p>The <code>z_score()</code> convenience function performs this
+calculation:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rs <span class="ot">&lt;-</span> <span class="fu">psrc_pums_median</span>(x, <span class="st">&quot;HINCP&quot;</span>, <span class="st">&quot;TEN&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>c1 <span class="ot">&lt;-</span> rs[<span class="dv">1</span>,(<span class="fu">ncol</span>(rs)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">ncol</span>(rs)]                <span class="co"># First-line estimate and its MOE (as numeric vector)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> rs[<span class="dv">3</span>,(<span class="fu">ncol</span>(rs)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">ncol</span>(rs)]                <span class="co"># Third-line estimate and its MOE (as numeric vector)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">z_score</span>(c1, c2)                                  <span class="co"># A true difference indicated by score &gt; 1</span></span></code></pre></div>
+<hr />
+<p><strong><em>NOTE FOR POWER USERS:</em></strong> If you wish to
+examine the analysis and grouping variables within the srvyr object,
+they are stored in a dataframe as the seventh list item. When further
+variable transformations or groupings are necessary, you can manipulate
+the srvyr object directly using <strong>dpylr</strong>’s
+<strong><em>filter</em></strong> and <strong><em>mutate</em></strong>
+functions (potentially in combination with
+<strong><em>select</em></strong>), which maintain the associated srvyr
+weights and structure (see <a href="http://gdfe.co/srvyr/">its
+vignette</a>).</p>
+<p>You may find it convenient to call <strong>get_psrc_pums()</strong>
+with the <code>labels=FALSE</code> option, as the underlying value codes
+are shorter and more easily handled with rules than are descriptive
+labels (use the <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/">data
+dictionary</a> to interpret value codes). Be careful making any
+numerical comparisons with categorical variables: R stores them as
+factor datatype, so they have a hidden value that could unwittingly be
+compared unless you convert datatype using <code>as.character()</code>
+first.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

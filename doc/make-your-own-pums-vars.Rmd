@@ -1,0 +1,93 @@
+---
+title: "Make your own PUMS variables"
+description: >
+  Hints & cautions for moving beyond PUMS-provided variables
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{Make your own PUMS variables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(psrccensus)
+library(magrittr)
+library(dplyr)
+library(srvyr)
+library(knitr)
+```
+
+## Defining your own variables in PUMS
+
+Why aren't the variables included in the PUMS dataset enough? Many PUMS categories offer more detail than is useful for an analysis, and so need to be simplified to reflect its purpose (and to increase sample sizes per category). Other cases may require defining a new variable conditioned on multiple original variables. And finally, at times the analysis may apply only to part of the population.
+
+The srvyr object delivered by get_psrc_pums() can be altered **dpylr** commands while maintaining the associated weights and structure (see [its vignette](http://gdfe.co/srvyr/)). We recommend using the `mutate()` command, in combination with `case_when()` or `ifelse()` to define a variable that directly captures the needs of your analysis, so **psrccensus** can deliver your intended statistics--and especially, the associated margin of error--rather than attempting to re-aggregate these from summary results.
+
+### Hints and things to watch out for when recoding PUMS variables:
+
+  * Categorical (i.e. grouping) variables in srvyr are of Factor datatype, and new categorical variables should also be Factor datatype. This means the new or altered variable you create should use either the `factor()` command or its quicker alternate, `as.factor()`.
+  
+  * To sort your new variable categories in a particular order, specify `factor(levels=)`; the default is alphabetical (the only option if using the `as.factor()` command).
+  
+  * To assign `NA` use a constant as the right hand side, such as `NA_character_`, `NA_integer_`, or `NA_real_`, depending on what datatype you want. R assigns type based on the first expression, and without context interprets normal `NA` as a logical value.
+  
+  * For a catch-all (aka "else") category, consider using the `!is.na()` criterion rather than `TRUE`. Grouping `NA` with other categories may obscure non-applicable cases.
+  
+  * For logical conditions using value labels, the `grepl()` function can be very handy, as regular expressions can match one or many labels without typing out the entire label (although you'll want to craft your regex pattern carefully, so it matches only the labels you intend it to). 
+  
+  * For complex recoding you may find it convenient to call **get_psrc_pums()** with the `labels=FALSE` option, as the underlying value codes are shorter and  more easily handled with rules than are descriptive labels (use the [data dictionary](https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/) to interpret value codes). Be aware this leaves all columns as values.
+  
+  * If you are defining a variable using PUMS values, be aware of a trap: R stores Factors as a hidden value that maps to a set of character "levels", which are what is displayed. While string comparisons with a Factor will use the displayed "level", numerical comparisons with a Factor will use the hidden value, even if the "level" looks like an integer (as PUMS values do). The way to handle this is to convert Factor to character first in your `mutate()` statement, i.e. `as.integer(as.character(SOME_PUMS_VAR))`, as part of your logical expression.
+
+### Handle subsets via a universal variable & the `incl_na=FALSE` option
+
+Rather than removing observations with the dplyr::filter() command, we recommend that  you assign those cases `NA` in a custom categorical variable--that way, you can use the full survey object in repeated analyses without needing to manage different filtered subsets. To exclude the `NA` category from a results table--particularly useful when reporting subset shares via the `psrc_pums_count()` function--specify the `incl_na=FALSE` option in any of the statistical functions. This effectively filters the survey prior to running the statistic, without affecting the data object itself. The default `incl_na=TRUE` option includes `NA` groups and gives accurate shares of the full population (or households, if that is your unit of analysis).
+
+### Examples
+Adding two custom variables with one mutate command:
+```{r mutate using labels, message=FALSE, eval=FALSE}
+pums19_5p <- get_psrc_pums(5, 2019, "p", c("AGEP","SCHL","ESR"))                           # Pull the data; 
+                                                                                           #    rather than pipe the result, use a separate assignment
+pums19_5p %<>% mutate(                                                                     #    so any issues with mutate() don't negate your download
+  ed_25up = factor(                                                                        # Use Factor datatype for categorical variables
+      case_when(AGEP<25                               ~ NA_character_,                     # Type-specific NA constant
+                grepl("^(Bach|Mast|Prof|Doct)", SCHL) ~ "Bachelor's degree or higher",     # Regex is concise; handy since PUMS labels can be wordy 
+                !is.na(SCHL)                          ~ "Less than a Bachelor's degree")), # !is.na() criteria
+  emp_25up = factor(                                                                       # Mutate() can assign more than one variable
+      case_when(AGEP<25                               ~ NA_character_,                     # Type-specific NA constant
+                grepl("at work$", ESR)                ~ "Employed",                        # Concise regex again; use care, checking the data dictionary
+                !is.na(ESR)                           ~ as.character(ESR)),                # Retain NA for children under 16
+      levels=c("Employed","Unemployed","Not in labor force")))                             # Preferred ordering via `levels=`
+  
+emp_ed_all  <- psrc_pums_count(pums19_5p, group_vars=c("emp_25up", "ed_25up"))             # These shares reflect the entire population
+emp_ed_25up <- psrc_pums_count(pums19_5p, group_vars=c("emp_25up", "ed_25up"), incl_na=FALSE) # No NA; same counts but shares for only age 25+, as intended
+```
+
+
+Using `labels=FALSE` and `as.character()` for more a complex recode:
+
+ * Notice conversion first to character, then integer to allow numeric comparisons.
+ * This approach has particular advantage over label matching when using value ranges
+ * All variables use values (including ESR; grepl() used above only works with labels)
+```{r  mutate using values, message=FALSE, eval=FALSE}
+pvars <- c("AGEP","FOD1P","FOD2P","INDP","ESR")
+ftr_int <- function(x){as.integer(as.character(x))}                                        # Micro-helper conversion function
+pums18_5p <- get_psrc_pums(5, 2018, "p", pvars, labels=FALSE)                              # Labels=FALSE leaves values--but they are still Factors!
+
+pums18_5p %<>% mutate(
+   med_deg = factor(
+       case_when(between(ftr_int(FOD1P), 6100, 6199)|between(ftr_int(FOD2P), 6100, 6199) ~ "Medical Degree",
+                 TRUE ~ "No medical degree")),                                             # Regardless of age
+   med_field = factor(
+       case_when(ftr_int(ESR) %in% c(1,2,4,5) & between(ftr_int(INDP), 7970, 8290) ~ "Medical industry, employed",
+                 ftr_int(ESR)==3 & between(ftr_int(INDP), 7970, 8290) ~ "Medical industry, not currently employed",
+                 ftr_int(ESR) %in% c(1,2,4,5) & !is.na(INDP)          ~ "Non-medical industry, employed",
+                 ftr_int(ESR)==3 & !is.na(INDP)                       ~ "Non-medical industry, not currently employed",
+                 TRUE ~ NA_character_)))                                                   # Leaving out those not in the workforce  
+
+med_deg_work_all  <- psrc_pums_count(pums18_5p, group_vars=c("med_field","med_deg"))       # These shares reflect the entire population
+med_deg_work_only <- psrc_pums_count(pums18_5p, group_vars=c("med_field","med_deg"), incl_na=FALSE) # These shares limited to workforce
+
+```
+
