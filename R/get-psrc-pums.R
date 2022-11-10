@@ -382,7 +382,9 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
+  gv_pat <- paste0("^", group_vars ,"$", collapse="|")
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
+  so %<>% mutate(across(.cols=where(is.numeric) & grep(gv_pat, colnames(.)), factor))              # Convert any numeric grouping variables to factor datatype
   if(all(group_vars!="keep_existing")){so %<>% ungroup()}                                          # "keep_existing" is power-user option for srvyr::combine() groupings;
   if(all(!is.null(group_vars) & group_vars!="keep_existing")){                                     # -- otherwise the package ungroups before and afterward
     if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}                    # Allows users to exclude w/o removing observations from the data object itself
