@@ -376,7 +376,6 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @param stat_type Desired survey statistic
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
-#' @importFrom rlang sym
 #' @importFrom tidyselect all_of
 #' @importFrom dplyr across if_all ungroup
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
