@@ -50,7 +50,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       }
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
+      labels <- tidycensus::load_variables(year=year, dataset=acs.type) %>% select(-geography)
       labels <- dplyr::rename(.data=labels, variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
       # Add column for Census Geography, Type and Year of Data
@@ -108,7 +108,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
+      labels <- tidycensus::load_variables(year=year, dataset=acs.type) %>% select(-geography)
       labels <- labels %>%
         dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
@@ -167,7 +167,7 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
+      labels <- tidycensus::load_variables(year=year, dataset=acs.type) %>% select(-geography)
       labels <- labels %>%
         dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
@@ -227,7 +227,7 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
       county.names <- paste(counties,"County")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset="acs5")
+      labels <- tidycensus::load_variables(year=year, dataset="acs5") %>% select(-geography)
       labels <- labels %>%
         dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
@@ -276,21 +276,21 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
     for (year in years) {
 
       # Download ACS Data
-      tbl <- suppressMessages(tidycensus::get_acs(state=state, county=counties, geography="block group", year=year, survey="acs5", table=table) %>%
-        tidyr::separate(col=.data$NAME, into=c("name", "tract", "county", "state"),sep=","))
+      tbl <- tidycensus::get_acs(state=state, county=counties, geography="block group", year=year, survey="acs5", table=table) %>%
+        tidyr::separate(col=.data$NAME, into=c("name", "tract", "county", "state"),sep=",")
       tbl$county <- trimws(tbl$county, "l")
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset="acs5")
+      labels <- tidycensus::load_variables(year=year, dataset="acs5") %>% select(-geography)
       labels <- labels %>%
         dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
       tbl <- tbl %>%
-        dplyr::mutate(census_geography="Block_group", acs_type = "acs5", year=year) %>%
+        dplyr::mutate(census_geography="block group", acs_type = "acs5", year=year) %>%
         dplyr::select(-.data$county)
 
       # Store yearly data into final yearly data for current table - append if a year already exists
