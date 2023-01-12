@@ -411,7 +411,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
                                    !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
                                    .fill="Total"))
   }
-  rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
+  rs %<>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
     setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
   if("COUNTY" %not_in% colnames(rs)){rs[,COUNTY:="Region"]}
