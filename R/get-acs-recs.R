@@ -13,7 +13,7 @@
 #' @return a tibble of acs estimates by counties for selected table codes and years with a regional aggregation.
 #' Includes detailed variable names.
 #'
-#'@importFrom magrittr %>%
+#'@importFrom magrittr %>% %<>%
 #'@importFrom rlang .data
 #'@importFrom dplyr filter
 
@@ -50,9 +50,13 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       }
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type) %>% select(-geography)
+      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
+      if("geography" %in% names(labels)){
+        labels %<>% select(-geography)
+        }
       labels <- dplyr::rename(.data=labels, variable = .data$name)
-      tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
+      tbl <- dplyr::left_join(tbl, labels,by=c("variable"))
+
       # Add column for Census Geography, Type and Year of Data
       tbl <- tbl %>%
         dplyr::mutate(census_geography="County", acs_type = acs.type, year=year)
@@ -108,9 +112,11 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type) %>% select(-geography)
-      labels <- labels %>%
-        dplyr::rename(variable = .data$name)
+      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
+      if("geography" %in% names(labels)){
+        labels %<>% select(-geography)
+      }
+      labels %<>% dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
@@ -167,9 +173,11 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type) %>% select(-geography)
-      labels <- labels %>%
-        dplyr::rename(variable = .data$name)
+      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
+      if("geography" %in% names(labels)){
+        labels %<>% select(-geography)
+      }
+      labels %<>% dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
@@ -227,9 +235,11 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
       county.names <- paste(counties,"County")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset="acs5") %>% select(-geography)
-      labels <- labels %>%
-        dplyr::rename(variable = .data$name)
+      labels <- tidycensus::load_variables(year=year, dataset="acs5")
+      if("geography" %in% names(labels)){
+        labels %<>% select(-geography)
+      }
+      labels %<>% dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
@@ -283,9 +293,11 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
       county.names <- paste(counties,"County")
 
       # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset="acs5") %>% select(-geography)
-      labels <- labels %>%
-        dplyr::rename(variable = .data$name)
+      labels <- tidycensus::load_variables(year=year, dataset="acs5")
+      if("geography" %in% names(labels)){
+        labels %<>% select(-geography)
+      }
+      labels %<>% dplyr::rename(variable = .data$name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
