@@ -96,11 +96,9 @@ filter2region <- function(dt, dyear){
 #' @param dyear The data year
 #' @return unzipped table
 fetch_zip <- function(zip_filepath, target_file, dyear){
-  temp <- tempfile(fileext=".csv")
-  download.file(zip_filepath, temp)
-  unzip(temp, files=target_file, exdir=getwd())
-  csv_target <- paste0(getwd(),"/", target_file)
-  dt <- read_pums(target_file, dyear)
+  temp <- tempfile()
+  curl::curl_download(zip_filepath, temp)
+  dt <- unzip(temp, target_file) %>% read_pums(dyear)
   unlink(temp)
   rm(temp)
   return(dt)
