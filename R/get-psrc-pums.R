@@ -391,7 +391,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   if(stat_type=="count"){
     rs <- suppressMessages(cascade(so,
                                    count:=survey_total(na.rm=TRUE),
-                                   share:=survey_prop(),
+                                   share:=survey_prop(proportion=FALSE),
                                    .fill="Total"))
   }else if(stat_type=="median"){
     rs <- suppressMessages(cascade(so,
@@ -400,7 +400,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   }else if(stat_type=="summary"){
     rs <- suppressMessages(cascade(so,
                                    count:=survey_total(na.rm=TRUE),
-                                   share:=survey_prop(),
+                                   share:=survey_prop(proportion=FALSE),
                                    !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
                                    !!paste0(prefix, "mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
                                    .fill="Total"))
