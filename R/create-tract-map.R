@@ -19,7 +19,7 @@
 #' @return a leaflet map object.
 #'
 #' @importFrom magrittr %>%
-#' @importFrom rlang .data
+#' @importFrom tidyselect matches
 #'
 #' @examples
 #' library(sf)
@@ -56,10 +56,10 @@ create_tract_map <- function(tract.tbl, tract.lyr,
     dplyr::rename_at(dplyr::vars(matches("equity_geog_vs_50_percent")),function(x) "estimate") %>%
     dplyr::rename_at(dplyr::vars(matches('equity_geog_vs_reg_total')),function(x) "estimate") %>%
     dplyr::rename_at(dplyr::vars(matches("geoid")),function(x) "GEOID") %>%
-    dplyr::select(.data$GEOID,.data$estimate) %>%
+    dplyr::select(GEOID,estimate) %>%
     dplyr::mutate(dplyr::across(c('GEOID'), as.character))%>%
-    dplyr::group_by(.data$GEOID) %>%
-    dplyr::summarise(Total=sum(.data$estimate))
+    dplyr::group_by(GEOID) %>%
+    dplyr::summarise(Total=sum(estimate))
 
     tract.lyr<-tract.lyr%>%
     # make geo names across 2010 and 2020

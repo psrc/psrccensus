@@ -19,7 +19,9 @@
 
 get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years, acs.type) {
 
-  census.data <- NULL
+  census.data <- geography <- NAME <- name <- variable <- NULL
+  estimate <- moe <- sumest <- summoe <- label <- NULL
+
   for (table in table.names) {
 
     yearly.data <- NULL
@@ -31,8 +33,8 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 
 
       # Split County Name for County and State
-      tbl <- tbl %>% tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",") %>%
-                     dplyr::mutate(estimate =tidyr::replace_na(.data$estimate,0))
+      tbl <- tbl %>% tidyr::separate(col=NAME, into=c("name", "state"),sep=",") %>%
+                     dplyr::mutate(estimate =tidyr::replace_na(estimate,0))
 
       tbl$state <- trimws(tbl$state, "l")
 
@@ -40,11 +42,11 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       if (identical(counties, c("King","Kitsap","Pierce","Snohomish"))){
 
         total <- tbl %>%
-          dplyr::select(.data$variable, .data$estimate, .data$moe) %>%
-          dplyr::mutate(estimate =tidyr::replace_na(.data$estimate,0))%>%
-          dplyr::group_by(.data$variable) %>%
-          dplyr::summarize(sumest = sum(.data$estimate), summoe = tidycensus::moe_sum(.data$moe, .data$estimate)) %>%
-          dplyr::rename(estimate=.data$sumest, moe=.data$summoe) %>%
+          dplyr::select(variable, estimate, moe) %>%
+          dplyr::mutate(estimate =tidyr::replace_na(estimate,0))%>%
+          dplyr::group_by(variable) %>%
+          dplyr::summarize(sumest = sum(estimate), summoe = tidycensus::moe_sum(moe, estimate)) %>%
+          dplyr::rename(estimate=sumest, moe=summoe) %>%
           dplyr::mutate(GEOID="REGION", name="Region", state=state)
         tbl <- dplyr::bind_rows(list(tbl,total))
       }
@@ -54,7 +56,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
       if("geography" %in% names(labels)){
         labels %<>% select(-geography)
         }
-      labels <- dplyr::rename(.data=labels, variable = .data$name)
+      labels <- dplyr::rename(.data=labels, variable = name)
       tbl <- dplyr::left_join(tbl, labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
@@ -62,8 +64,8 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
         dplyr::mutate(census_geography="County", acs_type = acs.type, year=year)
 
       # Median and average calculations are more complicated, may need PUMS, filter out for now:
-      tbl  <- tbl %>% dplyr::filter(.data$name !='Region' |
-                               (!(stringr::str_detect(.data$label, 'Median'))&!(stringr::str_detect(.data$label, 'Average'))))
+      tbl  <- tbl %>% dplyr::filter(name !='Region' |
+                               (!(stringr::str_detect(label, 'Median'))&!(stringr::str_detect(label, 'Average'))))
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -98,7 +100,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 #'@keywords internal
 get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")) {
 
-  census.data <- NULL
+  census.data <- geography <- NAME <- name <- NULL
   for (table in table.names) {
 
     yearly.data <- NULL
@@ -108,7 +110,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
       # Download ACS Data
       tbl <- tidycensus::get_acs(geography="metropolitan statistical area/micropolitan statistical area", year=year, survey=acs.type, table=table) %>%
         dplyr::filter(GEOID %in% FIPS) %>%
-        tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",")
+        tidyr::separate(col=NAME, into=c("name", "state"),sep=",")
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
@@ -116,7 +118,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
       if("geography" %in% names(labels)){
         labels %<>% select(-geography)
       }
-      labels %<>% dplyr::rename(variable = .data$name)
+      labels %<>% dplyr::rename(variable = name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
@@ -155,7 +157,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 
 get_acs_place <- function (state="Washington", table.names, years, acs.type, place_FIPS=NULL) {
 
-  census.data <- NULL
+  census.data <- geography <- NAME <- name <- NULL
 
   for (table in table.names) {
 
@@ -168,7 +170,7 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
 
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, geography='place', year=year, survey=acs.type, table=table) %>%
-        tidyr::separate(col=.data$NAME, into=c("name", "state"),sep=",")
+        tidyr::separate(col=NAME, into=c("name", "state"),sep=",")
       if(!is.null(place_FIPS)){tbl %<>% filter(GEOID %in% place_FIPS)}else if(year>2010){tbl %<>% filter(GEOID %in% psrc_places)}
       tbl$state <- trimws(tbl$state, "l")
 
@@ -177,7 +179,7 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
       if("geography" %in% names(labels)){
         labels %<>% select(-geography)
       }
-      labels %<>% dplyr::rename(variable = .data$name)
+      labels %<>% dplyr::rename(variable = name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
@@ -186,8 +188,8 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
         dplyr::mutate(census_geography = dplyr::case_when(
           endsWith(name, "city") ~ "City",
           endsWith(name, "CDP") ~ "CDP")) %>%
-        dplyr::mutate(name = gsub(" city", "", .data$name)) %>%
-        dplyr::mutate(name = gsub(" CDP", "", .data$name))
+        dplyr::mutate(name = gsub(" city", "", name)) %>%
+        dplyr::mutate(name = gsub(" CDP", "", name))
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -220,7 +222,7 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
 #'@keywords internal
 get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years) {
 
-  census.data <- NULL
+  census.data <- geography <- NAME <- name <- county <- NULL
   for (table in table.names) {
 
     yearly.data <- NULL
@@ -229,7 +231,7 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, county=counties, geography='tract', year=year, survey="acs5", table=table) %>%
-        tidyr::separate(col=.data$NAME, into=c("name", "county", "state"),sep=",")
+        tidyr::separate(col=NAME, into=c("name", "county", "state"),sep=",")
       tbl$county <- trimws(tbl$county, "l")
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
@@ -239,13 +241,13 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
       if("geography" %in% names(labels)){
         labels %<>% select(-geography)
       }
-      labels %<>% dplyr::rename(variable = .data$name)
+      labels %<>% dplyr::rename(variable = name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
       tbl <- tbl %>%
         dplyr::mutate(census_geography="Tract", acs_type = "acs5", year=year) %>%
-        dplyr::select(-.data$county)
+        dplyr::select(-county)
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -278,7 +280,7 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'@keywords internal
 get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years) {
 
-  census.data <- NULL
+  census.data <- geography <- NAME <- name <- county <- NULL
   for (table in table.names) {
 
     yearly.data <- NULL
@@ -287,7 +289,7 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
 
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, county=counties, geography="block group", year=year, survey="acs5", table=table) %>%
-        tidyr::separate(col=.data$NAME, into=c("name", "tract", "county", "state"),sep=",")
+        tidyr::separate(col=NAME, into=c("name", "tract", "county", "state"),sep=",")
       tbl$county <- trimws(tbl$county, "l")
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
@@ -297,13 +299,13 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
       if("geography" %in% names(labels)){
         labels %<>% select(-geography)
       }
-      labels %<>% dplyr::rename(variable = .data$name)
+      labels %<>% dplyr::rename(variable = name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
       # Add column for Census Geography, Type and Year of Data
       tbl <- tbl %>%
         dplyr::mutate(census_geography="block group", acs_type = "acs5", year=year) %>%
-        dplyr::select(-.data$county)
+        dplyr::select(-county)
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -328,6 +330,7 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
 #' @param table.names A character string or vector of Census table codes.
 #' @param years A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.
 #' @param FIPS Character string for FIPS codes for specific MSA geographies. Defaults to Seattle & Bremerton MSA c("14740","42660")
+#' @param place_FIPS Character string of FIPS codes (with state prefix) for specific Census Places. If NULL, Places within the PSRC Region will be returned.
 #' @param acs.type A character string as either 'acs1', 'acs3' or acs5'.
 #'
 #' @author Craig Helmann

@@ -8,6 +8,8 @@ psrc_ed_attain(dt, dyear)
 }
 \arguments{
 \item{dt}{the data.table}
+
+\item{dyear}{the data year}
 }
 \value{
 the data.table with educational attainment field, "ED_ATTAIN"

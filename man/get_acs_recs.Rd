@@ -28,6 +28,8 @@ get_acs_recs(
 
 \item{FIPS}{Character string for FIPS codes for specific MSA geographies. Defaults to Seattle & Bremerton MSA c("14740","42660")}
 
+\item{place_FIPS}{Character string of FIPS codes (with state prefix) for specific Census Places. If NULL, Places within the PSRC Region will be returned.}
+
 \item{acs.type}{A character string as either 'acs1', 'acs3' or acs5'.}
 }
 \value{

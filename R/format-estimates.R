@@ -34,6 +34,7 @@
 #' @export
 format_estimates <- function(table, type = 'total', moe = TRUE){
 
+  estimate <- summary_est <- summary_moe <- name <- geog <- NULL   # Bind variables locally (for documentation, not function)
   # replace_na moe with 0s
   df <- table %>%
     dplyr::mutate(moe = tidyr::replace_na(moe, 0))

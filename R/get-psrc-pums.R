@@ -94,12 +94,13 @@ filter2region <- function(dt, dyear){
 #' @param zip_filepath ftp URL location
 #' @param target_file .zip archive file to read
 #' @param dyear The data year
+#'
 #' @return unzipped table
 fetch_zip <- function(zip_filepath, target_file, dyear){
   options(download.file.method="libcurl", url.method="libcurl", timeout=300)
   temp <- tempfile()
   curl::curl_download(zip_filepath, temp)
-  dt <- unzip(temp, target_file) %>% read_pums(dyear)
+  dt <- utils::unzip(temp, target_file) %>% read_pums(dyear)
   unlink(temp)
   rm(temp)
   return(dt)
@@ -142,7 +143,10 @@ fetch_ftp <- function(span, dyear, level){
 #'
 #' @import data.table
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
-  PRACE <- HISP <- RAC1P <- SPORDER <- SERIALNO <- HRACE <- TYPE <- TYPEHUGQ <- VACS <- DIS <- COW <- NULL # Bind variables locally (for documentation, not function)
+  SPORDER <- SERIALNO <- TYPE <- TYPEHUGQ <- VACS <- DIS <- NULL
+  RAC1P <- PRACE <- ARACE <- HRACE <- HISP <- AGEP <- WORKER <- COW <- NULL
+
+  # Bind variables locally (for documentation, not function)
   unit_key <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
@@ -375,7 +379,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @param stat_type Desired survey statistic
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
-#' @importFrom tidyselect all_of
+#' @importFrom tidyselect all_of where
 #' @importFrom dplyr across if_all ungroup
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
@@ -491,13 +495,14 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
 #' @param stat_type Desired survey statistic
 #' @param stat_var The numeric variable to summarize
 #' @param group_var_list List with each list item a grouping variable or set of grouping variables
+#' @param incl_na option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)
 #' @return A table with the variable names and labels, summary statistic and margin of error
 #'
 #' @importFrom data.table rbindlist setDF
 #' @importFrom dplyr mutate rename relocate
 #' @export
 pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na=TRUE){
-  var_name <- NULL                                                                                 # Bind variables locally (for documentation, not function)
+  var_name <- DATA_YEAR <- COUNTY <- NULL                                                          # Bind variables locally (for documentation, not function)
   list_stat <- function(x){
     rsub <- psrc_pums_stat(so=so,
                            stat_type=stat_type,

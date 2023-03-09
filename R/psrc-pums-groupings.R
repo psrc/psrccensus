@@ -147,6 +147,7 @@ psrc_own_rent<- function(dt){
 #' PSRC educational attainment groupings
 #'
 #' @param dt the data.table
+#' @param dyear the data year
 #' @return the data.table with educational attainment field, "ED_ATTAIN"
 psrc_ed_attain<- function(dt, dyear){
   ED_ATTAIN <- SCHL <- NULL                                                                        # Bind variables locally (for documentation, not function)
@@ -175,7 +176,7 @@ psrc_ed_attain<- function(dt, dyear){
 #' @param dt the data.table
 #' @return the data.table with manufacturing-industrial category field, "MI_JOBSECTOR"             # When NAICS changes, new dyear/definition set should be added
 psrc_mi_jobsector <- function(dt){
-  MI_JOBSECTOR <- NAICSP <- NULL                                                                   # Bind variables locally (for documentation, not function)
+  MI_JOBSECTOR <- NAICSP <- patterns <- NULL                                                       # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
   if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
     dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]

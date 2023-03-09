@@ -14,6 +14,8 @@ pums_bulk_stat(so, stat_type, stat_var = NULL, group_var_list, incl_na = TRUE)
 \item{stat_var}{The numeric variable to summarize}
 
 \item{group_var_list}{List with each list item a grouping variable or set of grouping variables}
+
+\item{incl_na}{option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error
