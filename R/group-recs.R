@@ -10,8 +10,6 @@
 #' @return a tibble of grouped ACS or Census estimates
 #' @importFrom utils read.csv
 #' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
 #'
 #' inc_poverty<-get_acs_recs(geography = 'county',
 #'                          table.names = c('C17002'),

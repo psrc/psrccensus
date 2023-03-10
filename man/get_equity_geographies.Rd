@@ -29,10 +29,6 @@ a data frame with all tracts in the region with a 0-1 variable for whether they 
 Retrieve a 0-1 variable for whether each tract in the region is in an equity geography or not
 }
 \examples{
-\dontrun{
-Sys.getenv("CENSUS_API_KEY")
-}
-
 get_equity_geographies(equity_type = 'regavg', equity_group = 'disability', year = '2019')
 
 }

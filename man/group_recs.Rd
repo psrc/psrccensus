@@ -18,8 +18,6 @@ a tibble of grouped ACS or Census estimates
 Group ACS to Census Data into pre-defined commonly used groupings, stored in the file: inst/extdata/variables_groupings.
 }
 \examples{
-\dontrun{
-Sys.getenv("CENSUS_API_KEY")}
 
 inc_poverty<-get_acs_recs(geography = 'county',
                          table.names = c('C17002'),

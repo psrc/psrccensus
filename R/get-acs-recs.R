@@ -337,8 +337,6 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
 #'
 #' @return a tibble of ACS estimates by selected geography for selected table codes. Includes variable names.
 #' @examples
-#' \dontrun{
-#' Sys.getenv("CENSUS_API_KEY")}
 #' get_acs_recs(geography = 'county',
 #'              table.names = c('B03002',"C17002"),
 #'              years=c(2017,2019),

@@ -32,8 +32,6 @@ Generate decennial estimates for multiple tables by tracts, counties, MSAs, or p
 Currently only working for SF1 tables.
 }
 \examples{
-\dontrun{
-Sys.getenv("CENSUS_API_KEY")}
 tbl_names <- paste0('PCT020', LETTERS[1:6])
 get_decennial_recs(geography = 'county', table_codes = tbl_names, years = 2010)
 

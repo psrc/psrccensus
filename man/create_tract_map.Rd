@@ -50,9 +50,6 @@ Generate Census Tract Maps for Census Data
 \examples{
 library(sf)
 library(dplyr)
-\dontrun{
-Sys.getenv("CENSUS_API_KEY")
-}
 
 tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B03002'),years=c(2019))
 tract.tbl <- tract.big.tbl \%>\%

@@ -21,7 +21,6 @@ error.
 Format estimates of a county summary table with the option to include shares and share margins of error.
 }
 \examples{
-Sys.getenv("CENSUS_API_KEY")
 df <-get_acs_recs(geography = 'county',
                                table.names = c('B03002'),
                                years = c(2019),

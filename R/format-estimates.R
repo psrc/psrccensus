@@ -15,7 +15,6 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-#' Sys.getenv("CENSUS_API_KEY")
 #' df <-get_acs_recs(geography = 'county',
 #'                                table.names = c('B03002'),
 #'                                years = c(2019),

@@ -18,10 +18,6 @@
 #' @examples
 #' library(psrccensus)
 #'
-#' {
-#' Sys.getenv("CENSUS_API_KEY")
-#' }
-#'
 #' ts.table <- get_acs_recs(geography = 'county', table.names = c('B01001'), years=c(2019,2018,2017),
 #'                     acs.type = 'acs5')
 #'
