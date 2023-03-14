@@ -165,13 +165,13 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
 
     for (year in years) {
       # Determine Places within Region
-      if(is.null(place_FIPS) & year>2010){psrc_places <- get_psrc_places(year) %>% sf::st_drop_geometry() %>% unique() %>%
+      if(is.null(place_FIPS)){psrc_places <- get_psrc_places(year) %>% sf::st_drop_geometry() %>% unique() %>%
         dplyr::pull(GEOID)}
 
       # Download ACS Data
       tbl <- tidycensus::get_acs(state=state, geography='place', year=year, survey=acs.type, table=table) %>%
         tidyr::separate(col=NAME, into=c("name", "state"),sep=",")
-      if(!is.null(place_FIPS)){tbl %<>% filter(GEOID %in% place_FIPS)}else if(year>2010){tbl %<>% filter(GEOID %in% psrc_places)}
+      if(!is.null(place_FIPS)){tbl %<>% filter(GEOID %in% place_FIPS)}else{tbl %<>% filter(GEOID %in% psrc_places)}
       tbl$state <- trimws(tbl$state, "l")
 
       # Add labels to the data - The labels can differ for each year so loading now
