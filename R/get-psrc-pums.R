@@ -544,10 +544,11 @@ z_score <- function(x, y){
 real_dollars <- function(so, refyear){
   if(fredr::fredr_has_key()){
     dyear <- unique(so[[7]]$DATA_YEAR)
-    dyear_date <- as_date(paste0(dyear,"-01-01"))
-    refyear_date <- as_date(paste0(refyear,"-01-01"))
-    drange <- c(dyear_date, refyear_date)
-    x <- fredr::fredr(series_id = "DPCERG3A086NBEA", min(drange), max(drange))                     # Requires FRED key in .Renviron, see fredr documentation
+    drange <- c(dyear, refyear)
+    x <- fredr::fredr(series_id = "DPCERG3A086NBEA",                                               # Requires FRED key in .Renviron, see fredr documentation
+                      observation_start=as_date(paste0(min(drange),"-01-01")),
+                      observation_end=as_date(paste0(max(drange),"-01-01")),
+                      frequency="a")
     deflator <- last(x$value) / first(x$value)
     income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(so), value=TRUE)
     cost_cols <- grep("^CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(so), value=TRUE)
