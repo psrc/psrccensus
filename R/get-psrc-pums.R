@@ -288,7 +288,7 @@ add_county <- function(dt, dyear){
 #' @import data.table
 codes2labels <- function(dt, dyear, vars){
   recode <- val_min <- val_max <- var_code <- val_label <- i.val_label <- NULL                     # Bind variables locally (for documentation, not function)
-  ddyear  <- if(dyear>2016){dyear}else{2017}
+  ddyear  <- if(dyear>2016){dyear}else{2017}                                                       # Temporary - until 2005-15 lookup is ready
   recoder <- list()
   recoder[[1]] <- tidycensus::pums_variables %>% setDT() %>%                                       # Get the value-label correspondence for any/all factor variables
     .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
@@ -350,6 +350,10 @@ ensure_datatypes <- function(dt){
 #'
 #' @export
 get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
+  if(dyear<2017){
+    warning(paste("Use data dictionary to confirm earlier-year codes are identical to 2017",       # Until an archive lookup is finished
+                  "or use 'labels=FALSE' option and recode to labels manually"))                   # -- warn users to verify labels are OK
+  }
   unit_var <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   dt <- pums_ftp_gofer(span, dyear, level, vars, dir)
   swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
