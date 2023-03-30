@@ -304,6 +304,10 @@ codes2labels <- function(dt, dyear, vars){
   recoder[[5]] <- copy(recoder[[2]]) %>% .[, var_code:="ARACE"]
   recoder[[6]] <- copy(recoder[[4]]) %>% .[, var_code:="ADIS"]
   recoder %<>% rbindlist() %>% setDT() %>% .[var_code %in% vars] %>% setkeyv("val_max")            # Add to label lookup; filter variables
+  chg_vars <- c("YBL","RELP","SCHG","SCHL")                                                        # The code-to-label match for these vars
+  if(dyear < 2012 & any(vars %in% chg_vars)){                                                      # -- changed in 2012 but names were kept
+    recoder %<>% .[var_code %not_in% chg_vars]                                                     # -- so keep codes to avoid miscategorization
+  }
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
     for (v in recode_vars){
@@ -350,9 +354,10 @@ ensure_datatypes <- function(dt){
 #'
 #' @export
 get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
+                           # These vars kept name but changed dictionary;
   if(dyear<2017){
-    warning(paste("Use data dictionary to confirm earlier-year codes are identical to 2017",       # Until an archive lookup is finished
-                  "or use 'labels=FALSE' option and recode to labels manually"))                   # -- warn users to verify labels are OK
+    warning(paste("Use data dictionary to confirm earlier-year codes are identical to 2017",         # Until an archive lookup is finished
+                  "try 'labels=FALSE' option w/ manual recode for accuracy"))                        # -- warn users to verify labels are OK
   }
   unit_var <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   dt <- pums_ftp_gofer(span, dyear, level, vars, dir)
