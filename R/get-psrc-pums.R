@@ -390,8 +390,8 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @importFrom tidyselect all_of where
 #' @importFrom dplyr across if_all ungroup
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
-  count <- share <- COUNTY <- DATA_YEAR <- NULL                                                    # Bind variables locally (for documentation, not function)
+psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE, rr=FALSE){
+  count <- share <- COUNTY <- DATA_YEAR <- reliability <- NULL                                     # Bind variables locally (for documentation, not function)
   gv_pat <- paste0("^", group_vars ,"$", collapse="|")
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   so %<>% mutate(across(.cols=where(is.numeric) & grep(gv_pat, colnames(.)), factor))              # Convert any numeric grouping variables to factor datatype
@@ -402,29 +402,46 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
   }
   if(stat_type=="count"){
     rs <- suppressMessages(cascade(so,
-                                   count:=survey_total(na.rm=TRUE),
+                                   count:=survey_total(na.rm=TRUE, vartype=c("se","cv")),
                                    share:=survey_prop(proportion=FALSE),
                                    .fill="Total"))
   }else if(stat_type=="median"){
     rs <- suppressMessages(cascade(so,
-                                   !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+                                   !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var),
+                                                                             na.rm=TRUE,
+                                                                             vartype=c("se","cv"),
+                                                                             interval_type="quantile",
+                                                                             qrule="school"),
                                    .fill="Total"))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(cascade(so,
                                    count:=survey_total(na.rm=TRUE),
                                    share:=survey_prop(proportion=FALSE),
-                                   !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var), na.rm=TRUE, interval_type = "quantile", qrule="school"),
+                                   !!paste0(prefix, "median"):=survey_median(!!as.name(stat_var),
+                                                                             na.rm=TRUE,
+                                                                             vartype=c("se","cv"),
+                                                                             interval_type="quantile",
+                                                                             qrule="school"),
                                    !!paste0(prefix, "mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
                                    .fill="Total"))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- suppressMessages(cascade(so,
-                                   !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
+                                   !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE, vartype=c("se","cv"))),
                                    .fill="Total"))
   }
   rs %<>% setDT() %>%
-    .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
-    setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
+    .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%  # Convert standard error to MOE
+    setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe")) %>% # -- and revise column name to match
+    setnames(grep("_cv", colnames(.)), "reliability")
+  if(rr==TRUE){
+    rs %<>% .[, reliability:=dplyr::case_when(reliability <= .15 ~ "good",                          # Optional categorical variance measure
+                                              reliability <= .3  ~ "fair",
+                                              reliability <= .5  ~ "weak",
+                                              reliability >= .5  ~ "unreliable")]
+  }else{
+    rs[,reliability:=NULL]                                                                         # Drop if not selected
+  }
   if("COUNTY" %not_in% colnames(rs)){rs[,COUNTY:="Region"]}
   if("DATA_YEAR" %not_in% colnames(rs)){rs[, DATA_YEAR:=unique(so[[7]]$DATA_YEAR)]}
   setcolorder(rs, c("DATA_YEAR","COUNTY"))
@@ -443,6 +460,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE){
 #' @param stat_var The numeric variable to summarize
 #' @param group_vars Factor variable/s for grouping, as an UPPERCASE string element or list
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)
+#' @param rr optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)
 #' @name pums_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
@@ -450,15 +468,15 @@ NULL
 #' @rdname pums_stat
 #' @title Generate PUMS counts
 #' @export
-psrc_pums_count <- function(so, stat_var=NULL, group_vars=NULL, incl_na=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="count", stat_var=NULL, group_vars=group_vars, incl_na=incl_na)
+psrc_pums_count <- function(so, stat_var=NULL, group_vars=NULL, incl_na=TRUE, rr=FALSE){
+  rs <- psrc_pums_stat(so=so, stat_type="count", stat_var=NULL, group_vars=group_vars, incl_na=incl_na, rr=rr)
   return(rs)
 }
 #' @rdname pums_stat
 #' @title Generate PUMS sums
 #' @export
-psrc_pums_sum <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
-  rs <- psrc_pums_stat(so, stat_type="total", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
+psrc_pums_sum <- function(so, stat_var, group_vars=NULL, incl_na=TRUE, rr=FALSE){
+  rs <- psrc_pums_stat(so, stat_type="total", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na, rr=rr)
   return(rs)
 }
 
@@ -472,24 +490,24 @@ psrc_pums_sum <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
 #' rs <- psrc_pums_median(so, "HINCP", "TEN")
 #'}
 #' @export
-psrc_pums_median <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="median", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
+psrc_pums_median <- function(so, stat_var, group_vars=NULL, incl_na=TRUE, rr=FALSE){
+  rs <- psrc_pums_stat(so=so, stat_type="median", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na, rr=rr)
   return(rs)
 }
 
 #' @rdname pums_stat
 #' @title Generate PUMS means
 #' @export
-psrc_pums_mean <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="mean", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
+psrc_pums_mean <- function(so, stat_var, group_vars=NULL, incl_na=TRUE, rr=FALSE){
+  rs <- psrc_pums_stat(so=so, stat_type="mean", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na, rr)
   return(rs)
 }
 
 #' @rdname pums_stat
 #' @title Generate PUMS counts, sums, medians and means with one command
 #' @export
-psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
-  rs <- psrc_pums_stat(so=so, stat_type="summary", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na)
+psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE, rr=FALSE){
+  rs <- psrc_pums_stat(so=so, stat_type="summary", stat_var=stat_var, group_vars=group_vars, incl_na=incl_na, rr=rr)
   return(rs)
 }
 
@@ -503,19 +521,21 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE){
 #' @param stat_var The numeric variable to summarize
 #' @param group_var_list List with each list item a grouping variable or set of grouping variables
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)
+#' @param rr optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)
 #' @return A table with the variable names and labels, summary statistic and margin of error
 #'
 #' @importFrom data.table rbindlist setDF
 #' @importFrom dplyr mutate rename relocate
 #' @export
-pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na=TRUE){
+pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na=TRUE, rr=FALSE){
   var_name <- DATA_YEAR <- COUNTY <- NULL                                                          # Bind variables locally (for documentation, not function)
   list_stat <- function(x){
     rsub <- psrc_pums_stat(so=so,
                            stat_type=stat_type,
                            stat_var=stat_var,
                            group_vars=x,
-                           incl_na=incl_na)
+                           incl_na=incl_na,
+                           rr=rr)
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%

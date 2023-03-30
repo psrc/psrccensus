@@ -4,7 +4,14 @@
 \alias{pums_bulk_stat}
 \title{PUMS bulk summary statistics}
 \usage{
-pums_bulk_stat(so, stat_type, stat_var = NULL, group_var_list, incl_na = TRUE)
+pums_bulk_stat(
+  so,
+  stat_type,
+  stat_var = NULL,
+  group_var_list,
+  incl_na = TRUE,
+  rr = FALSE
+)
 }
 \arguments{
 \item{so}{The srvyr object returned by \code{\link{get_psrc_pums}}}
@@ -16,6 +23,8 @@ pums_bulk_stat(so, stat_type, stat_var = NULL, group_var_list, incl_na = TRUE)
 \item{group_var_list}{List with each list item a grouping variable or set of grouping variables}
 
 \item{incl_na}{option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)}
+
+\item{rr}{optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error

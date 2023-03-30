@@ -103,7 +103,8 @@ To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), u
 ```{r  median by category, message=FALSE, eval=FALSE}
 psrc_pums_median(x,                              # the assigned result of get_psrc_pums()
                  stat_var = "HINCP",             # Summarizing household income . . .
-                 group_vars = "TEN")             # . . . grouped by housing tenure
+                 group_vars = "TEN",             # . . . grouped by housing tenure
+                 rr=TRUE)                        # w/ optional relative reliability measure
 ```
 
 
