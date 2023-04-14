@@ -31,6 +31,9 @@
     <loc>https://psrc.github.io/psrccensus/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/acs_varsearch.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/add_county.html</loc>
   </url>
   <url>
@@ -41,6 +44,9 @@
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/create_tract_map.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/dicennial_varsearch.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/ensure_datatypes.html</loc>
@@ -104,6 +110,9 @@
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/label_acs_variables.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/psrccensus.html</loc>
