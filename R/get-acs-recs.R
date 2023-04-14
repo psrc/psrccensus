@@ -1,6 +1,30 @@
 #' @importFrom magrittr %<>% %>%
 NULL
 
+#' Search published ACS tables
+#'
+#' Includes primary, subject and profile tables
+#' @param regex search term
+#' @param year optionally restrict search to a specific year
+#' @return data.table of filtered variable codes and attributes
+#'
+#' @import data.table
+#' @importFrom lubridate now month year
+#' @export
+acs_varsearch <- function(regex, year=NULL){
+  acs_year <- if(is.null(year)){year(now() - months(18))}else{year}
+  name <- label <- concept <- NULL # Instantiate tidycensus::pums_variables variable locally (for documentation, not function)
+  pull_varlist <- function(survey){
+    x <- tidycensus::load_variables(acs_year, survey) %>% setDT() %>%
+      .[grepl(regex, label, ignore.case=TRUE)|grepl(regex, concept, ignore.case=TRUE)] %>% unique()
+    return(x)
+  }
+  acstypes <- paste0("acs5", c("","/subject","/profile","/cprofile")) %>% c("acsse", recursive=TRUE)
+  rs <- list()
+  rs <- lapply(acstypes, pull_varlist) %>% rbindlist(fill=TRUE)
+  return(rs)
+}
+
 #' Label ACS variables
 #'
 #' Helper function to provide variable labels and concept--i.e. topic--alongside codes
