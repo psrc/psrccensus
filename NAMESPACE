@@ -2,6 +2,7 @@
 
 export(acs_varsearch)
 export(create_tract_map)
+export(dicennial_varsearch)
 export(format_estimates)
 export(get_acs_recs)
 export(get_decennial_recs)

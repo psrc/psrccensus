@@ -1,8 +1,9 @@
 #' @importFrom magrittr %<>% %>%
 NULL
 
-#' Search published ACS tables
+#' Search published ACS variables
 #'
+#' Identify desired tables by examining prefix of relevant variable codes
 #' Includes primary, subject and profile tables
 #' @param regex search term
 #' @param year optionally restrict search to a specific year

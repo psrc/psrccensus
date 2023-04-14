@@ -1,5 +1,35 @@
 utils::globalVariables("GEOID")
 
+#' Search Dicennial Census variables
+#'
+#' Includes primary, subject and profile tables
+#' @param regex search term
+#' @param year optionally restrict search to a specific year
+#' @return data.table of filtered variable codes and attributes
+#'
+#' @import data.table
+#' @importFrom lubridate now month year
+#' @export
+dicennial_varsearch <- function(regex, year=NULL){
+  name <- label <- concept <- NULL # Instantiate tidycensus::pums_variables variable locally (for documentation, not function)
+  find_dicennial_year <- function(year=NULL){
+    lag_year <- if(is.null(year)){year(now() - months(18))}else{year}
+    dyear <- lag_year - lag_year %% 10
+    if(dyear==2020){dyear <- 2010}else{dyear} # Due to pandemic disruption, 2010 is better reference than 2020
+    return(dyear)
+  }
+  dyr <- find_dicennial_year(year)
+  pull_varlist <- function(survey){
+    x <- tidycensus::load_variables(dyr, survey) %>% setDT() %>%
+      .[grepl(regex, label, ignore.case=TRUE)|grepl(regex, concept, ignore.case=TRUE)]# %>% unique()
+    return(x)
+  }
+  dicennial_types <- c("sf1", "sf2", "pl")
+  rs <- list()
+  rs <- lapply(dicennial_types, pull_varlist) %>% rbindlist(fill=TRUE)
+  return(rs)
+}
+
 #' Decennial Estimates by Tract or Block Group and County
 #'
 #' Generate decennial estimates for multiple tables by multiple tracts and/or counties
