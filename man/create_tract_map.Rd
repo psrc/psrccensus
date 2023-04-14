@@ -55,7 +55,8 @@ tract.big.tbl <- psrccensus::get_acs_recs(geography='tract',table.names=c('B0300
 tract.tbl <- tract.big.tbl \%>\%
 filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
 
-tract.url <- "https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/tract2010_nowater/FeatureServer/0/query?where=0=0&outFields=*&f=pgeojson"
+tract.url <- paste0("https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/",
+                "tract2010_nowater/FeatureServer/0/query?where=0=0&outFields=*&f=pgeojson")
 
 tract.lyr<-st_read(tract.url)
 create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,

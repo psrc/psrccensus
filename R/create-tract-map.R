@@ -29,7 +29,8 @@
 #' tract.tbl <- tract.big.tbl %>%
 #' filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
 #'
-#' tract.url <- "https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/tract2010_nowater/FeatureServer/0/query?where=0=0&outFields=*&f=pgeojson"
+#' tract.url <- paste0("https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/",
+#'                 "tract2010_nowater/FeatureServer/0/query?where=0=0&outFields=*&f=pgeojson")
 #'
 #' tract.lyr<-st_read(tract.url)
 #' create_tract_map(tract.tbl=tract.tbl, tract.lyr=tract.lyr,
@@ -44,6 +45,7 @@ create_tract_map <- function(tract.tbl, tract.lyr,
                              legend.title = NULL, legend.subtitle = NULL,
                              map.lat=47.615, map.lon=-122.257, map.zoom=8.5, wgs84=4326){
 
+  estimate <- NULL
 
   # Summarize and Aggregate Tract Data by Year and Attribute to Map and join to tract layer for mapping
   # rename census value column to estimate to match ACS

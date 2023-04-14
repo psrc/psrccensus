@@ -1,3 +1,29 @@
+#' @importFrom magrittr %<>% %>%
+NULL
+
+#' Label ACS variables
+#'
+#' Helper function to provide variable labels and concept--i.e. topic--alongside codes
+#' @param df dataframe with Census API result
+#' @param table.name Census table code
+#' @param year the year--or last year--of the ACS survey
+#' @param acs.type either acs1 or acs5
+#'
+#' @return dataframe with labels appended
+
+label_acs_variables <- function(df, table.name, year, acs.type){
+  name <- label <- concept <- NULL # instantiate variables
+  survey <- if(table.name %in% acs_tbltypes_lookup$subject){paste0(acs.type,"/subject")
+    }else if(table.name %in% acs_tbltypes_lookup$profile){paste0(acs.type,"/profile")
+    }else if(table.name %in% acs_tbltypes_lookup$cprofile){paste0(acs.type,"/cprofile")
+    }else if(table.name %in% acs_tbltypes_lookup$acsse){"acsse"
+    }else{acs.type}
+  labels <- tidycensus::load_variables(year=year, dataset=survey) %>%
+    dplyr::select(c(name, label, concept)) %>% dplyr::rename(variable=name)
+  df <- dplyr::left_join(df, labels, by=c("variable"))
+  return(df)
+}
+
 #' ACS Estimates by County
 #'
 #' Generate ACS estimates for multiple tables by multiple counties
@@ -13,7 +39,6 @@
 #' @return a tibble of acs estimates by counties for selected table codes and years with a regional aggregation.
 #' Includes detailed variable names.
 #'
-#'@importFrom magrittr %>% %<>%
 #'@importFrom rlang .data
 #'@importFrom dplyr filter
 
@@ -51,16 +76,8 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
         tbl <- dplyr::bind_rows(list(tbl,total))
       }
 
-      # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
-      if("geography" %in% names(labels)){
-        labels %<>% select(-geography)
-        }
-      labels <- dplyr::rename(.data=labels, variable = name)
-      tbl <- dplyr::left_join(tbl, labels,by=c("variable"))
-
-      # Add column for Census Geography, Type and Year of Data
-      tbl <- tbl %>%
+      # Add labels, column for Census Geography, Type and Year of Data
+      tbl <- tbl %>% label_acs_variables(table, year, acs.type) %>%
         dplyr::mutate(census_geography="County", acs_type = acs.type, year=year)
 
       # Median and average calculations are more complicated, may need PUMS, filter out for now:
@@ -80,8 +97,6 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
   return(census.data)
 }
 
-
-
 #' ACS Estimates by MSA
 #'
 #' Generate ACS estimates for multiple tables by multiple MSA's
@@ -95,7 +110,6 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 #'
 #' @return a tibble of acs estimates by MSA for selected table codes and years. Includes detailed variable names.
 #'
-#'@importFrom magrittr %>%
 #'@importFrom rlang .data
 #'@keywords internal
 get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")) {
@@ -113,16 +127,10 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
         tidyr::separate(col=NAME, into=c("name", "state"),sep=",")
       tbl$state <- trimws(tbl$state, "l")
 
-      # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
-      if("geography" %in% names(labels)){
-        labels %<>% select(-geography)
-      }
-      labels %<>% dplyr::rename(variable = name)
-      tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
+      # Add labels, column for Census Geography, Type and Year of Data
+      tbl %<>% label_acs_variables(table, year, acs.type) %>%
+        dplyr::mutate(census_geography="MSA", acs_type=acs.type, year=year) %>%
 
-      # Add column for Census Geography, Type and Year of Data
-      tbl <- tbl %>% dplyr::mutate(census_geography="MSA", acs_type = acs.type, year=year)
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -151,7 +159,6 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 #'
 #' @return a tibble of acs estimates by Place for selected table codes and years. Includes detailed variable names.
 #'
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @keywords internal
 
@@ -182,8 +189,8 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
       labels %<>% dplyr::rename(variable = name)
       tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
 
-      # Add column for Census Geography, Type and Year of Data
-      tbl <- tbl %>%
+      # Add labels, column for Census Geography, Type and Year of Data
+      tbl %<>% label_acs_variables(table, year, acs.type) %>%
         dplyr::mutate(acs_type = acs.type, year=year) %>%
         dplyr::mutate(census_geography = dplyr::case_when(
           endsWith(name, "city") ~ "City",
@@ -217,7 +224,6 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
 #'
 #' @return a tibble of acs estimates by tracts for selected table codes. Includes detailed variable names.
 #'
-#'@importFrom magrittr %>%
 #'@importFrom rlang .data
 #'@keywords internal
 get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years) {
@@ -236,16 +242,8 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
 
-      # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset="acs5")
-      if("geography" %in% names(labels)){
-        labels %<>% select(-geography)
-      }
-      labels %<>% dplyr::rename(variable = name)
-      tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
-
-      # Add column for Census Geography, Type and Year of Data
-      tbl <- tbl %>%
+      # Add label, column for Census Geography, Type and Year of Data
+      tbl %<>% label_acs_variables(table, year, "acs5") %>%
         dplyr::mutate(census_geography="Tract", acs_type = "acs5", year=year) %>%
         dplyr::select(-county)
 
@@ -275,7 +273,6 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
 #'
 #' @return a tibble of acs estimates by tracts for selected table codes. Includes detailed variable names.
 #'
-#'@importFrom magrittr %>%
 #'@importFrom rlang .data
 #'@keywords internal
 get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap","Pierce","Snohomish"), table.names, years) {
@@ -294,17 +291,9 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
       tbl$state <- trimws(tbl$state, "l")
       county.names <- paste(counties,"County")
 
-      # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset="acs5")
-      if("geography" %in% names(labels)){
-        labels %<>% select(-geography)
-      }
-      labels %<>% dplyr::rename(variable = name)
-      tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
-
-      # Add column for Census Geography, Type and Year of Data
-      tbl <- tbl %>%
-        dplyr::mutate(census_geography="block group", acs_type = "acs5", year=year) %>%
+      # Add labels, column for Census Geography, Type and Year of Data
+      tbl %<>% label_acs_variables(table, year, "acs5") %>%
+        dplyr::mutate(census_geography="block group", acs_type="acs5", year=year) %>%
         dplyr::select(-county)
 
       # Store yearly data into final yearly data for current table - append if a year already exists
