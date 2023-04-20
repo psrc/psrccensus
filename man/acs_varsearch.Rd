@@ -18,3 +18,11 @@ data.table of filtered variable codes and attributes
 Identify desired tables by examining prefix of relevant variable codes
 Includes primary, subject and profile tables
 }
+\examples{
+# All variables in table B06011
+z <- acs_varsearch("^B06011_")
+
+# Median personal or household income, estimates only
+z <- acs_varsearch("Estimate.*median( household)? income")
+
+}

@@ -15,3 +15,11 @@ data.table of filtered variable attributes
 \description{
 Look for a var_code via search term
 }
+\examples{
+# All variables related to internet; shows code changed in 2020 survey
+pums_varsearch("internet")
+
+# Entry for specific variable, 'Employment Status Recode'
+pums_varsearch("^ESR$")
+
+}

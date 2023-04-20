@@ -1,5 +1,5 @@
 #' @importFrom magrittr %<>% %>%
-#' @import data.table
+#' @rawNamespace import(data.table, except = c(month, year))
 #' @author Michael Jensen
 NULL
 

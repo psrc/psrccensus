@@ -9,7 +9,14 @@ NULL
 #' @param year optionally restrict search to a specific year
 #' @return data.table of filtered variable codes and attributes
 #'
-#' @import data.table
+#' @examples
+#' # All variables in table B06011
+#' z <- acs_varsearch("^B06011_")
+#'
+#' # Median personal or household income, estimates only
+#' z <- acs_varsearch("Estimate.*median( household)? income")
+#'
+#' @rawNamespace import(data.table, except = c(month, year))
 #' @importFrom lubridate now month year
 #' @export
 acs_varsearch <- function(regex, year=NULL){
@@ -17,7 +24,9 @@ acs_varsearch <- function(regex, year=NULL){
   name <- label <- concept <- NULL # Instantiate tidycensus::pums_variables variable locally (for documentation, not function)
   pull_varlist <- function(survey){
     x <- tidycensus::load_variables(acs_year, survey) %>% setDT() %>%
-      .[grepl(regex, label, ignore.case=TRUE)|grepl(regex, concept, ignore.case=TRUE)] %>% unique()
+      .[grepl(regex, name, ignore.case=TRUE)|
+        grepl(regex, label, ignore.case=TRUE)|
+        grepl(regex, concept, ignore.case=TRUE)] %>% unique()
     return(x)
   }
   acstypes <- paste0("acs5", c("","/subject","/profile","/cprofile")) %>% c("acsse", recursive=TRUE)

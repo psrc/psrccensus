@@ -7,7 +7,14 @@ utils::globalVariables("GEOID")
 #' @param year optionally restrict search to a specific year
 #' @return data.table of filtered variable codes and attributes
 #'
-#' @import data.table
+#' @examples
+#' # Nursing home or medical group quarters
+#' z <- dicennial_varsearch("^Total!!Institutionalized .*(nursing|hospital|hospice)")
+#'
+#' # All variables from table POO1
+#' z <- dicennial_varsearch("^P001")
+#'
+#' @rawNamespace import(data.table, except = c(month, year))
 #' @importFrom lubridate now month year
 #' @export
 dicennial_varsearch <- function(regex, year=NULL){
@@ -21,7 +28,9 @@ dicennial_varsearch <- function(regex, year=NULL){
   dyr <- find_dicennial_year(year)
   pull_varlist <- function(survey){
     x <- tidycensus::load_variables(dyr, survey) %>% setDT() %>%
-      .[grepl(regex, label, ignore.case=TRUE)|grepl(regex, concept, ignore.case=TRUE)]# %>% unique()
+      .[grepl(regex, name, ignore.case=TRUE)|
+        grepl(regex, label, ignore.case=TRUE)|
+        grepl(regex, concept, ignore.case=TRUE)]# %>% unique()
     return(x)
   }
   dicennial_types <- c("sf1", "sf2", "pl")

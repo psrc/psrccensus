@@ -17,3 +17,11 @@ data.table of filtered variable codes and attributes
 \description{
 Includes primary, subject and profile tables
 }
+\examples{
+# Nursing home or medical group quarters
+z <- dicennial_varsearch("^Total!!Institutionalized .*(nursing|hospital|hospice)")
+
+# All variables from table POO1
+z <- dicennial_varsearch("^P001")
+
+}
