@@ -40,6 +40,9 @@
     <loc>https://psrc.github.io/psrccensus/reference/adjust_dollars.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/codes2labels.html</loc>
   </url>
   <url>
@@ -164,6 +167,9 @@
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/real_dollars.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/use_geography_splits.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/z_score.html</loc>
