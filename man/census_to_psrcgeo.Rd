@@ -30,13 +30,13 @@ A table with the variable names and labels, summary statistic and margin of erro
 \description{
 Translate psrccensus data to planning geographies
 
-Translate psrccensus data to Regional Geography Class (RGS)
+Translate psrccensus data to Regional Geography Classes
 
-Translate psrccensus data to Regional Growth Center (RGC)
+Translate psrccensus data to Regional Growth Centers
 
-Translate psrccensus data to Regional Manufacturing-Industrial Center (MIC)
+Translate psrccensus data to Regional Manufacturing-Industrial Centers
 
-Translate psrccensus data to Traffic Analysis Zone (TAZ)
+Translate psrccensus data to Traffic Analysis Zones
 
 Translate psrccensus data to HCT Station Areas (VISION 2050)
 }

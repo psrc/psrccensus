@@ -4,7 +4,12 @@
 \alias{use_geography_splits}
 \title{Helper to translate psrccensus estimates to planning geographies}
 \usage{
-use_geography_splits(df, planning_geog_type, wgt, agg_fct = "sum")
+use_geography_splits(
+  df,
+  planning_geog_type,
+  wgt = "total_pop",
+  agg_fct = "sum"
+)
 }
 \arguments{
 \item{df}{acs or dicennial dataset returned from psrccensus}
