@@ -136,3 +136,14 @@ census_to_taz <- function(df, wgt="total_pop"){
                  wgt=wgt, SIMPLIFY=FALSE) %>% rbindlist()
   return(rs)
 }
+
+#' @rdname census_to_psrcgeo
+#' @title Translate psrccensus data to HCT Station Areas (VISION 2050)
+#' @export
+census_to_hct <- function(df, wgt="total_pop"){
+  rs <- df %>% split(.$year)                                                                       # In case table has multiple years
+  rs %<>% mapply(psrccensus:::use_geography_splits, df=.,
+                 planning_geog_type="HCT Station Areas (VISION 2050)",
+                 wgt=wgt, SIMPLIFY=FALSE) %>% rbindlist()
+  return(rs)
+}

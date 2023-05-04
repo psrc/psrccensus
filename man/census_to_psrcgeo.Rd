@@ -6,6 +6,7 @@
 \alias{census_to_rgc}
 \alias{census_to_mic}
 \alias{census_to_taz}
+\alias{census_to_hct}
 \title{Translate psrccensus data to planning geographies}
 \usage{
 census_to_rgs(df, wgt = "total_pop")
@@ -15,6 +16,8 @@ census_to_rgc(df, wgt = "total_pop")
 census_to_mic(df, wgt = "total_pop")
 
 census_to_taz(df, wgt = "total_pop")
+
+census_to_hct(df, wgt = "total_pop")
 }
 \arguments{
 \item{df}{acs or dicennial dataset returned from psrccensus}
@@ -34,4 +37,6 @@ Translate psrccensus data to Regional Growth Center (RGC)
 Translate psrccensus data to Regional Manufacturing-Industrial Center (MIC)
 
 Translate psrccensus data to Traffic Analysis Zone (TAZ)
+
+Translate psrccensus data to HCT Station Areas (VISION 2050)
 }
