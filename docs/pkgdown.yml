@@ -2,12 +2,13 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  geographic-conversions: geographic-conversions.html
   get-data: get-data.html
   psrccensus: psrccensus.html
   pums-1-basics: pums-1-basics.html
   pums-2-make-vars: pums-2-make-vars.html
   pums-3-multiyear: pums-3-multiyear.html
-last_built: 2023-05-04T15:07Z
+last_built: 2023-05-10T01:14Z
 urls:
   reference: https://psrc.github.io/psrccensus/reference
   article: https://psrc.github.io/psrccensus/articles
