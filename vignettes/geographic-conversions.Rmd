@@ -16,7 +16,7 @@ library(knitr)
 
 ## Geographic precision and more meaningful geographies
 
-Every Census Estimate is linked to a geography. However, not every geography is linked to a census estimate.
+Every Census estimate is linked to a geography. However, not every geography is linked to a Census estimate.
 
 Since the Census Bureau cannot publish data at every conceivable scale, data users often approximate a custom boundary by choosing a set of disaggregate Census geographies (e.g. block, block group, or tract) that closely align with it.
 
@@ -53,7 +53,7 @@ The default quantity used for splits is **total population**; if one of the othe
 
 ### Examples
 As an example, to calculate 2019 median household income for the region you would use the following function calls:
-```{r convert group quarters, message=FALSE, eval=FALSE}
+```{r convert group quarters, message=FALSE}
 
 y <- get_acs_recs(geography = 'tract',
                   table.names = 'B26001',

@@ -82,8 +82,8 @@
 <div class="section level2">
 <h2 id="geographic-precision-and-more-meaningful-geographies">Geographic precision and more meaningful geographies<a class="anchor" aria-label="anchor" href="#geographic-precision-and-more-meaningful-geographies"></a>
 </h2>
-<p>Every Census Estimate is linked to a geography. However, not every
-geography is linked to a census estimate.</p>
+<p>Every Census estimate is linked to a geography. However, not every
+geography is linked to a Census estimate.</p>
 <p>Since the Census Bureau cannot publish data at every conceivable
 scale, data users often approximate a custom boundary by choosing a set
 of disaggregate Census geographies (e.g. block, block group, or tract)
@@ -170,10 +170,33 @@ region you would use the following function calls:</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>label<span class="op">=</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">label</span>,<span class="st">"(^Estimate!!|Total:!!)"</span>,<span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">y</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   GEOID       variable   estimate   moe label  concept                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 53033000101 B26001_001       15     8 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 53033000102 B26001_001       19    21 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 53033000201 B26001_001       31    31 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 53033000202 B26001_001       47    78 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 53033000300 B26001_001       13     5 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 53033000402 B26001_001      207    87 Total: GROUP QUARTERS POPULATION</span></span>
 <span></span>
 <span><span class="va">rgc_gq_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/census_to_psrcgeo.html">census_to_rgs</a></span><span class="op">(</span><span class="va">y</span>, wgt<span class="op">=</span><span class="st">"group_quarters_pop"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    planning_geog   variable  label                   concept  estimate</span></span>
+<span><span class="co">#&gt; 1:         Metro B26001_001 Total: GROUP QUARTERS POPULATION 38387.233</span></span>
+<span><span class="co">#&gt; 2:         Rural B26001_001 Total: GROUP QUARTERS POPULATION  5331.149</span></span>
+<span><span class="co">#&gt; 3:           HCT B26001_001 Total: GROUP QUARTERS POPULATION  7509.480</span></span>
+<span><span class="co">#&gt; 4:            UU B26001_001 Total: GROUP QUARTERS POPULATION  5888.861</span></span>
+<span><span class="co">#&gt; 5:          Core B26001_001 Total: GROUP QUARTERS POPULATION 11038.401</span></span>
+<span><span class="co">#&gt; 6:   CitiesTowns B26001_001 Total: GROUP QUARTERS POPULATION  4742.875</span></span>
+<span><span class="co">#&gt;          moe</span></span>
+<span><span class="co">#&gt; 1: 2102.1924</span></span>
+<span><span class="co">#&gt; 2:  769.9978</span></span>
+<span><span class="co">#&gt; 3:  632.2116</span></span>
+<span><span class="co">#&gt; 4:  874.4234</span></span>
+<span><span class="co">#&gt; 5:  820.3742</span></span>
+<span><span class="co">#&gt; 6:  457.1464</span></span></code></pre></div>
 <p>The set of planning geographies can be expanded as necessary (see the
 <a href="http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer" class="external-link">documentation</a>
 - PSRC VPN required to view).</p>
