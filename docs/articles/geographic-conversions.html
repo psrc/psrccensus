@@ -80,7 +80,7 @@
     
     
 <div class="section level2">
-<h2 id="geographic-precision-and-more-meaningful-geographies">Geographic precision and more meaningful geographies<a class="anchor" aria-label="anchor" href="#geographic-precision-and-more-meaningful-geographies"></a>
+<h2 id="geographic-precision-at-more-meaningful-geographies">Geographic precision at more meaningful geographies<a class="anchor" aria-label="anchor" href="#geographic-precision-at-more-meaningful-geographies"></a>
 </h2>
 <p>Every Census estimate is linked to a geography. However, not every
 geography is linked to a Census estimate.</p>
@@ -88,18 +88,18 @@ geography is linked to a Census estimate.</p>
 scale, data users often approximate a custom boundary by choosing a set
 of disaggregate Census geographies (e.g. block, block group, or tract)
 that closely align with it.</p>
-<p>Estimates more (apparently) precise than this involve assumptions.
-For PSRC’s method, we use five OFM population and housing metrics
-distributed to parcels on the basis of housing stock: total population,
-household population, group quarters population, housing units, and
-occupied housing units. If we assume the spatial distribution of a
-Census estimate is directly proportional to one of these measures, a
-ratio can represent disaggregation of the estimate from Census geography
-to this granular scale and re-aggregation to the specific planning
-geography. That is the concept behind the following [set of functions]
-(reference/census_to_psrcgeo.html), which convert estimates from
-standard Census geographies to the following PSRC planning
-geographies:</p>
+<p>Estimates more precise than this involve making some assumptions.
+Some metrics–such as housing stock–can be measured at a very granular
+level, i.e. parcel. If the distribution of a granular variable can
+plausibly be considered to be in direct proportion to the Census
+estimate of interest, we can then use the relative amounts of the proxy
+variable in the new geography versus the old geography to, in effect,
+disaggregate the estimate to parcel level and re-aggregate to the
+planning geography of interest. This is the concept behind the following
+<a href="reference/census_to_psrcgeo.html">set of functions</a>, which
+reference a stored set of fractions (per geography pair) to convert
+estimates from standard Census geographies to the following PSRC
+planning geographies:</p>
 <ul>
 <li>Regional Growth Strategy classes - <code><a href="../reference/census_to_psrcgeo.html">census_to_rgs()</a></code>
 </li>
@@ -113,8 +113,8 @@ geographies:</p>
 <code><a href="../reference/census_to_psrcgeo.html">census_to_hct()</a></code>
 </li>
 </ul>
-<p>These functions require only one argument, the name of the dataframe
-(as returned by <code><a href="../reference/get_acs_recs.html">get_acs_recs()</a></code> or
+<p>There is only one required argument: the name of the dataframe (as
+returned by <code><a href="../reference/get_acs_recs.html">get_acs_recs()</a></code> or
 <code>get_dicennial_recs()</code>) you wish to convert.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span>
@@ -147,20 +147,31 @@ geographies:</p>
 <span><span class="co">#&gt; 4: Seattle First Hill/Capitol Hill Hispanic or Latino: 3318.2591 625.0498</span></span>
 <span><span class="co">#&gt; 5:        Seattle South Lake Union Hispanic or Latino:  380.0769 210.8867</span></span>
 <span><span class="co">#&gt; 6:                Seattle Downtown Hispanic or Latino: 2834.7940 572.8945</span></span></code></pre></div>
-<p>The default quantity used for splits is <strong>total
-population</strong>; if one of the other four quantities is more
-appropriate given your particular estimate of focus, you can specify it
-(using the <code>wgt</code> argument). If your dataframe combines tables
-that would most appropriately apply two different split quantities–for
-example, one linked to total population, and another linked to housing
-units–you might divide the dataframe (or alter your code to retrieve
-separate tables originally) before applying the geographic
-conversion.</p>
-<div class="section level3">
-<h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
-</h3>
-<p>As an example, to calculate 2019 median household income for the
-region you would use the following function calls:</p>
+</div>
+<div class="section level2">
+<h2 id="selecting-the-correct-splitter-metric">Selecting the correct splitter metric<a class="anchor" aria-label="anchor" href="#selecting-the-correct-splitter-metric"></a>
+</h2>
+<p>The key assumption behind this method is the direct relationship
+between the granular “splitter” metric, and the Census variable of
+interest; the stronger this relationship, the more defensible the
+result. With housing stock as the basis, PSRC has disaggregated several
+OFM metrics to the parcel level:</p>
+<ul>
+<li>
+<strong>Total population</strong> - The default splitter metric</li>
+<li>
+<strong>Household population</strong> - Those living in conventional
+housing, e.g. houses, apartments, mobile homes, or rented rooms</li>
+<li>
+<strong>Group quarters population</strong> - Those living in shared
+facilities, such as dorms, barracks, nursing homes, or prisons</li>
+<li><strong>Housing units</strong></li>
+<li><strong>Occupied housing units</strong></li>
+</ul>
+<p>Before splitting a geography, consider which metric is most relevant
+to your Census estimate of interest. Aside from <strong>total
+population</strong>, these must be specified using the <code>wgt</code>
+argument, as illustrated below:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_acs_recs.html">get_acs_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'tract'</span>,</span>
@@ -169,50 +180,56 @@ region you would use the following function calls:</p>
 <span>                  acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>label<span class="op">=</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">label</span>,<span class="st">"(^Estimate!!|Total:!!)"</span>,<span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">y</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">#&gt;   GEOID       variable   estimate   moe label  concept                  </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 53033000101 B26001_001       15     8 Total: GROUP QUARTERS POPULATION</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 53033000102 B26001_001       19    21 Total: GROUP QUARTERS POPULATION</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 53033000201 B26001_001       31    31 Total: GROUP QUARTERS POPULATION</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 53033000202 B26001_001       47    78 Total: GROUP QUARTERS POPULATION</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 53033000300 B26001_001       13     5 Total: GROUP QUARTERS POPULATION</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 53033000402 B26001_001      207    87 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="va">y</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   GEOID       estimate   moe label  concept                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 53033000101       15     8 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 53033000102       19    21 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 53033000201       31    31 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 53033000202       47    78 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 53033000300       13     5 Total: GROUP QUARTERS POPULATION</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 53033000402      207    87 Total: GROUP QUARTERS POPULATION</span></span>
 <span></span>
 <span><span class="va">rgc_gq_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/census_to_psrcgeo.html">census_to_rgs</a></span><span class="op">(</span><span class="va">y</span>, wgt<span class="op">=</span><span class="st">"group_quarters_pop"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;    planning_geog   variable  label                   concept  estimate</span></span>
-<span><span class="co">#&gt; 1:         Metro B26001_001 Total: GROUP QUARTERS POPULATION 38387.233</span></span>
-<span><span class="co">#&gt; 2:         Rural B26001_001 Total: GROUP QUARTERS POPULATION  5331.149</span></span>
-<span><span class="co">#&gt; 3:           HCT B26001_001 Total: GROUP QUARTERS POPULATION  7509.480</span></span>
-<span><span class="co">#&gt; 4:            UU B26001_001 Total: GROUP QUARTERS POPULATION  5888.861</span></span>
-<span><span class="co">#&gt; 5:          Core B26001_001 Total: GROUP QUARTERS POPULATION 11038.401</span></span>
-<span><span class="co">#&gt; 6:   CitiesTowns B26001_001 Total: GROUP QUARTERS POPULATION  4742.875</span></span>
-<span><span class="co">#&gt;          moe</span></span>
-<span><span class="co">#&gt; 1: 2102.1924</span></span>
-<span><span class="co">#&gt; 2:  769.9978</span></span>
-<span><span class="co">#&gt; 3:  632.2116</span></span>
-<span><span class="co">#&gt; 4:  874.4234</span></span>
-<span><span class="co">#&gt; 5:  820.3742</span></span>
-<span><span class="co">#&gt; 6:  457.1464</span></span></code></pre></div>
-<p>The set of planning geographies can be expanded as necessary (see the
-<a href="http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer" class="external-link">documentation</a>
-- PSRC VPN required to view).</p>
-</div>
+<span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">7</span>,<span class="fl">8</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    planning_geog  label                   concept  estimate       moe</span></span>
+<span><span class="co">#&gt; 1:         Metro Total: GROUP QUARTERS POPULATION 38387.233 2102.1924</span></span>
+<span><span class="co">#&gt; 2:         Rural Total: GROUP QUARTERS POPULATION  5331.149  769.9978</span></span>
+<span><span class="co">#&gt; 3:           HCT Total: GROUP QUARTERS POPULATION  7509.480  632.2116</span></span>
+<span><span class="co">#&gt; 4:            UU Total: GROUP QUARTERS POPULATION  5888.861  874.4234</span></span>
+<span><span class="co">#&gt; 5:          Core Total: GROUP QUARTERS POPULATION 11038.401  820.3742</span></span>
+<span><span class="co">#&gt; 6:   CitiesTowns Total: GROUP QUARTERS POPULATION  4742.875  457.1464</span></span></code></pre></div>
+<p>If your dataframe combines tables that would most appropriately apply
+two different splitter metrics–for example, one linked to total
+population, and another linked to housing units–you might divide the
+dataframe (or alter your code to retrieve separate tables originally)
+before applying the geographic conversion.</p>
 </div>
 <div class="section level2">
 <h2 id="error-margins-limitations">Error margins &amp; limitations<a class="anchor" aria-label="anchor" href="#error-margins-limitations"></a>
 </h2>
-<p>Currently, these split-derived calculations are limited to estimates
-only; it cannot correctly allocate medians. You can calculate shares by
-converting estimates of both the numerator and denominator to the
-appropriate geography.</p>
+<p>Currently, split-derived calculations are limited to estimates only;
+medians cannot be determined via this method. Analysts can calculate
+shares by converting estimates of both the numerator and denominator to
+the appropriate geography.</p>
 <p>Although it may be harder to assume Margins of Error (MOE) are
 directly proportional to the split weight, the assumption is applied
-identically to estimate and MOE, which seemed the best option of those
-that came to mind.</p>
+identically to both estimate and MOE, which seemed the best choice of
+the available options.</p>
+</div>
+<div class="section level2">
+<h2 id="further-geographies">Further geographies<a class="anchor" aria-label="anchor" href="#further-geographies"></a>
+</h2>
+<p>The set of planning geographies is not strictly limited to the five
+listed above; with approval, the set can be expanded (see the <a href="http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer" class="external-link">documentation</a>
+- PSRC VPN required to view). We realize there is also a need to split
+Census estimates using custom geographies besides those central to
+PSRC’s own planning (such as those involved in jurisdictional data
+requests). We are considering several methods to do this and in the
+future will update this page with links to documentation of those
+methods.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

@@ -14,13 +14,13 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(knitr)
 ```
 
-## Geographic precision and more meaningful geographies
+## Geographic precision at more meaningful geographies
 
 Every Census estimate is linked to a geography. However, not every geography is linked to a Census estimate.
 
-Since the Census Bureau cannot publish data at every conceivable scale, data users often approximate a custom boundary by choosing a set of disaggregate Census geographies (e.g. block, block group, or tract) that closely align with it.
+Since the Census Bureau cannot publish data at every conceivable scale, data users often approximate a custom boundary by choosing a set of disaggregate Census geographies (e.g. block, block group, or tract) that closely align with it. 
 
-Estimates more (apparently) precise than this involve assumptions. For PSRC's method, we use five OFM population and housing metrics distributed to parcels on the basis of housing stock: total population, household population, group quarters population, housing units, and occupied housing units. If we assume the spatial distribution of a Census estimate is directly proportional to one of these measures, a ratio can represent disaggregation of the estimate from Census geography to this granular scale and re-aggregation to the specific planning geography. That is the concept behind the following [set of functions] (reference/census_to_psrcgeo.html), which convert estimates from standard Census geographies to the following PSRC planning geographies:
+Estimates more precise than this involve making some assumptions. Some metrics--such as housing stock--can be measured at a very granular level, i.e. parcel. If the distribution of a granular variable can plausibly be considered to be in direct proportion to the Census estimate of interest, we can then use the relative amounts of the proxy variable in the new geography versus the old geography to, in effect, disaggregate the estimate to parcel level and re-aggregate to the planning geography of interest. This is the concept behind the following [set of functions](reference/census_to_psrcgeo.html), which reference a stored set of fractions (per geography pair) to convert estimates from standard Census geographies to the following PSRC planning geographies:
 
   *  Regional Growth Strategy classes    - `census_to_rgs()`
   *  Regional Growth Centers             - `census_to_rgc()`
@@ -28,8 +28,7 @@ Estimates more (apparently) precise than this involve assumptions. For PSRC's me
   *  Traffic Analysis Zones              - `census_to_taz()`
   *  High Capacity Transit Station areas - `census_to_hct()`
 
-
-These functions require only one argument, the name of the dataframe (as returned by `get_acs_recs()` or `get_dicennial_recs()`) you wish to convert.
+There is only one required argument: the name of the dataframe (as returned by `get_acs_recs()` or `get_dicennial_recs()`) you wish to convert.
 
 ```{r simple geographic conversion, message=FALSE}
 library(psrccensus)
@@ -46,13 +45,22 @@ x %>% dplyr::filter(variable=="B03002_012") %>% .[,c(1,5:8)] %>% head()
 rgc_race <- census_to_rgc(x)
 
 rgc_race %>% dplyr::filter(variable=="B03002_012") %>% .[,c(1,3,7:8)] %>% head()
+
                           
 ```
 
-The default quantity used for splits is **total population**; if one of the other four quantities is more appropriate given your particular estimate of focus, you can specify it (using the `wgt` argument). If your dataframe combines tables that would most appropriately apply two different split quantities--for example, one linked to total population, and another linked to housing units--you might divide the dataframe (or alter your code to retrieve separate tables originally) before applying the geographic conversion. 
+## Selecting the correct splitter metric
 
-### Examples
-As an example, to calculate 2019 median household income for the region you would use the following function calls:
+The key assumption behind this method is the direct relationship between the granular "splitter" metric, and the Census variable of interest; the stronger this relationship, the more defensible the result. With housing stock as the basis, PSRC has disaggregated several OFM metrics to the parcel level:
+
+  *  **Total population** - The default splitter metric
+  *  **Household population** - Those living in conventional housing, e.g. houses, apartments, mobile homes, or rented rooms
+  *  **Group quarters population** - Those living in shared facilities, such as dorms, barracks, nursing homes, or prisons
+  *  **Housing units**
+  *  **Occupied housing units** 
+
+Before splitting a geography, consider which metric is most relevant to your Census estimate of interest. Aside from **total population**, these must be specified using the `wgt` argument, as illustrated below:
+
 ```{r convert group quarters, message=FALSE}
 
 y <- get_acs_recs(geography = 'tract',
@@ -61,18 +69,23 @@ y <- get_acs_recs(geography = 'tract',
                   acs.type = 'acs5') %>% 
   dplyr::mutate(label=stringr::str_replace_all(label,"(^Estimate!!|Total:!!)",""))
 
-y %>% .[,c(1,4:8)] %>% head()
+y %>% .[,c(1,5:8)] %>% head()
 
 rgc_gq_age <- census_to_rgs(y, wgt="group_quarters_pop")
 
-rgc_gq_age %>% .[,c(1:4,7:8)]
+rgc_gq_age %>% .[,c(1,3,4,7,8)]
+
 
 ```
-
-The set of planning geographies can be expanded as necessary (see the [documentation](http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer) - PSRC VPN required to view).
+If your dataframe combines tables that would most appropriately apply two different splitter metrics--for example, one linked to total population, and another linked to housing units--you might divide the dataframe (or alter your code to retrieve separate tables originally) before applying the geographic conversion. 
 
 ## Error margins & limitations
 
-Currently, these split-derived calculations are limited to estimates only; it cannot correctly allocate medians. You can calculate shares by converting estimates of both the numerator and denominator to the appropriate geography. 
+Currently, split-derived calculations are limited to estimates only; medians cannot be determined via this method. Analysts can calculate shares by converting estimates of both the numerator and denominator to the appropriate geography.
 
-Although it may be harder to assume Margins of Error (MOE) are directly proportional to the split weight, the assumption is applied identically to estimate and MOE, which seemed the best option of those that came to mind.
+Although it may be harder to assume Margins of Error (MOE) are directly proportional to the split weight, the assumption is applied identically to both estimate and MOE, which seemed the best choice of the available options.
+
+
+## Further geographies
+
+The set of planning geographies is not strictly limited to the five listed above; with approval, the set can be expanded (see the [documentation](http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer) - PSRC VPN required to view). We realize there is also a need to split Census estimates using custom geographies besides those central to PSRC's own planning (such as those involved in jurisdictional data requests). We are considering several methods to do this and in the future will update this page with links to documentation of those methods.
