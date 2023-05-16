@@ -53,6 +53,7 @@ In addition to variables listed in the Census PUMS data dictionary, you can also
   * **OWN_RENT** - dichotomous tenure (simplified from TEN)
   * **ED_ATTAIN** - educational attainment (simplified from SCHL)
   * **MI_JOBSECTOR** - PSRC-defined Manufacturing-Industrial groups (from NAICSP)
+  * **LUM_JOBSECTOR** - PSRC-defined land use modeling employment sector (from NAICSP)  
 
 If codes change (and they have in the past), it may be necessary to confirm these custom variable definitions match the new data dictionary.
   
