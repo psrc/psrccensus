@@ -14,13 +14,15 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(knitr)
 ```
 
-## Geographic precision at more meaningful geographies
-
 Every Census estimate is linked to a geography. However, not every geography is linked to a Census estimate.
 
-Since the Census Bureau cannot publish data at every conceivable scale, data users often approximate a custom boundary by choosing a set of disaggregate Census geographies (e.g. block, block group, or tract) that closely align with it. 
+Since the Census Bureau cannot publish data at every conceivable scale, data users often approximate a custom boundary by choosing a set of disaggregate Census geographies (e.g. block, block group, or tract) that closely align with it. This approach is very often adequate to the purpose.
 
-Estimates more precise than this involve making some assumptions. Some metrics--such as housing stock--can be measured at a very granular level, i.e. parcel. If the distribution of a granular variable can plausibly be considered to be in direct proportion to the Census estimate of interest, we can then use the relative amounts of the proxy variable in the new geography versus the old geography to, in effect, disaggregate the estimate to parcel level and re-aggregate to the planning geography of interest. This is the concept behind the following [set of functions](reference/census_to_psrcgeo.html), which reference a stored set of fractions (per geography pair) to convert estimates from standard Census geographies to the following PSRC planning geographies:
+### Geographic conversion via a granular proxy variable
+
+For more geographic precision, we in effect disaggregate the estimate to a granular scale--specifically, parcel--by assuming the estimate is in direct proportion either to a variable reported at that scale (housing units), or to one of several population measures we can apportion to that scale (e.g. OFM total population).
+
+With this in mind, PSRC has developed demographic ratios to convert estimates from Census geographies to its own planning geographies. Each planning geography has its own [function](reference/census_to_psrcgeo.html): 
 
   *  Regional Growth Strategy classes    - `census_to_rgs()`
   *  Regional Growth Centers             - `census_to_rgc()`
@@ -28,7 +30,7 @@ Estimates more precise than this involve making some assumptions. Some metrics--
   *  Traffic Analysis Zones              - `census_to_taz()`
   *  High Capacity Transit Station areas - `census_to_hct()`
 
-There is only one required argument: the name of the dataframe (as returned by `get_acs_recs()` or `get_dicennial_recs()`) you wish to convert.
+As long as you're using the default proxy variable (total population), you only need a single argument: the name of the dataframe (as returned by `get_acs_recs()` or `get_dicennial_recs()`) you wish to convert.
 
 ```{r simple geographic conversion, message=FALSE}
 library(psrccensus)
@@ -49,23 +51,23 @@ rgc_race %>% dplyr::filter(variable=="B03002_012") %>% .[,c(1,3,7:8)] %>% head()
                           
 ```
 
-## Selecting the correct splitter metric
+### Selecting the correct proxy
 
-The key assumption behind this method is the direct relationship between the granular "splitter" metric, and the Census variable of interest; the stronger this relationship, the more defensible the result. With housing stock as the basis, PSRC has disaggregated several OFM metrics to the parcel level:
+The key assumption behind this method is the direct relationship between the granular proxy variable and the Census variable of interest: the stronger this relationship, the more defensible the result. Before splitting a geography, consider which of these metrics is most relevant to your Census estimate of interest:
 
-  *  **Total population** - The default splitter metric
-  *  **Household population** - Those living in conventional housing, e.g. houses, apartments, mobile homes, or rented rooms
-  *  **Group quarters population** - Those living in shared facilities, such as dorms, barracks, nursing homes, or prisons
-  *  **Housing units**
-  *  **Occupied housing units** 
+  *  **`total_pop`** --i.e. total population (the default)
+  *  **`household_pop`**
+  *  **`group_quarters_pop`**
+  *  **`housing_units`**
+  *  **`occupied_housing_units`**
 
-Before splitting a geography, consider which metric is most relevant to your Census estimate of interest. Aside from **total population**, these must be specified using the `wgt` argument, as illustrated below:
+ You can specify these using the `wgt` argument:
 
 ```{r convert group quarters, message=FALSE}
 
 y <- get_acs_recs(geography = 'tract',
                   table.names = 'B26001',
-                  years = 2021,
+                  years = 2019,
                   acs.type = 'acs5') %>% 
   dplyr::mutate(label=stringr::str_replace_all(label,"(^Estimate!!|Total:!!)",""))
 
@@ -77,7 +79,7 @@ rgc_gq_age %>% .[,c(1,3,4,7,8)]
 
 
 ```
-If your dataframe combines tables that would most appropriately apply two different splitter metrics--for example, one linked to total population, and another linked to housing units--you might divide the dataframe (or alter your code to retrieve separate tables originally) before applying the geographic conversion. 
+If your dataframe combines tables that would most appropriately apply two different proxy metrics--for example, one linked to total population, and another linked to housing units--you might divide the dataframe (or alter your code to retrieve separate tables originally) before applying the geographic conversion. 
 
 ## Error margins & limitations
 

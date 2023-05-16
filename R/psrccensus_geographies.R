@@ -36,6 +36,14 @@ get_psrc_places <- function(year){
 #' @rawNamespace import(data.table, except = c(month, year))
 use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fct="sum"){
 
+  testInteger <- function(x){
+    func <- function(x){all.equal(x, as.integer(x), check.attributes = FALSE)}
+    test <- x %>% lapply(func) %>% unlist() %>% all()
+    if(test==TRUE){return(TRUE)
+    }else{return(FALSE)}
+  }
+  est_is_integer <- testInteger(df$estimate)
+
   geography_splits_helper <- function(df, planning_geog_type, wgt="total_pop", agg_fct="sum"){
     digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen
     fullwgt <- paste0("percent_of_", wgt)
@@ -73,13 +81,14 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
            ofm_estimate_year=={{data_year}}),
           grepl("(_geog$|^percent_of)", colnames(.)), with=FALSE] %>%
         setnames("data_geog", "GEOID") %>% setkey(GEOID)
-      df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta)                                         # Merge on key=GEOID
+      df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
       if(agg_fct=="sum" & value_col=="value"){                                                     # Dicennial
         rs <- df[, value=sum(value * get(fullwgt)), by=mget(group_cols)]
       }else if(agg_fct=="sum" & value_col=="estimate"){                                            # ACS
         rsi <- df[, .(estimate = sum(estimate * get(fullwgt)),
                      moe = tidycensus::moe_sum((moe * get(fullwgt)), (estimate * get(fullwgt)), na.rm=TRUE)), # MOE calculation
                  by=mget(group_cols)]
+        if(est_is_integer){rsi[, `:=`(estimate=round(estimate), moe=round(moe))]}
       }else{rsi <- NULL}
       return(rsi)
     }
