@@ -193,3 +193,30 @@ psrc_mi_jobsector <- function(dt){
                                      "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
   return(dt)
 }
+
+#' PSRC Land Use Modeling employment sector
+#'
+#' @param dt the data.table
+#' @return the data.table with modeling employment sector, "LUM_JOBSECTOR"                         # When NAICS changes, new dyear/definition set should be added
+psrc_lum_jobsector <- function(dt){
+  LUM_JOBSECTOR <- NAICSP <- patterns <- NULL                                                      # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
+    dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
+    dt[, NAICSP:=fcoalesce(.SD), .SDcols=patterns("^NAICSP\\d+$")]
+  }
+  dt[, LUM_JOBSECTOR:=factor(fcase(grepl("^611|62441", as.character(NAICSP)),      "13 - Public Education",
+                                   grepl("^11|^21", as.character(NAICSP)),         "01 - Natural Resources",
+                                   grepl("^23", as.character(NAICSP)),             "02 - Construction",
+                                   grepl("^3", as.character(NAICSP)),              "03 - Manufacturing",
+                                   grepl("^22|^42|^48|^49", as.character(NAICSP)), "04 - WTU",
+                                   grepl("^44|^45|^4MS", as.character(NAICSP)),    "05 - Retail",
+                                   grepl("^5", as.character(NAICSP)),              "07 - Business Services",
+                                   grepl("^61", as.character(NAICSP)),             "08 - Private Education",
+                                   grepl("^62", as.character(NAICSP)),             "09 - Healthcare",
+                                   grepl("^722", as.character(NAICSP)),            "10 - Food Services",
+                                   grepl("^7", as.character(NAICSP)),              "11 - Personal Services",
+                                   grepl("^92", as.character(NAICSP)),             "12 - Government",
+                                   !is.na(NAICSP)|as.character(NAICSP)=='999920',  NA_character_))]
+  return(dt)
+}

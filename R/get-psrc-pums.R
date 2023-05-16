@@ -202,6 +202,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   if("ED_ATTAIN" %in% vars){dt %<>% psrc_ed_attain(dyear)}                                         # - "
   if("BIN_YBL" %in% vars){dt %<>% psrc_bin_ybl(dyear)}                                             # - "
   if("MI_JOBSECTOR" %in% vars){dt %<>% psrc_mi_jobsector()}                                        # - "
+  if("LUM_JOBSECTOR" %in% vars){dt %<>% psrc_lum_jobsector()}                                      # - "
   swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")
