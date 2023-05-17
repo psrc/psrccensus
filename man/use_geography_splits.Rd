@@ -12,7 +12,7 @@ use_geography_splits(
 )
 }
 \arguments{
-\item{df}{acs or dicennial dataset returned from psrccensus}
+\item{df}{acs or decennial dataset returned from psrccensus}
 
 \item{planning_geog_type}{planning geography type as listed in Elmer.general.geography_splits}
 

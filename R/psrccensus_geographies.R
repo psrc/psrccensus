@@ -27,7 +27,7 @@ get_psrc_places <- function(year){
 
 #' Helper to translate psrccensus estimates to planning geographies
 #'
-#' @param df acs or dicennial dataset returned from psrccensus
+#' @param df acs or decennial dataset returned from psrccensus
 #' @param planning_geog_type planning geography type as listed in Elmer.general.geography_splits
 #' @param wgt measure share used as split weight
 #'            either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"
@@ -74,7 +74,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
                        data_year, ofm_vintage, sep=", "), ");")
       group_cols <- grep("(year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
         append("planning_geog", after=0)
-      value_col <- grep("(value|estimate)", colnames(df), value=TRUE)                              # Dicennial:value; ACS:estimate
+      value_col <- grep("(value|estimate)", colnames(df), ignore.case=TRUE, value=TRUE) %>% tolower() # Decennial:value; ACS:estimate
       rosetta <- psrcelmer::get_query(sql_str) %>% setDT() %>%                                     # Must be on PSRC VPN to connect to Elmer
         .[(data_geog_type=={{cb_geo}} &                                                            # Keep only necessary rows & columns
            planning_geog_type=={{planning_geog_type}} &
@@ -82,7 +82,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
           grepl("(_geog$|^percent_of)", colnames(.)), with=FALSE] %>%
         setnames("data_geog", "GEOID") %>% setkey(GEOID)
       df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
-      if(agg_fct=="sum" & value_col=="value"){                                                     # Dicennial
+      if(agg_fct=="sum" & value_col=="value"){                                                     # Decennial
         rs <- df[, value=sum(value * get(fullwgt)), by=mget(group_cols)]
       }else if(agg_fct=="sum" & value_col=="estimate"){                                            # ACS
         rsi <- df[, .(estimate = sum(estimate * get(fullwgt)),
@@ -104,7 +104,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
 
 #' Translate psrccensus data to planning geographies
 #'
-#' @param df acs or dicennial dataset returned from psrccensus
+#' @param df acs or decennial dataset returned from psrccensus
 #' @param wgt either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"
 #' @name census_to_psrcgeo
 #'

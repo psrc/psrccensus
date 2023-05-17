@@ -20,7 +20,7 @@ census_to_taz(df, wgt = "total_pop")
 census_to_hct(df, wgt = "total_pop")
 }
 \arguments{
-\item{df}{acs or dicennial dataset returned from psrccensus}
+\item{df}{acs or decennial dataset returned from psrccensus}
 
 \item{wgt}{either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"}
 }
