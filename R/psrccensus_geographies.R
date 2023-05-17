@@ -74,7 +74,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
                        data_year, ofm_vintage, sep=", "), ");")
       group_cols <- grep("(year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
         append("planning_geog", after=0)
-      value_col <- grep("(value|estimate)", colnames(df), ignore.case=TRUE, value=TRUE) %>% tolower() # Decennial:value; ACS:estimate
+      value_col <- grep("(value|estimate)", colnames(df), value=TRUE)                              # Decennial:value; ACS:estimate
       rosetta <- psrcelmer::get_query(sql_str) %>% setDT() %>%                                     # Must be on PSRC VPN to connect to Elmer
         .[(data_geog_type=={{cb_geo}} &                                                            # Keep only necessary rows & columns
            planning_geog_type=={{planning_geog_type}} &
@@ -83,7 +83,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
         setnames("data_geog", "GEOID") %>% setkey(GEOID)
       df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
       if(agg_fct=="sum" & value_col=="value"){                                                     # Decennial
-        rs <- df[, value=sum(value * get(fullwgt)), by=mget(group_cols)]
+        rs <- df[, .(value=sum(value * get(fullwgt))), by=mget(group_cols)]
       }else if(agg_fct=="sum" & value_col=="estimate"){                                            # ACS
         rsi <- df[, .(estimate = sum(estimate * get(fullwgt)),
                      moe = tidycensus::moe_sum((moe * get(fullwgt)), (estimate * get(fullwgt)), na.rm=TRUE)), # MOE calculation
