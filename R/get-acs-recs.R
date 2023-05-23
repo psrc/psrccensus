@@ -414,3 +414,21 @@ get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Ki
 
   return(dfs)
 }
+
+#' Add shares to Psrccensus ACS object
+#'
+#' @param df dataframe with Census ACS result
+#' @return dataframe with additional share and share_moe fields
+#' @rawNamespace import(data.table, except = c(month, year))
+#' @export
+add_acs_share <- function(df){
+  label <- x.estimate <- i.estimate <- x.moe <- i.moe <- concept <- share <- share_moe <- NULL
+  input_type <- class(df)
+  rs <- setDT(df)
+  tots <- copy(rs) %>% .[grepl("Total:$",label)]
+  rs %<>% .[tots, `:=`(share=x.estimate/i.estimate,
+                       share_moe=tidycensus::moe_prop(x.estimate, i.estimate, x.moe, i.moe)),
+            on=.(GEOID, concept, year)]
+  if("data.table" %not_in% input_type){rs %<>% setDT()}
+  return(rs)
+}

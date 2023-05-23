@@ -232,3 +232,21 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
   if(length(years) > 1) message('\nConcept for table codes may differ across Census years. Please double check with tidycensus::load_variables()\n')
   return(final_dfs)
 }
+
+#' Add shares to Psrccensus ACS object
+#'
+#' @param df dataframe with Psrccensus Decennial result
+#' @return dataframe with additional share and share_moe fields
+#' @rawNamespace import(data.table, except = c(month, year))
+#' @export
+add_decennial_share <- function(df){
+  label <- x.value <- i.value <- concept <- share <- share_moe <- NULL
+  input_type <- class(df)
+  rs <- setDT(df)
+  tots <- copy(rs) %>% .[grepl("Total$",label)]
+  rs %<>% .[tots, `:=`(share=x.value/i.value),
+            on=.(GEOID, concept, year)]
+  if("data.table" %not_in% input_type){rs %<>% setDT()}
+  return(rs)
+}
+
