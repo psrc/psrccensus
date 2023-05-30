@@ -105,11 +105,13 @@ filter2region <- function(dt, dyear){
 #' @return unzipped table
 fetch_zip <- function(zip_filepath, target_file, dyear){
   options(download.file.method="libcurl", url.method="libcurl", timeout=300)
-  temp <- tempfile()
-  curl::curl_download(zip_filepath, temp)
-  dt <- utils::unzip(temp, target_file) %>% read_pums(dyear)
-  unlink(temp)
-  rm(temp)
+  temp1 <- tempfile()
+  temp2 <- tempfile()
+  curl::curl_download(zip_filepath, temp1)
+  temp2 <- utils::unzip(temp1, target_file)
+  dt <- read_pums(temp2, dyear)
+  unlink(temp1)
+  rm(temp1, temp2)
   return(dt)
 }
 
