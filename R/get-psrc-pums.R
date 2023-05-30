@@ -111,7 +111,7 @@ fetch_zip <- function(zip_filepath, target_file, dyear){
   temp2 <- utils::unzip(temp1, target_file)
   dt <- read_pums(temp2, dyear)
   unlink(temp1)
-  rm(temp1, temp2)
+  unlink(temp2)
   return(dt)
 }
 
