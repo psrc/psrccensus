@@ -49,3 +49,6 @@ so <- get_psrc_pums(1, 2019, "h", c("HINCP", "TEN"))
 rs <- psrc_pums_median(so, "HINCP", "TEN")
 }
 }
+\author{
+Michael Jensen
+}

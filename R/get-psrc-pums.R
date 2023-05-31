@@ -1,5 +1,4 @@
 #' @importFrom magrittr %<>% %>%
-#' @author Michael Jensen
 NULL
 
 globalVariables(c(":=", "!!", ".", "enquos"))
@@ -12,7 +11,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #'
 #' Look for a var_code via search term
 #' @param regex search term
-#' @return data.table of filtered variable attributes
+#' @author Michael Jensen
 #'
 #' @examples
 #' # All variables related to internet; shows code changed in 2020 survey
@@ -35,6 +34,7 @@ pums_varsearch <- function(regex){
 #' Helper to the \code{\link{get_psrc_pums}} function
 #' @param dt data.table with Census Bureau "N/A" code--"b" or "bbb..."
 #' @return filtered input data.table with values "b" recoded to NA
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 pums_recode_na <- function(dt){
@@ -49,6 +49,7 @@ pums_recode_na <- function(dt){
 #' @param target_file either .csv from ftp site, or compressed .gz file on server
 #' @param dyear The data year
 #' @return unzipped table
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 read_pums <- function(target_file, dyear){
@@ -77,6 +78,7 @@ read_pums <- function(target_file, dyear){
 #' @param dt data.table
 #' @param dyear The data year
 #' @return filtered data.table
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 filter2region <- function(dt, dyear){
@@ -103,6 +105,7 @@ filter2region <- function(dt, dyear){
 #' @param dyear The data year
 #'
 #' @return unzipped table
+#' @author Michael Jensen
 fetch_zip <- function(zip_filepath, target_file, dyear){
   options(download.file.method="libcurl", url.method="libcurl", timeout=300)
   temp1 <- tempfile()
@@ -122,6 +125,7 @@ fetch_zip <- function(zip_filepath, target_file, dyear){
 #' @param dyear The data year
 #' @param level Either "p" or "h", for "persons" or "households" respectively
 #' @return data.table
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 fetch_ftp <- function(span, dyear, level){
@@ -148,6 +152,7 @@ fetch_ftp <- function(span, dyear, level){
 #' @param dir Directory for .gz file, if already downloaded. Default NULL uses the Census ftp.
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
@@ -222,6 +227,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
 #' @inheritParams pums_ftp_gofer
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 pums_api_gofer <- function(span, dyear, level, vars){
@@ -246,6 +252,7 @@ pums_api_gofer <- function(span, dyear, level, vars){
 #' Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 #' @param dt The data.table
 #' @return full input data.table with all dollar values adjusted
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 adjust_dollars <- function(dt){
@@ -272,6 +279,7 @@ adjust_dollars <- function(dt){
 #' @param dt PSRC data.table
 #' @param dyear The data year
 #' @return PSRC data.table with county names
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 add_county <- function(dt, dyear){
@@ -293,6 +301,7 @@ add_county <- function(dt, dyear){
 #' @param dyear The data year
 #' @param vars PUMS variable/s as an UPPERCASE string element or list
 #' @return PSRC data.table with labels
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 codes2labels <- function(dt, dyear, vars){
@@ -333,6 +342,7 @@ codes2labels <- function(dt, dyear, vars){
 #' Makes certain weights are numeric and grouping variables are factors
 #' @param dt PSRC data.table
 #' @return PSRC data.table with types confirmed
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 ensure_datatypes <- function(dt){
@@ -353,6 +363,7 @@ ensure_datatypes <- function(dt){
 #' @inheritParams pums_ftp_gofer
 #' @param labels Default TRUE, recodes varible values to the corresponding label
 #' @return A srvyr object with appropriate sampling weight and replication weights
+#' @author Michael Jensen
 #'
 #' @importFrom tidyselect all_of
 #' @rawNamespace import(data.table, except = c(month, year))
@@ -395,6 +406,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
 #' @inheritParams pums_stat
 #' @param stat_type Desired survey statistic
 #' @return A summary tibble, including variable names, summary statistic and margin of error
+#' @author Michael Jensen
 #'
 #' @importFrom tidyselect all_of where
 #' @importFrom dplyr across if_all ungroup
@@ -472,6 +484,7 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE, rr
 #' @param rr optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)
 #' @name pums_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
+#' @author Michael Jensen
 NULL
 
 #' @rdname pums_stat
@@ -532,6 +545,7 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE, rr=FA
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total may not reflect the full dataset)
 #' @param rr optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)
 #' @return A table with the variable names and labels, summary statistic and margin of error
+#' @author Michael Jensen
 #'
 #' @importFrom data.table rbindlist setDF
 #' @importFrom dplyr mutate rename relocate
@@ -560,6 +574,7 @@ pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na
 #' @param x numeric vector, first estimate and corresponding MOE to compare
 #' @param y numeric vector, second estimate and corresponding MOE to compare
 #' @return Z score; if larger than 1, difference is significant
+#' @author Michael Jensen
 #'
 #' @export
 z_score <- function(x, y){
@@ -575,6 +590,8 @@ z_score <- function(x, y){
 #'
 #' @param so srvyr object returned by get_psrc_pums
 #' @param refyear dollar year in which value should be returned be returned
+#' @author Michael Jensen
+#'
 #' @importFrom lubridate as_date
 #' @importFrom dplyr mutate across all_of
 #'

@@ -1,5 +1,4 @@
 #' @importFrom magrittr %<>% %>%
-#' @author Michael Jensen
 NULL
 
 globalVariables(c(":=", "!!", ".", "enquos"))
@@ -10,6 +9,7 @@ globalVariables(c(":=", "!!", ".", "enquos"))
 #'
 #' @param year of census geography
 #' @return string vector of Place FIPS codes
+#' @author Michael Jensen
 #'
 #' @importFrom sf st_transform st_buffer st_join st_intersects
 #' @importFrom dplyr filter select rename
@@ -32,6 +32,8 @@ get_psrc_places <- function(year){
 #' @param wgt measure share used as split weight
 #'            either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"
 #' @param agg_fct aggregation
+#' @return table with planning geography units in place of census geography units
+#' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fct="sum"){
@@ -109,7 +111,8 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
 #' @name census_to_psrcgeo
 #'
 #' @importFrom data.table rbindlist
-#' @return A table with the variable names and labels, summary statistic and margin of error
+#' @return Equivalent table with planning geography units instead of census geography units, and translated value and margin of error
+#' @author Michael Jensen
 NULL
 
 #' @rdname census_to_psrcgeo

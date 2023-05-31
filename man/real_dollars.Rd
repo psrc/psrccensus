@@ -16,3 +16,6 @@ Applies PCE deflator to yield real values in specified dollar-year terms
 Helpful when comparing between separate surveys
 Requires [St. Louis Federal Reserve (FRED) API key](http://sboysel.github.io/fredr/articles/fredr.html#authentication)
 }
+\author{
+Michael Jensen
+}

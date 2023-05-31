@@ -19,3 +19,6 @@ unzipped table
 \description{
 Helper to the \code{\link{pums_ftp_gofer}} function
 }
+\author{
+Michael Jensen
+}

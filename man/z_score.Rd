@@ -17,3 +17,6 @@ Z score; if larger than 1, difference is significant
 \description{
 Stat to determine if two estimates are different
 }
+\author{
+Michael Jensen
+}

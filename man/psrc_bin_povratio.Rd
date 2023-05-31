@@ -15,3 +15,6 @@ the data.table with an additional binned age field, "BIN_POVRATIO"
 \description{
 PSRC income to poverty ratio groupings
 }
+\author{
+Michael Jensen
+}

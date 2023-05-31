@@ -15,3 +15,6 @@ the data.table with modeling employment sector, "LUM_JOBSECTOR"                 
 \description{
 PSRC Land Use Modeling employment sector
 }
+\author{
+Michael Jensen
+}

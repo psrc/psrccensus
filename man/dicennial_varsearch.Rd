@@ -25,3 +25,6 @@ z <- dicennial_varsearch("^Total!!Institutionalized .*(nursing|hospital|hospice)
 z <- dicennial_varsearch("^P001")
 
 }
+\author{
+Michael Jensen
+}

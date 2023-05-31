@@ -15,3 +15,6 @@ the data.table with manufacturing-industrial category field, "MI_JOBSECTOR"     
 \description{
 PSRC manufacturing-industrial category
 }
+\author{
+Michael Jensen
+}

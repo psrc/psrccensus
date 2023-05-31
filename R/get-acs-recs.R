@@ -8,6 +8,7 @@ NULL
 #' @param regex search term
 #' @param year optionally restrict search to a specific year
 #' @return data.table of filtered variable codes and attributes
+#' @author Michael Jensen
 #'
 #' @examples
 #' # All variables in table B06011
@@ -419,6 +420,7 @@ get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Ki
 #'
 #' @param df dataframe with Census ACS result
 #' @return dataframe with additional share and share_moe fields
+#' @author Michael Jensen
 #' @rawNamespace import(data.table, except = c(month, year))
 #' @export
 add_acs_share <- function(df){

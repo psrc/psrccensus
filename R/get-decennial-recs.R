@@ -6,6 +6,7 @@ utils::globalVariables("GEOID")
 #' @param regex search term
 #' @param year optionally restrict search to a specific year
 #' @return data.table of filtered variable codes and attributes
+#' @author Michael Jensen
 #'
 #' @examples
 #' # Nursing home or medical group quarters
@@ -237,6 +238,8 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
 #'
 #' @param df dataframe with Psrccensus Decennial result
 #' @return dataframe with additional share and share_moe fields
+#' @author Michael Jensen
+#'
 #' @rawNamespace import(data.table, except = c(month, year))
 #' @export
 add_decennial_share <- function(df){

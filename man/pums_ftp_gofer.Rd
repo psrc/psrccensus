@@ -25,3 +25,6 @@ sample & replication weights, and if needed, inflation adjustments
 Download & filter data from the Census Bureau Microdata ftp server
 Helper to the \code{\link{get_psrc_pums}} function
 }
+\author{
+Michael Jensen
+}

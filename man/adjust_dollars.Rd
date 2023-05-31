@@ -17,3 +17,6 @@ Helper to \code{\link{get_psrc_pums}} function.
 Applies the Census Bureau-specified inflation adjustment to dollar values. See vignette for brief discussion.
 Option to bypass this inflation adjustment exists, in order to match estimates generated without it.
 }
+\author{
+Michael Jensen
+}

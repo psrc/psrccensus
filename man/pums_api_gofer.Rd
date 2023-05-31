@@ -23,3 +23,6 @@ sample & replication weights, and if needed, inflation adjustments
 Call the Census Bureau Microdata API
 Helper to the \code{\link{get_psrc_pums}} function
 }
+\author{
+Michael Jensen
+}

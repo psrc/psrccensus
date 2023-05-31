@@ -15,3 +15,6 @@ string vector of Place FIPS codes
 \description{
 Retrieve set of Census Places within the PSRC region
 }
+\author{
+Michael Jensen
+}

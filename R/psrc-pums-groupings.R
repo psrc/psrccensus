@@ -1,6 +1,5 @@
 #' @importFrom magrittr %<>% %>%
 #' @rawNamespace import(data.table, except = c(month, year))
-#' @author Michael Jensen
 NULL
 
 `%not_in%` <- Negate(`%in%`)
@@ -9,6 +8,7 @@ NULL
 #'
 #' @param dt the data.table
 #' @return the data.table with an additional binned household income field, "BINCOME"
+#' @author Michael Jensen
 psrc_bincome <- function(dt){
   BINCOME <- HINCP <- NULL                                                                         # Bind variables locally (for documentation, not function)
   dt %<>% setDT() %>%
@@ -31,6 +31,7 @@ psrc_bincome <- function(dt){
 #'
 #' @param dt the data.table
 #' @return the data.table with an additional binned age field, "BIN_AGE"
+#' @author Michael Jensen
 psrc_bin_age <- function(dt){
   BIN_AGE <- AGEP <- NULL                                                                          # Bind variables locally (for documentation, not function)
   dt %<>% setDT() %>%
@@ -67,6 +68,7 @@ psrc_bin_age <- function(dt){
 #'
 #' @param dt the data.table
 #' @return the data.table with an additional binned age field, "BIN_POVRATIO"
+#' @author Michael Jensen
 psrc_bin_povratio <- function(dt){
   BIN_POVRATIO <- POVPIP <- NULL                                                                   # Bind variables locally (for documentation, not function)
     dt %<>% setDT() %>%
@@ -94,6 +96,7 @@ psrc_bin_povratio <- function(dt){
 #' @param dt the data.table
 #' @param dyear the data year
 #' @return the data.table with an additional binned age field, "BIN_YBL"
+#' @author Michael Jensen
 #'
 #' @importFrom stringr str_extract
 psrc_bin_ybl<- function(dt, dyear){
@@ -132,6 +135,7 @@ psrc_bin_ybl<- function(dt, dyear){
 #'
 #' @param dt the data.table
 #' @return the data.table with dichotomous tenure field, "OWN_RENT"
+#' @author Michael Jensen
 psrc_own_rent<- function(dt){
   OWN_RENT <- TEN <- NULL                                                                          # Bind variables locally (for documentation, not function)
   dt %<>% setDT() %>%
@@ -149,6 +153,7 @@ psrc_own_rent<- function(dt){
 #' @param dt the data.table
 #' @param dyear the data year
 #' @return the data.table with educational attainment field, "ED_ATTAIN"
+#' @author Michael Jensen
 psrc_ed_attain<- function(dt, dyear){
   ED_ATTAIN <- SCHL <- NULL                                                                        # Bind variables locally (for documentation, not function)
   if(dyear>2011){
@@ -175,6 +180,7 @@ psrc_ed_attain<- function(dt, dyear){
 #'
 #' @param dt the data.table
 #' @return the data.table with manufacturing-industrial category field, "MI_JOBSECTOR"             # When NAICS changes, new dyear/definition set should be added
+#' @author Michael Jensen
 psrc_mi_jobsector <- function(dt){
   MI_JOBSECTOR <- NAICSP <- patterns <- NULL                                                       # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
@@ -198,6 +204,7 @@ psrc_mi_jobsector <- function(dt){
 #'
 #' @param dt the data.table
 #' @return the data.table with modeling employment sector, "LUM_JOBSECTOR"                         # When NAICS changes, new dyear/definition set should be added
+#' @author Michael Jensen
 psrc_lum_jobsector <- function(dt){
   LUM_JOBSECTOR <- NAICSP <- patterns <- NULL                                                      # Bind variables locally (for documentation, not function)
   dt %<>% setDT()

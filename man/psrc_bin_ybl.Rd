@@ -17,3 +17,6 @@ the data.table with an additional binned age field, "BIN_YBL"
 \description{
 ACS year structure built groupings
 }
+\author{
+Michael Jensen
+}

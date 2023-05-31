@@ -17,3 +17,6 @@ the data.table with educational attainment field, "ED_ATTAIN"
 \description{
 PSRC educational attainment groupings
 }
+\author{
+Michael Jensen
+}

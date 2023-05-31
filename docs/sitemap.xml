@@ -37,7 +37,13 @@
     <loc>https://psrc.github.io/psrccensus/reference/acs_varsearch.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/add_acs_share.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/add_county.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/add_decennial_share.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/adjust_dollars.html</loc>

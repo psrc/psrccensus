@@ -17,3 +17,6 @@ filtered data.table
 \description{
 Helper to \code{\link{read_pums}} function
 }
+\author{
+Michael Jensen
+}

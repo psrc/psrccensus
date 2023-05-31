@@ -15,3 +15,6 @@ the data.table with an additional binned household income field, "BINCOME"
 \description{
 PSRC standard broad income groupings
 }
+\author{
+Michael Jensen
+}

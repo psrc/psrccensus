@@ -9,9 +9,6 @@ pums_varsearch(regex)
 \arguments{
 \item{regex}{search term}
 }
-\value{
-data.table of filtered variable attributes
-}
 \description{
 Look for a var_code via search term
 }
@@ -22,4 +19,7 @@ pums_varsearch("internet")
 # Entry for specific variable, 'Employment Status Recode'
 pums_varsearch("^ESR$")
 
+}
+\author{
+Michael Jensen
 }

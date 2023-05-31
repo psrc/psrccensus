@@ -15,3 +15,6 @@ the data.table with an additional binned age field, "BIN_AGE"
 \description{
 PSRC standard age groupings
 }
+\author{
+Michael Jensen
+}

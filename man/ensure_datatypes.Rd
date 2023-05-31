@@ -16,3 +16,6 @@ PSRC data.table with types confirmed
 Helper to \code{\link{get_psrc_pums}} function.
 Makes certain weights are numeric and grouping variables are factors
 }
+\author{
+Michael Jensen
+}

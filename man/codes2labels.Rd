@@ -20,3 +20,6 @@ PSRC data.table with labels
 Helper to \code{\link{get_psrc_pums}} function.
 Delivers labels instead of values, where labels exist
 }
+\author{
+Michael Jensen
+}

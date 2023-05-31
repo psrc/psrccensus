@@ -21,6 +21,12 @@ either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_un
 
 \item{agg_fct}{aggregation}
 }
+\value{
+table with planning geography units in place of census geography units
+}
 \description{
 Helper to translate psrccensus estimates to planning geographies
+}
+\author{
+Michael Jensen
 }

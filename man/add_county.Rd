@@ -18,3 +18,6 @@ PSRC data.table with county names
 Helper to \code{\link{get_psrc_pums}} function.
 Attaches county name.
 }
+\author{
+Michael Jensen
+}

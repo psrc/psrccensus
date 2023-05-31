@@ -15,3 +15,6 @@ the data.table with dichotomous tenure field, "OWN_RENT"
 \description{
 PSRC tenure groupings
 }
+\author{
+Michael Jensen
+}

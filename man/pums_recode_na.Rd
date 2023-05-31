@@ -15,3 +15,6 @@ filtered input data.table with values "b" recoded to NA
 \description{
 Helper to the \code{\link{get_psrc_pums}} function
 }
+\author{
+Michael Jensen
+}

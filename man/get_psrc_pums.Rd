@@ -30,3 +30,6 @@ The primary PUMS function
 get_psrc_pums(span=1, dyear=2019, level="p", vars=c("AGEP","SEX"))}
 
 }
+\author{
+Michael Jensen
+}

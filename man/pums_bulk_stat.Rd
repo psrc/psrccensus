@@ -33,3 +33,6 @@ A table with the variable names and labels, summary statistic and margin of erro
 Generate a statistic separately for a list of grouping variables
 List input items can be multiple, i.e. character vector
 }
+\author{
+Michael Jensen
+}

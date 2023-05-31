@@ -25,3 +25,6 @@ A summary tibble, including variable names, summary statistic and margin of erro
 \description{
 Given specific form by related \code{\link{pums_stat}} functions.
 }
+\author{
+Michael Jensen
+}

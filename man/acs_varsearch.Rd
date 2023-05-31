@@ -26,3 +26,6 @@ z <- acs_varsearch("^B06011_")
 z <- acs_varsearch("Estimate.*median( household)? income")
 
 }
+\author{
+Michael Jensen
+}

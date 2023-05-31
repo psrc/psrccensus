@@ -15,3 +15,6 @@ dataframe with additional share and share_moe fields
 \description{
 Add shares to Psrccensus ACS object
 }
+\author{
+Michael Jensen
+}

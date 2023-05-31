@@ -25,7 +25,7 @@ census_to_hct(df, wgt = "total_pop")
 \item{wgt}{either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"}
 }
 \value{
-A table with the variable names and labels, summary statistic and margin of error
+Equivalent table with planning geography units instead of census geography units, and translated value and margin of error
 }
 \description{
 Translate psrccensus data to planning geographies
@@ -39,4 +39,7 @@ Translate psrccensus data to Regional Manufacturing-Industrial Centers
 Translate psrccensus data to Traffic Analysis Zones
 
 Translate psrccensus data to HCT Station Areas (VISION 2050)
+}
+\author{
+Michael Jensen
 }

@@ -20,3 +20,6 @@ data.table
 Helper to the \code{\link{pums_ftp_gofer}} function
 This is used on both the person and household table to prep them for join
 }
+\author{
+Michael Jensen
+}
