@@ -106,12 +106,11 @@ filter2region <- function(dt, dyear){
 fetch_zip <- function(zip_filepath, target_file, dyear){
   options(download.file.method="libcurl", url.method="libcurl", timeout=300)
   temp1 <- tempfile()
-  temp2 <- tempfile()
-  curl::curl_download(zip_filepath, temp1)
-  temp2 <- utils::unzip(temp1, target_file)
+  curl::curl_download(zip_filepath, temp1, quiet=FALSE)
+  temp2 <- utils::unzip(temp1, target_file, exdir=tempdir())
   dt <- read_pums(temp2, dyear)
   unlink(temp1)
-  unlink(temp2)
+  basename(temp2) %>% unlink(recursive=TRUE)
   return(dt)
 }
 
