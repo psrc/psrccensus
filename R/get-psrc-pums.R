@@ -582,7 +582,34 @@ z_score <- function(x, y){
   return(z)
 }
 
-#' Inflation adjustment to a year other than the survey year
+#' Retrieve annual Personal Consumption Expenditures deflator ratio
+#'
+#' Applies PCE deflator to yield real values in specified dollar-year terms
+#' Helpful when comparing between separate surveys
+#' Requires [St. Louis Federal Reserve (FRED) API key](http://sboysel.github.io/fredr/articles/fredr.html#authentication)
+#'
+#' @param have_yr existing dollar year basis
+#' @param want_yr dollar year to which you want the basis shifted
+#' @author Michael Jensen
+#'
+#' @importFrom lubridate as_date
+#'
+#' @export
+pce_deflator <- function(have_yr, want_yr){
+  deflator <- NULL
+  if(fredr::fredr_has_key()){
+    drange <- c(have_yr, want_yr)
+    x <- fredr::fredr(series_id = "DPCERG3A086NBEA",                                               # Requires FRED key in .Renviron, see fredr documentation
+                      observation_start=as_date(paste0(min(drange),"-01-01")),
+                      observation_end=as_date(paste0(max(drange),"-01-01")),
+                      frequency="a")
+    deflator <- last(x$value) / first(x$value)
+    if(have_yr > want_yr){deflator <- 1 / deflator}                                                # Positions reversed if using basis older than reported.
+  }
+  return(deflator)
+}
+
+#' PUMS inflation adjustment to a year other than the survey year
 #'
 #' Applies PCE deflator to yield real values in specified dollar-year terms
 #' Helpful when comparing between separate surveys
@@ -599,21 +626,16 @@ z_score <- function(x, y){
 real_dollars <- function(so, refyear){
   if(fredr::fredr_has_key()){
     dyear <- unique(so[[7]]$DATA_YEAR)
-    drange <- c(dyear, refyear)
-    x <- fredr::fredr(series_id = "DPCERG3A086NBEA",                                               # Requires FRED key in .Renviron, see fredr documentation
-                      observation_start=as_date(paste0(min(drange),"-01-01")),
-                      observation_end=as_date(paste0(max(drange),"-01-01")),
-                      frequency="a")
-    deflator <- last(x$value) / first(x$value)
+    deflator <- pce_deflator(dyear, refyear)
     income_cols <- grep("^FINCP$|^HINCP$|^INTP$|^OIP$|^PAP$|^PERNP$|^PINCP$|^RETP$|^SEMP$|^SSIP$|^SSP$|^WAGP$", colnames(so), value=TRUE)
     cost_cols <- grep("^CONP$|^ELEP$|^FULP$|^GASP$|^GRNTP$|^INSP$|^MHP$|^MRGP$|^SMOCP$|^RNTP$|^SMP$|^WATP$|^TAXAMT", colnames(so), value=TRUE)
     dollar_cols <- c(income_cols, cost_cols)
     if(length(dollar_cols)>0){
       so %<>% mutate(across(all_of(dollar_cols), ~ .x * deflator, .names=paste0("{.col}", refyear)))
     }
-  return(so)
-  }else{
-    warning("You are missing a FRED key (see fredr documentation). No change made.")
     return(so)
-  }
+    }else{
+      warning("You are missing a FRED key (see fredr documentation). No change made.")
+      return(so)
+    }
 }
