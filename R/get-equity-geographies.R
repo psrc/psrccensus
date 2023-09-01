@@ -14,9 +14,6 @@
 #'
 #' @return a data frame with all tracts in the region with a 0-1 variable for whether they are in an equity geography or not
 #'
-#' @examples
-#'get_equity_geographies(equity_type = 'regavg', equity_group = 'disability', year = '2019')
-#'
 #' @export
 get_equity_geographies <- function(equity_type = '50', equity_group = 'race', year = '2019'){
   # determine column suffix (type)

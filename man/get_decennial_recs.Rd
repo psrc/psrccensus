@@ -7,8 +7,10 @@
 get_decennial_recs(
   geography,
   counties = c("King", "Kitsap", "Pierce", "Snohomish"),
-  table_codes,
+  sumfile = "sf1",
   years,
+  variables = NULL,
+  table_codes = NULL,
   fips = NULL
 )
 }
@@ -17,10 +19,14 @@ get_decennial_recs(
 
 \item{counties}{A character string or vector of counties. Defaults to PSRC counties.}
 
-\item{table_codes}{A character string or vector of Census table codes,
-the table code will be padded with 0s such as "H001", as opposed to "H1}
+\item{sumfile}{A character string for which summary file to use such as "sf1" or "dp"}
 
 \item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.}
+
+\item{variables}{A character string or vector of Census variables}
+
+\item{table_codes}{A character string or vector of Census table codes,
+the table code will be padded with 0s such as "H001", as opposed to "H1"}
 
 \item{fips}{Character. Single code or vector of either MSA or place fips codes.}
 }
@@ -52,6 +58,10 @@ get_decennial_recs(geography = 'msa',
 get_decennial_recs(geography = 'block group',
                    table_codes = c('H001', 'H006'),
                    years = 2010)
+
+get_decennial_recs(geography="tract",
+                   variables="DP1_0092C",
+                   years=2020, sumfile="dp")
 }
 \author{
 Christy Lam

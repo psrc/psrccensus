@@ -10,13 +10,6 @@ NULL
 #' @return data.table of filtered variable codes and attributes
 #' @author Michael Jensen
 #'
-#' @examples
-#' # All variables in table B06011
-#' z <- acs_varsearch("^B06011_")
-#'
-#' # Median personal or household income, estimates only
-#' z <- acs_varsearch("Estimate.*median( household)? income")
-#'
 #' @rawNamespace import(data.table, except = c(month, year))
 #' @importFrom lubridate now month year
 #' @export
@@ -371,32 +364,6 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
 #'              counties=c("Kitsap"),
 #'              years=c(2019),
 #'              acs.type = 'acs5')
-#'
-#' get_acs_recs(geography = 'msa',
-#'              table.names = c('B03002',"C17002"),
-#'              years=c(2019),
-#'              acs.type = 'acs1')
-#'
-#' get_acs_recs(geography = 'msa',
-#'              table.names = c("C17002"),
-#'              years=c(2019),
-#'              FIPS = c("14740"),
-#'              acs.type = 'acs5')
-#'
-#' get_acs_recs(geography = 'place',
-#'              table.names = c("C17002"),
-#'              years=c(2019),
-#'              acs.type = 'acs5')
-#'
-#' get_acs_recs(geography = 'tract',
-#'              counties=c("Pierce"),
-#'              table.names = c('B03002'),
-#'              years=c(2018,2019))
-#'
-#' get_acs_recs(geography = 'block group',
-#'              counties=c("Pierce"),
-#'              table.names = c('B03002'),
-#'              years=c(2018,2019))
 #'
 #' @export
 get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table.names, years, FIPS = c("14740","42660"), place_FIPS=NULL, acs.type) {

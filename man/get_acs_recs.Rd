@@ -50,32 +50,6 @@ get_acs_recs(geography = 'county',
              years=c(2019),
              acs.type = 'acs5')
 
-get_acs_recs(geography = 'msa',
-             table.names = c('B03002',"C17002"),
-             years=c(2019),
-             acs.type = 'acs1')
-
-get_acs_recs(geography = 'msa',
-             table.names = c("C17002"),
-             years=c(2019),
-             FIPS = c("14740"),
-             acs.type = 'acs5')
-
-get_acs_recs(geography = 'place',
-             table.names = c("C17002"),
-             years=c(2019),
-             acs.type = 'acs5')
-
-get_acs_recs(geography = 'tract',
-             counties=c("Pierce"),
-             table.names = c('B03002'),
-             years=c(2018,2019))
-
-get_acs_recs(geography = 'block group',
-             counties=c("Pierce"),
-             table.names = c('B03002'),
-             years=c(2018,2019))
-
 }
 \author{
 Craig Helmann

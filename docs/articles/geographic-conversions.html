@@ -135,16 +135,12 @@ population), you only need a single argument: the name of the dataframe
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 530330001022 B03002_012      181   206 Hispanic or Latino:</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 530330001023 B03002_012      110   151 Hispanic or Latino:</span></span>
 <span></span>
-<span><span class="va">rgc_race</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/census_to_psrcgeo.html">census_to_rgc</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#isn't working</span></span>
+<span><span class="co">#rgc_race &lt;- census_to_rgc(x)</span></span>
 <span></span>
-<span><span class="va">rgc_race</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">variable</span><span class="op">==</span><span class="st">"B03002_012"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      planning_geog               label estimate  moe</span></span>
-<span><span class="co">#&gt; 1:   not in regional growth center Hispanic or Latino:   416323 9537</span></span>
-<span><span class="co">#&gt; 2:               Seattle Northgate Hispanic or Latino:      719  326</span></span>
-<span><span class="co">#&gt; 3:    Seattle University Community Hispanic or Latino:     1915  389</span></span>
-<span><span class="co">#&gt; 4:                  Seattle Uptown Hispanic or Latino:      649  222</span></span>
-<span><span class="co">#&gt; 5: Seattle First Hill/Capitol Hill Hispanic or Latino:     3318  625</span></span>
-<span><span class="co">#&gt; 6:        Seattle South Lake Union Hispanic or Latino:      380  211</span></span></code></pre></div>
+<span><span class="co">#rgc_race %&gt;% dplyr::filter(variable=="B03002_012") %&gt;% .[,c(1,3,7:8)] %&gt;% head()</span></span>
+<span></span>
+<span>                          </span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="selecting-the-correct-proxy">Selecting the correct proxy<a class="anchor" aria-label="anchor" href="#selecting-the-correct-proxy"></a>
@@ -183,16 +179,9 @@ default)</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 53033000402      239   151 Total: GROUP QUARTERS POPULATION</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 53033000500       21    20 Total: GROUP QUARTERS POPULATION</span></span>
 <span></span>
-<span><span class="va">rgc_gq_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/census_to_psrcgeo.html">census_to_rgs</a></span><span class="op">(</span><span class="va">y</span>, wgt<span class="op">=</span><span class="st">"group_quarters_pop"</span><span class="op">)</span></span>
+<span><span class="co">#rgc_gq_age &lt;- census_to_rgs(y, wgt="group_quarters_pop")</span></span>
 <span></span>
-<span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">7</span>,<span class="fl">8</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;    planning_geog  label                   concept estimate  moe</span></span>
-<span><span class="co">#&gt; 1:         Rural Total: GROUP QUARTERS POPULATION     4848  547</span></span>
-<span><span class="co">#&gt; 2:         Metro Total: GROUP QUARTERS POPULATION    38944 1818</span></span>
-<span><span class="co">#&gt; 3:           HCT Total: GROUP QUARTERS POPULATION     8117  617</span></span>
-<span><span class="co">#&gt; 4:          Core Total: GROUP QUARTERS POPULATION    11580  843</span></span>
-<span><span class="co">#&gt; 5:            UU Total: GROUP QUARTERS POPULATION     7224  733</span></span>
-<span><span class="co">#&gt; 6:   CitiesTowns Total: GROUP QUARTERS POPULATION     4945  441</span></span></code></pre></div>
+<span><span class="co">#rgc_gq_age %&gt;% .[,c(1,3,4,7,8)]</span></span></code></pre></div>
 <p>If your dataframe combines tables that would most appropriately apply
 two different proxy metrics–for example, one linked to total population,
 and another linked to housing units–you might divide the dataframe (or

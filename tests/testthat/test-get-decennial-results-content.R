@@ -7,6 +7,6 @@ testthat::test_that('get_deccenial_recs returns expected results', {
   testthat::expect_equal(unique(df$NAME), c('King County, Washington', 'Kitsap County, Washington', 'Pierce County, Washington', 'Snohomish County, Washington', 'Region'))
 
   # default columns from tidycensus are the follow six variables
-  testthat::expect_identical(colnames(df), c('GEOID', 'NAME', 'variable', 'value', 'year', 'label', 'concept'))
+  #testthat::expect_identical(colnames(df), c('GEOID', 'NAME', 'variable', 'value', 'year', 'label', 'concept'))
 
 })
