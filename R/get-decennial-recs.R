@@ -46,8 +46,11 @@ dicennial_varsearch <- function(regex, year=NULL){
 #'
 #' @param geography A character string as either 'tract', 'county', 'block group'.
 #' @param counties A character string or vector of counties. Defaults to PSRC counties.
+#' @param variables A character string or vector of Census variables
 #' @param table_codes A character string or vector of Census table codes.
 #' @param years Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.
+#' @param sumfile A character string for which summary file to use such as "sf1" or "dp"
+#'
 #' @param state A character string state abbreviation
 #'
 #' @author Christy Lam
@@ -55,26 +58,35 @@ dicennial_varsearch <- function(regex, year=NULL){
 #' @return a tibble of decennial estimates by either tracts in a county/counties for selected table codes and years. Does not include
 #' variable names.
 #'@keywords internal
-get_decennial_tract_county_bg <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'),
-                                          table_codes, years, state = 'WA') {
-  get_decennial_geogs <- purrr::partial(tidycensus::get_decennial,
-                                        geography = geography,
-                                        state = state,
-                                        table = table)
+get_decennial_tract_county_bg <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'),variables,
+                                          table_codes, years, state = 'WA', sumfile) {
+
+  #the user can choose either a table or variable
+  if(is.null(table_codes)){
+    data_items=variables
+  }else{
+    data_items=table_codes
+  }
+
   dfs <- NULL
-  for(year in years) {
-    for(table in table_codes) {
-      tryCatch(
-        all_geogs <- purrr::map(counties, ~get_decennial_geogs(county = .x, year = year)),
-        error = function(e) print(paste('API error, Decennial data for', year, 'may not be available.'))
-      )
-      if(exists('all_geogs')) {
-        d <- purrr::reduce(all_geogs, dplyr::bind_rows)
-        d$year <- year
-        ifelse(is.null(dfs), dfs <- d, dfs <- dplyr::bind_rows(dfs, d))
-        rm(all_geogs)
-      }
+
+  for (year in years) {
+    tbl_dfs<- NULL
+    for(data_item in data_items){
+
+      tbl_df<-tidycensus::get_decennial(geography = geography,
+                                        state = state,
+                                        sumfile=sumfile,
+                                        county=counties,
+                                        if(is.null(table_codes)){variables = data_item},
+                                        if(!is.null(table_codes)){table= data_item},
+                                        year=year)
+
     }
+    tbl_dfs<-dplyr::bind_rows(tbl_df, tbl_dfs)
+
+    yr_df<-tbl_dfs%>%dplyr::mutate(county=substr(GEOID,1,5), year=year)
+    dfs <- dplyr::bind_rows(yr_df, dfs)
   }
 
   # create regional summary for county geography
@@ -175,8 +187,10 @@ get_decennial_place <- function(table_codes, years, fips = NULL, state = 'WA') {
 #' @param geography A character string as either 'tract', 'county', 'block group', 'msa', or 'place'.
 #' @param counties A character string or vector of counties. Defaults to PSRC counties.
 #' @param table_codes A character string or vector of Census table codes,
-#' the table code will be padded with 0s such as "H001", as opposed to "H1
+#' the table code will be padded with 0s such as "H001", as opposed to "H1"
+#' @param variables A character string or vector of Census variables
 #' @param years Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.
+#' @param sumfile A character string for which summary file to use such as "sf1" or "dp"
 #' @param fips Character. Single code or vector of either MSA or place fips codes.
 #'
 #' @author Christy Lam
@@ -203,12 +217,18 @@ get_decennial_place <- function(table_codes, years, fips = NULL, state = 'WA') {
 #' get_decennial_recs(geography = 'block group',
 #'                    table_codes = c('H001', 'H006'),
 #'                    years = 2010)
+#'
+#' get_decennial_recs(geography="tract",
+#'                    variables="DP1_0092C",
+#'                    years=2020, sumfile="dp")
 #' @export
-get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table_codes, years,
+get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'),  sumfile='sf1', years,variables=NULL, table_codes=NULL,
                                fips = NULL) {
 
+
+
   if(geography %in% c('tract', 'county', 'block group')) {
-    dfs <- get_decennial_tract_county_bg(geography = geography, table_codes = table_codes, years = years)
+    dfs <- get_decennial_tract_county_bg(geography = geography, variables=variables, table_codes = table_codes,years = years,                   sumfile=sumfile)
   } else if (geography == 'msa'){
     dfs <- get_decennial_msa(table_codes, years, fips = fips)
   } else if(geography == 'place') {
@@ -219,7 +239,7 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
   final_dfs <- NULL
   data_years <- unique(dfs$year)
   for(data_year in data_years) {
-    vars <- tidycensus::load_variables(data_year, "sf1")
+    vars <- tidycensus::load_variables(data_year, sumfile)
 
     if(data_year == 2000) { # clean labels
       vars$concept <- stringr::str_extract(vars$concept, '.*(?=\\s(\\[)*)')

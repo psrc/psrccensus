@@ -28,10 +28,6 @@ a data frame with all tracts in the region with a 0-1 variable for whether they 
 \description{
 Retrieve a 0-1 variable for whether each tract in the region is in an equity geography or not
 }
-\examples{
-get_equity_geographies(equity_type = 'regavg', equity_group = 'disability', year = '2019')
-
-}
 \author{
 Suzanne Childress
 }

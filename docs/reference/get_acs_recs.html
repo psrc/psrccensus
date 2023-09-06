@@ -172,7 +172,6 @@
 <span class="r-in"><span>             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2015-2019 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2019 from table B03002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'Washington'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 21 × 11</span></span>
@@ -190,104 +189,6 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 53035 Kitsap Co… Wash… B03002_…      170    72 Esti… HISPAN… County          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 11 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: acs_type &lt;chr&gt;, year &lt;dbl&gt;</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_acs_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'msa'</span>,</span></span>
-<span class="r-in"><span>             table.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'B03002'</span>,<span class="st">"C17002"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             acs.type <span class="op">=</span> <span class="st">'acs1'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2019 1-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The 1-year ACS provides data for geographies with populations of 65,000 and greater.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS1 variables for 2019 from table B03002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ifelse(., is.null(yearly.data), yearly.data &lt;- tbl, yearly.data &lt;- dplyr::bind_rows(yearly.data,     tbl)):</span> unused argument (yearly.data &lt;- dplyr::bind_rows(yearly.data, tbl))</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_acs_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'msa'</span>,</span></span>
-<span class="r-in"><span>             table.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C17002"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             FIPS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"14740"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2015-2019 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2019 from table C17002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ifelse(., is.null(yearly.data), yearly.data &lt;- tbl, yearly.data &lt;- dplyr::bind_rows(yearly.data,     tbl)):</span> unused argument (yearly.data &lt;- dplyr::bind_rows(yearly.data, tbl))</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_acs_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'place'</span>,</span></span>
-<span class="r-in"><span>             table.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C17002"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Retrieving data for the year 2021</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2015-2019 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2019 from table C17002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'Washington'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,824 × 13</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID name  state variable estimate   moe label.x concept.x label.y concept.y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 5301… Alder Wash… C17002_…      161   115 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 5301… Alder Wash… C17002_…        0    12 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 5301… Alder Wash… C17002_…        0    12 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 5301… Alder Wash… C17002_…        0    12 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 5301… Alder Wash… C17002_…        0    12 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 5301… Alder Wash… C17002_…        0    12 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 5301… Alder Wash… C17002_…        0    12 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 5301… Alder Wash… C17002_…      161   115 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 5301… Alde… Wash… C17002_…     <span style="text-decoration: underline;">2</span>843   340 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 5301… Alde… Wash… C17002_…       66    71 Estima… RATIO OF… Estima… RATIO OF…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1,814 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: acs_type &lt;chr&gt;, year &lt;dbl&gt;, census_geography &lt;chr&gt;</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_acs_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'tract'</span>,</span></span>
-<span class="r-in"><span>             counties<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pierce"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             table.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'B03002'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>,<span class="fl">2019</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2014-2018 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2018 from table B03002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'Washington'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2015-2019 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2019 from table B03002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'Washington'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7,224 × 11</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID      name  state variable estimate   moe label concept census_geography</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 530530602… Cens… Wash… B03002_…     <span style="text-decoration: underline;">2</span>414   371 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 530530602… Cens… Wash… B03002_…     <span style="text-decoration: underline;">1</span>388   222 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 530530602… Cens… Wash… B03002_…      873   147 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 530530602… Cens… Wash… B03002_…      155   120 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 530530602… Cens… Wash… B03002_…        8    12 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 530530602… Cens… Wash… B03002_…      289   131 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 530530602… Cens… Wash… B03002_…       18    41 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 530530602… Cens… Wash… B03002_…        5     8 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 530530602… Cens… Wash… B03002_…       40    46 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 530530602… Cens… Wash… B03002_…        0    12 Esti… HISPAN… Tract           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7,214 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: acs_type &lt;chr&gt;, year &lt;dbl&gt;</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_acs_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'block group'</span>,</span></span>
-<span class="r-in"><span>             counties<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pierce"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             table.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'B03002'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             years<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>,<span class="fl">2019</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2014-2018 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2018 from table B03002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'Washington'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2015-2019 5-year ACS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading ACS5 variables for 2019 from table B03002. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'Washington'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 23,520 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID        name          tract  state variable estimate   moe label concept</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…     <span style="text-decoration: underline;">2</span>414   371 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…     <span style="text-decoration: underline;">1</span>388   222 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…      873   147 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…      155   120 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…        8    12 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…      289   131 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…       18    41 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…        5     8 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…       40    46 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 530530602001 Block Group 1 <span style="color: #949494;">"</span> Cen… Wash… B03002_…        0    12 Esti… HISPAN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 23,510 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: census_geography &lt;chr&gt;, acs_type &lt;chr&gt;, year &lt;dbl&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -7,9 +7,11 @@
 get_decennial_tract_county_bg(
   geography,
   counties = c("King", "Kitsap", "Pierce", "Snohomish"),
+  variables,
   table_codes,
   years,
-  state = "WA"
+  state = "WA",
+  sumfile
 )
 }
 \arguments{
@@ -17,11 +19,15 @@ get_decennial_tract_county_bg(
 
 \item{counties}{A character string or vector of counties. Defaults to PSRC counties.}
 
+\item{variables}{A character string or vector of Census variables}
+
 \item{table_codes}{A character string or vector of Census table codes.}
 
 \item{years}{Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.}
 
 \item{state}{A character string state abbreviation}
+
+\item{sumfile}{A character string for which summary file to use such as "sf1" or "dp"}
 }
 \value{
 a tibble of decennial estimates by either tracts in a county/counties for selected table codes and years. Does not include

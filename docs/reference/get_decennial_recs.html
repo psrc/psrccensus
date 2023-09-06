@@ -61,8 +61,10 @@ Currently only working for SF1 tables.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_decennial_recs</span><span class="op">(</span></span>
 <span>  <span class="va">geography</span>,</span>
 <span>  counties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"King"</span>, <span class="st">"Kitsap"</span>, <span class="st">"Pierce"</span>, <span class="st">"Snohomish"</span><span class="op">)</span>,</span>
-<span>  <span class="va">table_codes</span>,</span>
+<span>  sumfile <span class="op">=</span> <span class="st">"sf1"</span>,</span>
 <span>  <span class="va">years</span>,</span>
+<span>  variables <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  table_codes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fips <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -77,13 +79,21 @@ Currently only working for SF1 tables.</p>
 <dd><p>A character string or vector of counties. Defaults to PSRC counties.</p></dd>
 
 
-<dt>table_codes</dt>
-<dd><p>A character string or vector of Census table codes,
-the table code will be padded with 0s such as "H001", as opposed to "H1</p></dd>
+<dt>sumfile</dt>
+<dd><p>A character string for which summary file to use such as "sf1" or "dp"</p></dd>
 
 
 <dt>years</dt>
 <dd><p>Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.</p></dd>
+
+
+<dt>variables</dt>
+<dd><p>A character string or vector of Census variables</p></dd>
+
+
+<dt>table_codes</dt>
+<dd><p>A character string or vector of Census table codes,
+the table code will be padded with 0s such as "H001", as opposed to "H1"</p></dd>
 
 
 <dt>fips</dt>
@@ -109,329 +119,161 @@ the table code will be padded with 0s such as "H001", as opposed to "H1</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 960 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID NAME                    variable   value  year label            concept</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033 King County, Washington PCT020A001 <span style="text-decoration: underline;">24</span>629  <span style="text-decoration: underline;">2</span>010 Total            GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53033 King County, Washington PCT020A002  <span style="text-decoration: underline;">7</span>394  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53033 King County, Washington PCT020A003  <span style="text-decoration: underline;">1</span>977  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53033 King County, Washington PCT020A004   392  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 53033 King County, Washington PCT020A005     0  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53033 King County, Washington PCT020A006     0  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53033 King County, Washington PCT020A007  <span style="text-decoration: underline;">1</span>287  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53033 King County, Washington PCT020A008   298  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53033 King County, Washington PCT020A009     0  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 53033 King County, Washington PCT020A010   251  <span style="text-decoration: underline;">2</span>010 Total!!Institut… GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 950 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 160 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID NAME                         variable  value county  year label concept</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033 King County, Washington      PCT020F0…   972 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53035 Kitsap County, Washington    PCT020F0…   208 53035   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53053 Pierce County, Washington    PCT020F0…   381 53053   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53061 Snohomish County, Washington PCT020F0…   132 53061   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 53033 King County, Washington      PCT020F0…   233 53033   <span style="text-decoration: underline;">2</span>010 Tota… GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53035 Kitsap County, Washington    PCT020F0…     7 53035   <span style="text-decoration: underline;">2</span>010 Tota… GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53053 Pierce County, Washington    PCT020F0…   208 53053   <span style="text-decoration: underline;">2</span>010 Tota… GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53061 Snohomish County, Washington PCT020F0…    52 53061   <span style="text-decoration: underline;">2</span>010 Tota… GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53033 King County, Washington      PCT020F0…   171 53033   <span style="text-decoration: underline;">2</span>010 Tota… GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 53035 Kitsap County, Washington    PCT020F0…     2 53035   <span style="text-decoration: underline;">2</span>010 Tota… GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 150 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_decennial_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'county'</span>, table_codes <span class="op">=</span> <span class="st">'P001'</span>, years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fl">2010</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2000 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2000 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2000 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2000 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2000 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2000 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2000 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2000 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table P001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Concept for table codes may differ across Census years. Please double check with tidycensus::load_variables()</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID  NAME                         variable   value  year label concept     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033  King County, Washington      P001001  1<span style="text-decoration: underline;">737</span>034  <span style="text-decoration: underline;">2</span>000 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53035  Kitsap County, Washington    P001001   <span style="text-decoration: underline;">231</span>969  <span style="text-decoration: underline;">2</span>000 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53053  Pierce County, Washington    P001001   <span style="text-decoration: underline;">700</span>820  <span style="text-decoration: underline;">2</span>000 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53061  Snohomish County, Washington P001001   <span style="text-decoration: underline;">606</span>024  <span style="text-decoration: underline;">2</span>000 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> REGION Region                       P001001  3<span style="text-decoration: underline;">275</span>847  <span style="text-decoration: underline;">2</span>000 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53033  King County, Washington      P001001  1<span style="text-decoration: underline;">931</span>249  <span style="text-decoration: underline;">2</span>010 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53035  Kitsap County, Washington    P001001   <span style="text-decoration: underline;">251</span>133  <span style="text-decoration: underline;">2</span>010 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53053  Pierce County, Washington    P001001   <span style="text-decoration: underline;">795</span>225  <span style="text-decoration: underline;">2</span>010 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53061  Snohomish County, Washington P001001   <span style="text-decoration: underline;">713</span>335  <span style="text-decoration: underline;">2</span>010 Total TOTAL POPUL…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> REGION Region                       P001001  3<span style="text-decoration: underline;">690</span>942  <span style="text-decoration: underline;">2</span>010 Total TOTAL POPUL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID  NAME                        variable  value county  year label concept</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033  King County, Washington     P001001  1.93<span style="color: #949494;">e</span>6 53033   <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53035  Kitsap County, Washington   P001001  2.51<span style="color: #949494;">e</span>5 53035   <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53053  Pierce County, Washington   P001001  7.95<span style="color: #949494;">e</span>5 53053   <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53061  Snohomish County, Washingt… P001001  7.13<span style="color: #949494;">e</span>5 53061   <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> REGION Region                      P001001  3.69<span style="color: #949494;">e</span>6 <span style="color: #BB0000;">NA</span>      <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53033  King County, Washington     P001001  1.74<span style="color: #949494;">e</span>6 53033   <span style="text-decoration: underline;">2</span>000 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53035  Kitsap County, Washington   P001001  2.32<span style="color: #949494;">e</span>5 53035   <span style="text-decoration: underline;">2</span>000 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53053  Pierce County, Washington   P001001  7.01<span style="color: #949494;">e</span>5 53053   <span style="text-decoration: underline;">2</span>000 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53061  Snohomish County, Washingt… P001001  6.06<span style="color: #949494;">e</span>5 53061   <span style="text-decoration: underline;">2</span>000 Total TOTAL …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> REGION Region                      P001001  3.28<span style="color: #949494;">e</span>6 <span style="color: #BB0000;">NA</span>      <span style="text-decoration: underline;">2</span>000 Total TOTAL …</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_decennial_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'tract'</span>, table_codes <span class="op">=</span> <span class="va">tbl_names</span>, years <span class="op">=</span> <span class="fl">2010</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020A. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020B. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020C. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020D. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020E. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table PCT020F. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 148,992 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID       NAME                           variable value  year label concept</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033000100 Census Tract 1, King County, … PCT020A…    32  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53033000200 Census Tract 2, King County, … PCT020A…    55  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53033000300 Census Tract 3, King County, … PCT020A…     8  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53033000401 Census Tract 4.01, King Count… PCT020A…    97  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 53033000402 Census Tract 4.02, King Count… PCT020A…   247  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53033000500 Census Tract 5, King County, … PCT020A…    17  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53033000600 Census Tract 6, King County, … PCT020A…    34  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53033000700 Census Tract 7, King County, … PCT020A…     9  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53033000800 Census Tract 8, King County, … PCT020A…    52  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 53033000900 Census Tract 9, King County, … PCT020A…    13  <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 148,982 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 24,832 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID       NAME                    variable value county  year label concept</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033000100 Census Tract 1, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53033000200 Census Tract 2, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53033000300 Census Tract 3, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53033000401 Census Tract 4.01, Kin… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 53033000402 Census Tract 4.02, Kin… PCT020F…     1 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53033000500 Census Tract 5, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53033000600 Census Tract 6, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53033000700 Census Tract 7, King C… PCT020F…     1 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53033000800 Census Tract 8, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 53033000900 Census Tract 9, King C… PCT020F…     0 53033   <span style="text-decoration: underline;">2</span>010 Total GROUP …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 24,822 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_decennial_recs</span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'place'</span>,</span></span>
 <span class="r-in"><span>                   table_codes <span class="op">=</span> <span class="st">'PCT013'</span>,</span></span>
@@ -495,56 +337,62 @@ the table code will be padded with 0s such as "H001", as opposed to "H1</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H001. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H006. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H006. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H006. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2010 decennial Census</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading SF1 variables for 2010 from table H006. To cache this dataset for faster access to Census tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per Census dataset.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 23,823 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID        NAME                          variable value  year label concept</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 530330001001 Block Group 1, Census Tract … H001001    565  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 530330001002 Block Group 2, Census Tract … H001001    658  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 530330001003 Block Group 3, Census Tract … H001001    744  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 530330001004 Block Group 4, Census Tract … H001001    838  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 530330001005 Block Group 5, Census Tract … H001001    638  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 530330002001 Block Group 1, Census Tract … H001001    455  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 530330002002 Block Group 2, Census Tract … H001001    590  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 530330002003 Block Group 3, Census Tract … H001001    826  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 530330002004 Block Group 4, Census Tract … H001001    576  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 530330002005 Block Group 5, Census Tract … H001001    698  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 23,813 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 21,176 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID        NAME                   variable value county  year label concept</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 530330001001 Block Group 1, Census… H006001    528 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 530330001002 Block Group 2, Census… H006001    591 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 530330001003 Block Group 3, Census… H006001    691 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 530330001004 Block Group 4, Census… H006001    769 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 530330001005 Block Group 5, Census… H006001    567 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 530330002001 Block Group 1, Census… H006001    429 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 530330002002 Block Group 2, Census… H006001    552 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 530330002003 Block Group 3, Census… H006001    781 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 530330002004 Block Group 4, Census… H006001    541 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 530330002005 Block Group 5, Census… H006001    669 53033   <span style="text-decoration: underline;">2</span>010 Total RACE O…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 21,166 more rows</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">get_decennial_recs</span><span class="op">(</span>geography<span class="op">=</span><span class="st">"tract"</span>,</span></span>
+<span class="r-in"><span>                   variables<span class="op">=</span><span class="st">"DP1_0092C"</span>,</span></span>
+<span class="r-in"><span>                   years<span class="op">=</span><span class="fl">2020</span>, sumfile<span class="op">=</span><span class="st">"dp"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting data from the 2020 decennial Census</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '033' for 'King County'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '035' for 'Kitsap County'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '053' for 'Pierce County'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '061' for 'Snohomish County'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using the Demographic Profile</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">Note: 2020 decennial Census data use differential privacy, a technique that</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">introduces errors into data to preserve respondent confidentiality.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> <span style="color: #BB00BB;">Small counts should be interpreted with caution.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> <span style="color: #BB00BB;">See https://www.census.gov/library/fact-sheets/2021/protecting-the-confidentiality-of-the-2020-census-redistricting-data.html for additional guidance.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 923 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GEOID       NAME                    variable value county  year label concept</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 53033000101 Census Tract 1.01; Kin… DP1_009…  <span style="text-decoration: underline;">3</span>759 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 53033000102 Census Tract 1.02; Kin… DP1_009…  <span style="text-decoration: underline;">4</span>321 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 53033000201 Census Tract 2.01; Kin… DP1_009…  <span style="text-decoration: underline;">4</span>416 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 53033000202 Census Tract 2.02; Kin… DP1_009…  <span style="text-decoration: underline;">4</span>099 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 53033000300 Census Tract 3; King C… DP1_009…  <span style="text-decoration: underline;">2</span>820 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 53033000402 Census Tract 4.02; Kin… DP1_009…  <span style="text-decoration: underline;">5</span>174 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 53033000403 Census Tract 4.03; Kin… DP1_009…  <span style="text-decoration: underline;">3</span>074 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 53033000404 Census Tract 4.04; Kin… DP1_009…  <span style="text-decoration: underline;">4</span>067 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 53033000500 Census Tract 5; King C… DP1_009…  <span style="text-decoration: underline;">3</span>400 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 53033000601 Census Tract 6.01; Kin… DP1_009…  <span style="text-decoration: underline;">4</span>074 53033   <span style="text-decoration: underline;">2</span>020 Coun… PROFIL…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 913 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
