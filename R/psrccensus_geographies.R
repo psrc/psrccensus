@@ -50,9 +50,6 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
     digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen
     fullwgt <- paste0("percent_of_", wgt)
     data_year <- dplyr::pull(df, year) %>% unique()
-    ofm_vintage <- if(data_year %in% 2010:2019){2020
-                   }else if(data_year %in% 2020:2022){2022
-                   }
     cb_geo_yr <- (data_year - (data_year %% 10)) %% 100 %>% as.character()
     fips_lookup <- data.frame(digits=c(11,12,15), geo=c("tract","blockgroup","block")) %>% setDT()
     fips_length <- dplyr::pull(df, GEOID) %>% as.character() %>% nchar() %>% max()
@@ -71,9 +68,9 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
       return(NULL)
     }else{
       options(useFancyQuotes = FALSE)
-      sql_str <- paste0("SELECT * FROM Elmer.general.get_geography_splits(",                       # SQL table-value function returns data
+      sql_str <- paste0("SELECT * FROM Elmer.general.get_current_geography_splits(",               # SQL table-value function returns data
                        paste(sQuote(cb_geo), sQuote(planning_geog_type),
-                       data_year, ofm_vintage, sep=", "), ");")
+                       data_year, sep=", "), ");")
       group_cols <- grep("(year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
         append("planning_geog", after=0)
       value_col <- grep("(value|estimate)", colnames(df), value=TRUE)                              # Decennial:value; ACS:estimate
