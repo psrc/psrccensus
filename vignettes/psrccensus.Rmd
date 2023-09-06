@@ -86,6 +86,6 @@ Functions currently in `psrccensus` will only return data in **Washington State*
 
 ## Get Data
 
-View the [Get Data](https://psrc.github.io/psrccensus/articles/get-data.html) vignette (under Articles) on how to use the primary functions.
+View the [Get Data](get-data.html) vignette (under Articles) on how to use the primary functions.
 
-View the [Calculate PUMS Summaries](https://psrc.github.io/psrccensus/articles/calculate-pums-summaries.html) vignette (under Articles) on learn how to create aggregations of PUMS data for the region.
+View the [Calculate PUMS Summaries](pums-1-basics.html) vignette (under Articles) on learn how to create aggregations of PUMS data for the region.
