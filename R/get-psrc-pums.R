@@ -452,8 +452,8 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE, rr
                                    .fill="Total"))
   }
   rs %<>% setDT() %>%
-    .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%  # Convert standard error to MOE
-    setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe")) %>% # -- and revise column name to match
+    .[, grep("_se$", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se$", colnames(.))] %>%  # Convert standard error to MOE
+    setnames(grep("_se$", colnames(.)), stringr::str_replace(grep("_se$", colnames(.), value=TRUE), "_se$", "_moe")) %>% # -- and revise column name to match
     setnames(grep("_cv", colnames(.)), "reliability")
   if(rr==TRUE){
     rs %<>% .[, reliability:=dplyr::case_when(reliability <= .15 ~ "good",                          # Optional categorical variance measure
