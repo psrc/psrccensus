@@ -46,31 +46,3 @@ get_decennial_recs(geography = 'msa',
 ```
 
 Note: the table names are padded with 0s, so you call "H001" as opposed to "H1" as you would in Elmer. Only SF1 tables are currently implemented.
-
-## Make a map of ACS data by tract
-
-Let's say you want to create a map of the tracts in the region for one variable. You can use the function `create_tract_map()`. Here's an example, mapping non-Hispanic Black or African American population alone by tract:
-
-```{r tract_map example, message=FALSE}
-library(sf)
-library(dplyr)
-
-tract.big.tbl <- get_acs_recs(geography ='tract', 
-                              table.names = 'B03002',
-                              years = 2019)
-
-tract.tbl <- tract.big.tbl %>% 
-  filter(label=='Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone')
-
-tract.url <- "https://services6.arcgis.com/GWxg6t7KXELn1thE/arcgis/rest/services/tract2010_nowater/FeatureServer/0/query?where=0=0&outFields=*&f=pgeojson"
-#'
-tract.lyr<-st_read(tract.url)
-
-create_tract_map(tract.tbl, 
-                 tract.lyr, 
-                 map.title='Black, non-Hispanic Population',
-                 map.title.position='topleft', 
-                 legend.title='Black, Non-Hispanic Population',
-                 legend.subtitle='by Census Tract')
-
-```

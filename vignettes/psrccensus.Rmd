@@ -29,9 +29,6 @@ The three most important functions are:
 
 -  [`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.html) "function for getting Public Use Microsample Data")
 
-We have one fancy function that lets us create a map of an ACS variable by tract.
-
--   [`create_tract_map()`](https://psrc.github.io/psrccensus/reference/create_tract_map.html)
 
 To use `psrccensus`, you first will need to get an API key.
 
@@ -72,6 +69,8 @@ Many of our frequently used Census/ACS/PUMS tables are nicely described in our w
 
 You can also search the API variable lists from ACS and Census.
 
+-  **2020 Census**: <https://www.census.gov/data/developers/data-sets/decennial-census.html>
+
 -   **2019 ACS 1-year**: <https://api.census.gov/data/2019/acs/acs1/variables.html>
 
 -   **2015-2019 ACS 5-year**: <https://api.census.gov/data/2019/acs/acs5/variables.html>
@@ -79,6 +78,8 @@ You can also search the API variable lists from ACS and Census.
 -   **2010 Census**: <https://www.census.gov/data/developers/data-sets/decennial-census.html>
 
 ### Which variables are available in which year in ACS and Census?
+
+The 2020 Census data differs from the 2010 Census datasets. Changes to 2020 Census datasets: https://www2.census.gov/programs-surveys/decennial/2020/program-management/2010_20_data_product_release_dates.pdf
 
 Generally, ACS 1-year data are available down for geographies with populations of 65,000 or more, so you can easily get 1-year data for counties or the region, for example. Once you want to go down to the tract-level, 5-year ACS data is more appropriate. Decennial Census data is available down to the block level.
 
