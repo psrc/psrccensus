@@ -22,14 +22,6 @@
 #'
 #' format_estimates(df)
 #' format_estimates(df, type = 'share', moe = FALSE)
-#'
-#' t <- get_acs_recs(geography = 'county',
-#'                   counties = c("King", "Kitsap"),
-#'                   table.names = c('B03002'),
-#'                   years = c(2019),
-#'                   acs.type = 'acs1')
-#'
-#' format_estimates(t, type = 'share', moe = TRUE)
 #' @export
 format_estimates <- function(table, type = 'total', moe = TRUE){
 

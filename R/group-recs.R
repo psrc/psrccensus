@@ -20,7 +20,6 @@
 group_recs <- function(tbl, this_group_name){
   # this is kind of a hard code for the file name and location, may want to revisit
   variables_groupings<-read.csv(system.file('extdata', 'variables_groupings.csv', package='psrccensus'))
-  #variables_groupings<-read.csv('C:/Users/SChildress/Documents/GitHub/psrccensus/inst/extdata/variables_groupings.csv')
 
   this_variable_grouping<- variables_groupings%>%dplyr::filter(.data$group_name==!!this_group_name)
 
