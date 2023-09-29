@@ -55,9 +55,6 @@
     <loc>https://psrc.github.io/psrccensus/reference/codes2labels.html</loc>
   </url>
   <url>
-    <loc>https://psrc.github.io/psrccensus/reference/create_tract_map.html</loc>
-  </url>
-  <url>
     <loc>https://psrc.github.io/psrccensus/reference/dicennial_varsearch.html</loc>
   </url>
   <url>
@@ -106,16 +103,10 @@
     <loc>https://psrc.github.io/psrccensus/reference/get_decennial_tract_county_bg.html</loc>
   </url>
   <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_equity_geographies.html</loc>
-  </url>
-  <url>
     <loc>https://psrc.github.io/psrccensus/reference/get_psrc_places.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/get_psrc_pums.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_time_series.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/group_recs.html</loc>
@@ -182,6 +173,9 @@
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/real_dollars.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/reliability_calcs.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/use_geography_splits.html</loc>
