@@ -19,8 +19,8 @@ acs_varsearch <- function(regex, year=NULL){
   pull_varlist <- function(survey){
     x <- tidycensus::load_variables(acs_year, survey) %>% setDT() %>%
       .[grepl(regex, name, ignore.case=TRUE)|
-        grepl(regex, label, ignore.case=TRUE)|
-        grepl(regex, concept, ignore.case=TRUE)] %>% unique()
+          grepl(regex, label, ignore.case=TRUE)|
+          grepl(regex, concept, ignore.case=TRUE)] %>% unique()
     return(x)
   }
   acstypes <- paste0("acs5", c("","/subject","/profile","/cprofile")) %>% c("acsse", recursive=TRUE)
@@ -42,10 +42,10 @@ acs_varsearch <- function(regex, year=NULL){
 label_acs_variables <- function(df, table.name, year, acs.type){
   name <- label <- concept <- NULL # instantiate variables
   survey <- if(table.name %in% acs_tbltypes_lookup$subject){paste0(acs.type,"/subject")
-    }else if(table.name %in% acs_tbltypes_lookup$profile){paste0(acs.type,"/profile")
-    }else if(table.name %in% acs_tbltypes_lookup$cprofile){paste0(acs.type,"/cprofile")
-    }else if(table.name %in% acs_tbltypes_lookup$acsse){"acsse"
-    }else{acs.type}
+  }else if(table.name %in% acs_tbltypes_lookup$profile){paste0(acs.type,"/profile")
+  }else if(table.name %in% acs_tbltypes_lookup$cprofile){paste0(acs.type,"/cprofile")
+  }else if(table.name %in% acs_tbltypes_lookup$acsse){"acsse"
+  }else{acs.type}
   labels <- tidycensus::load_variables(year=year, dataset=survey) %>%
     dplyr::select(c(name, label, concept)) %>% dplyr::rename(variable=name)
   df <- dplyr::left_join(df, labels, by=c("variable"))
@@ -87,7 +87,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 
       # Split County Name for County and State
       tbl <- tbl %>% tidyr::separate(col=NAME, into=c("name", "state"),sep=",") %>%
-                     dplyr::mutate(estimate =tidyr::replace_na(estimate,0))
+        dplyr::mutate(estimate =tidyr::replace_na(estimate,0))
 
       tbl$state <- trimws(tbl$state, "l")
 
@@ -110,7 +110,7 @@ get_acs_county <- function (state="Washington", counties = c("King","Kitsap","Pi
 
       # Median and average calculations are more complicated, may need PUMS, filter out for now:
       tbl  <- tbl %>% dplyr::filter(name !='Region' |
-                               (!(stringr::str_detect(label, 'Median'))&!(stringr::str_detect(label, 'Average'))))
+                                      (!(stringr::str_detect(label, 'Median'))&!(stringr::str_detect(label, 'Average'))))
 
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
@@ -160,8 +160,8 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
         dplyr::mutate(census_geography="MSA", acs_type=acs.type, year=year) %>%
 
 
-      # Store yearly data into final yearly data for current table - append if a year already exists
-      ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
+        # Store yearly data into final yearly data for current table - append if a year already exists
+        ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
 
     }
 
@@ -275,6 +275,7 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
         dplyr::mutate(census_geography="Tract", acs_type = "acs5", year=year) %>%
         dplyr::select(-county)
 
+
       # Store yearly data into final yearly data for current table - append if a year already exists
       ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
 
@@ -284,7 +285,6 @@ get_acs_tract <- function (state="Washington", counties = c("King","Kitsap","Pie
     ifelse(is.null(census.data), census.data <- yearly.data, census.data <- dplyr::bind_rows(census.data, yearly.data))
 
   }
-
   return(census.data)
 }
 
@@ -337,6 +337,39 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
   return(census.data)
 }
 
+#' Add estimate reliability information
+#'
+#' After gathering data, add reliability information using moe and estimate
+#'
+#' @param dfs acs data frames already retrieved from the api
+#' @author Suzanne
+#' @return the data frames with new columns for se, cv, and reliability
+#' @export
+
+reliability_calcs<- function(dfs){
+  # A coefficient of variation (CV) measures the relative amount of sampling error that is associated with a sample       #estimate. The CV is calculated as the ratio of the SE for an estimate to the estimate itself and is usually
+  #  expressed as a percent.
+  # Note that since both the ACS and household travel survey are reported using a 90 percent confidence interval,         # where the Margin of Error (MOE) is reported in place of standard error, you can convert it to standard error by       # dividing by 1.645.
+  # to do: put 1.645 in a better place in the package, it's a magic number
+  # http://aws-linux/mediawiki/index.php/Understanding_Error_and_Determining_Statistical_Significance
+  zscore_90<-1.645
+
+  dfs%<>%dplyr::mutate(se=moe/zscore_90)%>%
+    dplyr::mutate(cv= se/estimate)%>%
+    dplyr::mutate(reliability=
+                    dplyr::case_when(
+                      estimate==0 ~ 'estimate is 0, cannot compute',
+                      cv<=0.15 ~ 'good',
+                      cv>0.15 & cv<=0.30 ~ 'fair',
+                      cv>0.30 & cv<=0.50 ~ 'use with caution',
+                      cv>0.50 ~ 'use with extreme caution',
+                      .default = 'missing or N/A'
+                    ))
+
+  return(dfs)
+}
+
+
 #' ACS Estimates
 #'
 #' Generate ACS estimates for multiple tables by tracts, counties, MSAs, or places for multiple years.
@@ -355,19 +388,19 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
 #' @return a tibble of ACS estimates by selected geography for selected table codes. Includes variable names.
 #' @examples
 #' get_acs_recs(geography = 'county',
-#'              table.names = c('B03002',"C17002"),
+#'              table.names = c('B03002'),
 #'              years=c(2017,2019),
 #'              acs.type = 'acs1')
 #'
 #' get_acs_recs(geography = 'county',
-#'              table.names = c('B03002'),
+#'              table.names = c("C17002"),
 #'              counties=c("Kitsap"),
 #'              years=c(2019),
 #'              acs.type = 'acs5')
 #'
 #' @export
 get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'), table.names, years, FIPS = c("14740","42660"), place_FIPS=NULL, acs.type) {
-
+  #this should probably be stored in different place, but I haven't figured out how
   if(geography == 'county') {
     dfs <- get_acs_county(state, counties, table.names, years, acs.type)
   } else if (geography == 'msa'){
@@ -378,7 +411,9 @@ get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Ki
     dfs <- get_acs_tract(state, counties, table.names, years)
   } else if(geography == 'block group') {
     dfs <- get_acs_blockgroup(state, counties, table.names, years)
-}
+  }
+
+  dfs<-reliability_calcs(dfs)
 
   return(dfs)
 }

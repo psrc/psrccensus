@@ -40,12 +40,12 @@ Generate ACS estimates for multiple tables by tracts, counties, MSAs, or places 
 }
 \examples{
 get_acs_recs(geography = 'county',
-             table.names = c('B03002',"C17002"),
+             table.names = c('B03002'),
              years=c(2017,2019),
              acs.type = 'acs1')
 
 get_acs_recs(geography = 'county',
-             table.names = c('B03002'),
+             table.names = c("C17002"),
              counties=c("Kitsap"),
              years=c(2019),
              acs.type = 'acs5')
