@@ -104,7 +104,7 @@ acs_data_group <- acs_data %>%
 ```
 
 #### Data wrangling
-```{r, include=FALSE}
+```{r }
 # pivot data to calculate percentage by census tract, calculate estimates
 
 acs_data_group<- acs_data_group%>%   

@@ -210,6 +210,18 @@ error.</p>
 <div class="section level4">
 <h4 id="data-wrangling">Data wrangling<a class="anchor" aria-label="anchor" href="#data-wrangling"></a>
 </h4>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># pivot data to calculate percentage by census tract, calculate estimates</span></span>
+<span></span>
+<span><span class="va">acs_data_group</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>   </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">rent_burden_group</span>, values_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">estimate</span>,<span class="va">moe</span><span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span><span class="st">'estimate_cost_burdened'</span><span class="op">=</span><span class="st">'estimate_Cost Burdened (More than 30 percent)'</span>,</span>
+<span>         <span class="st">'moe_cost_burdened'</span><span class="op">=</span> <span class="st">'moe_Cost Burdened (More than 30 percent)'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># weight averages for population &amp; calculating percentage/share of population per tract instead of integer</span></span>
+<span><span class="va">acs_data_group</span><span class="op">&lt;-</span>  <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>estimate_new_total<span class="op">=</span><span class="op">(</span><span class="va">estimate_Total</span><span class="op">-</span><span class="va">`estimate_Not computed`</span><span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>estimate_perc_cost_burdened<span class="op">=</span><span class="op">(</span><span class="op">(</span><span class="va">estimate_cost_burdened</span><span class="op">/</span><span class="va">estimate_new_total</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="calculate-margins-of-error">Calculate margins of error<a class="anchor" aria-label="anchor" href="#calculate-margins-of-error"></a>
@@ -219,7 +231,7 @@ to down the grouped rows, you need to apply the function rowwise. You
 would not need to do this if the data were not pivoted.</p>
 <p>Note the moe_sum is applied although you are taking a difference.
 Then moe_prop is applied when you are finding the shares.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#calculate moes</span></span>
 <span><span class="va">acs_data_group</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise</a></span><span class="op">(</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
