@@ -90,12 +90,11 @@ metrics that require transformation.</p>
 provide coefficients of variation, standard errors, and reliability
 labels to ACS data retrieved directly from the api.</p>
 <p>To calculate reliability using psrccensus, on user transformed
-tables, you may want to apply the function
-<code>reliability_calcs</code>. This function requires you have a
-dataframe, a column holding the margins of error, and a column holding
-the estimate. So you need to have pre-calculated the margin of error
-along the way to be able to retrieve the reliability of the
-estimate.</p>
+tables, you may want to apply the function <a href="https://psrc.github.io/psrccensus/reference/reliability_calcs.html">reliability_calcs</a>.
+This function requires you have a dataframe, a column holding the
+margins of error, and a column holding the estimate. So you need to have
+pre-calculated the margin of error along the way to be able to retrieve
+the reliability of the estimate.</p>
 <p>At each stage of calculation and aggregation, you need to
 re-calculate the margins of error. Here is a vignette about calculating
 margins of error from the ACS: <a href="https://walker-data.com/tidycensus/articles/margins-of-error.html" class="external-link uri">https://walker-data.com/tidycensus/articles/margins-of-error.html</a></p>
@@ -133,9 +132,9 @@ are cost-burdened by Census tract. Cost-burdened is defined in this case
 as spending more than 30% of household income on housing costs.</p>
 <p>To do the summary, first you need to aggregate the data provided by
 households spending over 30% based on the available fields-Less than
-10.0 percent|10.0 to 14.9 percent|15.0 to 19.9 percent|20.0 to 24.9
-percent|25.0 to 29.9 percent. This provides the numerator of your
-calculation.</p>
+10.0 percent,10.0 to 14.9 percent, 15.0 to 19.9 percent, 20.0 to 24.9
+percent, 25.0 to 29.9 percent. These summed items by group provide the
+numerator of your calculation.</p>
 <p>Next you need to redefine the total to remove when the values are not
 compute- this is denominator. Then you need to calculate the shares.</p>
 <p>For each data transformation, you need to recalculate the margin of
@@ -158,8 +157,7 @@ error.</p>
 <pre><code><span><span class="co">## Getting data from the 2017-2021 5-year ACS</span></span></code></pre>
 </div>
 <div class="section level4">
-<h4 id="step-2--add-a-grouping-for-more-than-30-of-income-going-to-housing-cost">Step 2. Add a grouping for more than 30% of income going to housing
-cost<a class="anchor" aria-label="anchor" href="#step-2--add-a-grouping-for-more-than-30-of-income-going-to-housing-cost"></a>
+<h4 id="step-2--add-a-grouping">Step 2. Add a grouping<a class="anchor" aria-label="anchor" href="#step-2--add-a-grouping"></a>
 </h4>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data wrangling for grouping &gt;30% and under 30% - census tract and population</span></span>
@@ -179,8 +177,7 @@ cost<a class="anchor" aria-label="anchor" href="#step-2--add-a-grouping-for-more
 </div>
 </div>
 <div class="section level3">
-<h3 id="step-3-aggregate-by-the-rent-burden-group-and-the-tract-id-calculate-sums-and-the-moe_sum-">Step 3: Aggregate by the rent burden group and the tract id,
-calculate sums, and the moe_sum.<a class="anchor" aria-label="anchor" href="#step-3-aggregate-by-the-rent-burden-group-and-the-tract-id-calculate-sums-and-the-moe_sum-"></a>
+<h3 id="step-3-aggregate-and-calculate">Step 3: Aggregate and calculate<a class="anchor" aria-label="anchor" href="#step-3-aggregate-and-calculate"></a>
 </h3>
 <p>The moe_sum uses tidycensus.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -189,14 +186,17 @@ calculate sums, and the moe_sum.<a class="anchor" aria-label="anchor" href="#ste
 <span><span class="co"># use the moe_sum function from tidycensus</span></span>
 <span><span class="va">acs_data_group</span> <span class="op">&lt;-</span> <span class="va">acs_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">rent_burden_group</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span>, moe<span class="op">=</span><span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_sum.html" class="external-link">moe_sum</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="va">estimate</span>, moe<span class="op">=</span><span class="va">moe</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span>, </span>
+<span>                   moe<span class="op">=</span><span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_sum.html" class="external-link">moe_sum</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="va">estimate</span>, moe<span class="op">=</span><span class="va">moe</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## `summarise()` has grouped output by 'GEOID'. You can override using the</span></span>
 <span><span class="co">## `.groups` argument.</span></span></code></pre>
-<p>###Step 4: Data wrangling to get the aggregated data in the right
-shape, pivot, subtract, divide.</p>
 </div>
 <div class="section level3">
-<h3 id="step-5-calculate-margins-of-error-on-the-transformed-data-">Step 5: Calculate margins of error on the transformed data.<a class="anchor" aria-label="anchor" href="#step-5-calculate-margins-of-error-on-the-transformed-data-"></a>
+<h3 id="step-4-data-wrangling">Step 4: Data wrangling<a class="anchor" aria-label="anchor" href="#step-4-data-wrangling"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="step-5-calculate-margins-of-error">Step 5: Calculate margins of error<a class="anchor" aria-label="anchor" href="#step-5-calculate-margins-of-error"></a>
 </h3>
 <p>Because you are applying the function across the columns, as opposed
 to down the grouped rows, you need to apply the function rowwise. You
@@ -209,7 +209,8 @@ Then moe_prop is applied when you are finding the shares.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise</a></span><span class="op">(</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>moe_new_total<span class="op">=</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_sum.html" class="external-link">moe_sum</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">estimate_Total</span>, <span class="va">`estimate_Not computed`</span><span class="op">)</span>, </span>
 <span>                               moe<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">moe_Total</span>,<span class="va">`moe_Not computed`</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>moe_perc_cost_burdened<span class="op">=</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_prop.html" class="external-link">moe_prop</a></span><span class="op">(</span>num<span class="op">=</span><span class="va">estimate_cost_burdened</span>,denom<span class="op">=</span><span class="va">estimate_new_total</span>, moe_num<span class="op">=</span><span class="va">moe_cost_burdened</span>, moe_denom<span class="op">=</span><span class="va">moe_new_total</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>moe_perc_cost_burdened<span class="op">=</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_prop.html" class="external-link">moe_prop</a></span><span class="op">(</span>num<span class="op">=</span><span class="va">estimate_cost_burdened</span>,</span>
+<span>                              denom<span class="op">=</span><span class="va">estimate_new_total</span>, moe_num<span class="op">=</span><span class="va">moe_cost_burdened</span>, moe_denom<span class="op">=</span><span class="va">moe_new_total</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="va">acs_data_final</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -217,20 +218,21 @@ Then moe_prop is applied when you are finding the shares.</p>
 <span>                <span class="va">moe_cost_burdened</span>, <span class="va">moe_new_total</span>, <span class="va">moe_perc_cost_burdened</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">estimate_cost_burdened</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">acs_data_final</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/reliability_calcs.html">reliability_calcs</a></span><span class="op">(</span><span class="va">acs_data_final</span>, estimate<span class="op">=</span><span class="st">'estimate_perc_cost_burdened'</span>, moe<span class="op">=</span><span class="st">'moe_perc_cost_burdened'</span><span class="op">)</span></span>
+<span><span class="va">acs_data_final</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/reliability_calcs.html">reliability_calcs</a></span><span class="op">(</span><span class="va">acs_data_final</span>, estimate<span class="op">=</span><span class="st">'estimate_perc_cost_burdened'</span>, </span>
+<span>                                  moe<span class="op">=</span><span class="st">'moe_perc_cost_burdened'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">acs_data_final</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">estimate_perc_cost_burdened</span>, <span class="va">moe_perc_cost_burdened</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">acs_data_final</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">estimate_perc_cost_burdened</span>, <span class="va">reliability</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Rowwise:  GEOID</span></span></span>
-<span><span class="co">##   GEOID       estimate_perc_cost_burdened moe_perc_cost_burdened</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 53033000101                       0.298                 0.076<span style="text-decoration: underline;">5</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 53033000102                       0.325                 0.097<span style="text-decoration: underline;">1</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 53033000201                       0.339                 0.105 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 53033000202                       0.241                 0.147 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 53033000300                       0.313                 0.164 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 53033000402                       0.292                 0.089<span style="text-decoration: underline;">8</span></span></span></code></pre>
-<p>Now the data is ready to be joined to the tract map.</p>
+<span><span class="co">##   GEOID       estimate_perc_cost_burdened reliability     </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 53033000101                       0.298 fair            </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 53033000102                       0.325 fair            </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 53033000201                       0.339 fair            </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 53033000202                       0.241 use with caution</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 53033000300                       0.313 use with caution</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 53033000402                       0.292 fair</span></span></code></pre>
+<p>Now the data is ready to be joined to the tract map, if desired.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
