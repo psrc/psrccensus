@@ -7,12 +7,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="How to calculate reliability and margins of error on transformed ACS data.
 ">
-<title>Reliability Measures on Transformed ACS Metrics • psrccensus</title>
+<title>Reliability Measures for ACS data tables • psrccensus</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reliability Measures on Transformed ACS Metrics">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reliability Measures for ACS data tables">
 <meta property="og:description" content="How to calculate reliability and margins of error on transformed ACS data.
 ">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -46,7 +46,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/calculate-reliability-moe-transformed-acs.html">Reliability Measures on Transformed ACS Metrics</a>
+    <a class="dropdown-item" href="../articles/calculate-reliability-moe-transformed-acs.html">Reliability Measures for ACS data tables</a>
     <a class="dropdown-item" href="../articles/geographic-conversions.html">Census estimates for non-census geographies</a>
     <a class="dropdown-item" href="../articles/get-data.html">Get Data</a>
     <a class="dropdown-item" href="../articles/pums-1-basics.html">PUMS 1: Calculate basic summaries</a>
@@ -71,7 +71,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Reliability Measures on Transformed ACS Metrics</h1>
+      <img src="" class="logo" alt=""><h1>Reliability Measures for ACS data tables</h1>
             
       
       
@@ -81,13 +81,50 @@
     
     
 <div class="section level2">
-<h2 id="how-to-calculate-reliability-estimates-on-transformed-acs-dataframes">How to calculate reliability estimates on transformed ACS
-dataframes<a class="anchor" aria-label="anchor" href="#how-to-calculate-reliability-estimates-on-transformed-acs-dataframes"></a>
+<h2 id="reliability-measures-for-acs-estimates">Reliability measures for ACS estimates<a class="anchor" aria-label="anchor" href="#reliability-measures-for-acs-estimates"></a>
 </h2>
+<div class="section level4">
+<h4 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+</h4>
 <p>This vignette explains how to calculate reliability measures for ACS
-metrics that require transformation. <a href="https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch08.pdf" class="external-link">This
-document from Census</a> provides background on how to estimate margins
-of error on user derived estimates.</p>
+estimates. The American Community Survey (ACS), the household travel
+survey, and other population surveys are all samples of the population
+with usually less 10% of the population answering the survey.</p>
+<p>Because these surveys are a sample, they have several sources of
+potential error such as sampling error, nonresponse error, coverage
+error, measurement error, and processing error.</p>
+<p>The data team wanted to develop a set of rough guidelines to help
+team analysts to better understanding when [<a href="https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch07.pdf" class="external-link uri">https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch07.pdf</a>
+sampling error] specifically could mean that the sample has quality
+issues and needs to be examined with additional scrutiny.</p>
+<p>A coefficient of variation (CV) measures the relative amount of
+sampling error that is associated with a sample estimate. The CV is
+calculated as the ratio of the SE for an estimate to the estimate itself
+and is usually expressed as a percent.</p>
+<p>The internal recommendation for understanding CVs are:</p>
+<ul>
+<li><p>CV &lt;= 15% is good</p></li>
+<li><p>CV &gt;15% and &lt;=30% is fair</p></li>
+<li><p>CV &gt;30% and &lt;=50% estimate should be used with
+caution</p></li>
+<li><p>CV &gt;50% examine with great caution whether it is
+usable</p></li>
+</ul>
+<p>Note that since both the ACS and household travel survey are reported
+using a 90 percent confidence interval, where the Margin of Error (MOE)
+is reported in place of standard error, you can convert it to standard
+error by dividing by 1.645.</p>
+<p>These breakpoints are based on guidance from the [<a href="https://ofm.wa.gov/sites/default/files/public/legacy/pop/acs/ofm_acs_user_guide.pdf" class="external-link uri">https://ofm.wa.gov/sites/default/files/public/legacy/pop/acs/ofm_acs_user_guide.pdf</a>
+Census Bureau] and the [<a href="https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf" class="external-link uri">https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf</a>
+National Center for Transit Research]. It is important that analysts
+consider the nuances of their datasets to understand potential sources
+of error in their estimates. These internal categories are part of an
+ongoing conversation and may change.</p>
+</div>
+<div class="section level3">
+<h3 id="reliability-is-provided-on-all-data-tables-retrieved-via-psrccensus">Reliability is provided on all data tables retrieved via
+psrccensus<a class="anchor" aria-label="anchor" href="#reliability-is-provided-on-all-data-tables-retrieved-via-psrccensus"></a>
+</h3>
 <p>The psrccensus library contains functionality has been added to
 provide coefficients of variation, standard errors, and reliability
 labels to ACS data retrieved directly from the api. Every ACS data table
@@ -96,6 +133,11 @@ includes fields for standard error, coefficient of variation, and
 reliability. But often you need to transform the variables that come
 from the ACS to get at what you need to summarize, and this is not
 directly built into psrccensus.</p>
+</div>
+<div class="section level3">
+<h3 id="how-to-calculate-reliability-estimates-on-transformed-acs-dataframes">How to calculate reliability estimates on transformed ACS
+dataframes<a class="anchor" aria-label="anchor" href="#how-to-calculate-reliability-estimates-on-transformed-acs-dataframes"></a>
+</h3>
 <p>To calculate reliability using psrccensus, on user transformed
 tables, you may want to apply the function <a href="https://psrc.github.io/psrccensus/reference/reliability_calcs.html">reliability_calcs()</a>.
 This function requires you have a dataframe, a column holding the
@@ -104,11 +146,14 @@ pre-calculated the margin of error transformed, along the way to be able
 to retrieve the reliability of the estimate.</p>
 <p>At each stage of calculation and aggregation, you need to
 re-calculate the margins of error. The R library tidycensus has built in
-functions for (re-calculating margins of error)[<a href="https://walker-data.com/tidycensus/articles/margins-of-error.html" class="external-link uri">https://walker-data.com/tidycensus/articles/margins-of-error.html</a>]
-after data transformation. We recommend that users rely on these
-functions to derive margins of error when data needs to be aggregated.
-Another option would be to code the margin of error calculations into a
-user defined fucntions.</p>
+functions for <a href="https://walker-data.com/tidycensus/articles/margins-of-error.html" class="external-link">re-calculating
+margins of error</a> after data transformation. We recommend that users
+rely on these functions to derive margins of error when data needs to be
+aggregated. Another option would be to code the margin of error
+calculations into a user defined functions.</p>
+<p>For more background on the types of calculations performed by
+tidycensus for margins of error, you can also read <a href="%5BThis%20document%20from%20Census%5D(https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch08.pdf)%20provides%20background%20on%20how%20to%20estimate%20margins%20of%20error%20on%20user%20derived%20estimates" class="external-link">this
+document from Census</a></p>
 <p>Common functions from tidycensus for calculating margins of error,
 are the following:</p>
 <ul>
@@ -121,6 +166,7 @@ ratio</p></li>
 <li><p>moe_sum() Calculate the margin of error for a derived sum (or
 difference)</p></li>
 </ul>
+</div>
 <div class="section level3">
 <h3 id="example-housing-cost-burden">Example: Housing Cost Burden<a class="anchor" aria-label="anchor" href="#example-housing-cost-burden"></a>
 </h3>

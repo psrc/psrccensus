@@ -1,23 +1,50 @@
 ---
-title: "Reliability Measures on Transformed ACS Metrics"
+title: "Reliability Measures for ACS data tables"
 description: >
   How to calculate reliability and margins of error on transformed ACS data.
 output: html_vignette
 vignette: >
-  %\VignetteIndexEntry{Reliability Measures on Transformed ACS Metrics}
+  %\VignetteIndexEntry{Reliability Measures for ACS data tables}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-## How to calculate reliability estimates on transformed ACS dataframes
+## Reliability measures for ACS estimates
 
-This vignette explains how to calculate reliability measures for ACS metrics that require transformation. [This document from Census](https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch08.pdf) provides background on how to estimate margins of error on user derived estimates.
 
+#### Background
+This vignette explains how to calculate reliability measures for ACS estimates.
+The American Community Survey (ACS), the household travel survey, and other population surveys are all samples of the population with usually less 10% of the population answering the survey.
+
+Because these surveys are a sample, they have several sources of potential error such as sampling error, nonresponse error, coverage error, measurement error, and processing error.
+
+The data team wanted to develop a set of rough guidelines to help team analysts to better understanding when [https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch07.pdf sampling error] specifically could mean that the sample has quality issues and needs to be examined with additional scrutiny. 
+
+A coefficient of variation (CV) measures the relative amount of sampling error that is associated with a sample estimate. The CV is calculated as the ratio of the SE for an estimate to the estimate itself and is usually expressed as a percent.
+
+The internal recommendation for understanding CVs are:
+
+* CV <= 15% is good  
+
+* CV >15% and <=30% is fair
+
+* CV >30% and <=50% estimate should be used with caution
+
+* CV >50% examine with great caution whether it is usable
+
+Note that since both the ACS and household travel survey are reported using a 90 percent confidence interval, where the Margin of Error (MOE) is reported in place of standard error, you can convert it to standard error by dividing by 1.645.
+
+These breakpoints are based on guidance from the [https://ofm.wa.gov/sites/default/files/public/legacy/pop/acs/ofm_acs_user_guide.pdf Census Bureau] and the [https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf National Center for Transit Research]. It is important that analysts consider the nuances of their datasets to understand potential sources of error in their estimates. These internal categories are part of an ongoing conversation and may change.
+
+###  Reliability is provided on all data tables retrieved via psrccensus
 The psrccensus library contains functionality has been added to provide coefficients of variation, standard errors, and reliability labels to ACS data retrieved directly from the api. Every ACS data table output from psrccensus via the function [get_acs_recs()](https://psrc.github.io/psrccensus/reference/get_acs_recs.html) includes fields for standard error, coefficient of variation, and reliability. But often you need to transform the variables that come from the ACS to get at what you need to summarize, and this is not directly built into psrccensus.
 
+### How to calculate reliability estimates on transformed ACS dataframes
 To calculate reliability using psrccensus, on user transformed tables, you may want to apply the function [reliability_calcs()](https://psrc.github.io/psrccensus/reference/reliability_calcs.html). This function requires you have a dataframe, a column holding the margins of error, and a column holding the estimate. So you need to have pre-calculated the margin of error transformed, along the way to be able to retrieve the reliability of the estimate.
 
 
-At each stage of calculation and aggregation, you need to re-calculate the margins of error. The R library tidycensus has built in functions for (re-calculating margins of error)[https://walker-data.com/tidycensus/articles/margins-of-error.html] after data transformation. We recommend that users rely on these functions to derive margins of error when data needs to be aggregated. Another option would be to code the margin of error calculations into a user defined fucntions.
+At each stage of calculation and aggregation, you need to re-calculate the margins of error. The R library tidycensus has built in functions for [re-calculating margins of error](https://walker-data.com/tidycensus/articles/margins-of-error.html) after data transformation. We recommend that users rely on these functions to derive margins of error when data needs to be aggregated. Another option would be to code the margin of error calculations into a user defined functions.
+
+For more background on the types of calculations performed by tidycensus for margins of error, you can also read [this document from Census]([This document from Census](https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch08.pdf) provides background on how to estimate margins of error on user derived estimates)
 
 Common functions from tidycensus for calculating margins of error, are the following:
 
@@ -32,6 +59,7 @@ Calculate the margin of error for a derived ratio
 
 * moe_sum()
 Calculate the margin of error for a derived sum (or difference)
+
 
 ### Example: Housing Cost Burden
 
