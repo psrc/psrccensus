@@ -209,14 +209,6 @@ get_acs_place <- function (state="Washington", table.names, years, acs.type, pla
       if(!is.null(place_FIPS)){tbl %<>% filter(GEOID %in% place_FIPS)}else{tbl %<>% filter(GEOID %in% psrc_places)}
       tbl$state <- trimws(tbl$state, "l")
 
-      # Add labels to the data - The labels can differ for each year so loading now
-      labels <- tidycensus::load_variables(year=year, dataset=acs.type)
-      if("geography" %in% names(labels)){
-        labels %<>% select(-geography)
-      }
-      labels %<>% dplyr::rename(variable = name)
-      tbl <- dplyr::left_join(tbl,labels,by=c("variable"))
-
       # Add labels, column for Census Geography, Type and Year of Data
       tbl %<>% label_acs_variables(table, year, acs.type) %>%
         dplyr::mutate(acs_type = acs.type, year=year) %>%
