@@ -87,16 +87,19 @@
 <h4 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
 </h4>
 <p>This vignette explains how to calculate reliability measures for ACS
-estimates. The American Community Survey (ACS), the household travel
-survey, and other population surveys are all samples of the population
-with usually less 10% of the population answering the survey.</p>
+estimates.</p>
+<p>The American Community Survey (ACS), the household travel survey, and
+other population surveys are all samples of the population with usually
+less 10% of the population answering the survey.</p>
 <p>Because these surveys are a sample, they have several sources of
 potential error such as sampling error, nonresponse error, coverage
-error, measurement error, and processing error.</p>
+error, measurement error, and processing error.<a href="https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch07.pdf" class="external-link">Here
+is a document from Census</a> about these concepts as they apply to
+ACS.</p>
 <p>The data team wanted to develop a set of rough guidelines to help
-team analysts to better understanding when [<a href="https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch07.pdf" class="external-link uri">https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch07.pdf</a>
-sampling error] specifically could mean that the sample has quality
-issues and needs to be examined with additional scrutiny.</p>
+team analysts to better understanding when specifically could mean that
+the sample has quality issues and needs to be examined with additional
+scrutiny.</p>
 <p>A coefficient of variation (CV) measures the relative amount of
 sampling error that is associated with a sample estimate. The CV is
 calculated as the ratio of the SE for an estimate to the estimate itself
@@ -114,17 +117,15 @@ usable</p></li>
 using a 90 percent confidence interval, where the Margin of Error (MOE)
 is reported in place of standard error, you can convert it to standard
 error by dividing by 1.645.</p>
-<p>These breakpoints are based on guidance from the [<a href="https://ofm.wa.gov/sites/default/files/public/legacy/pop/acs/ofm_acs_user_guide.pdf" class="external-link uri">https://ofm.wa.gov/sites/default/files/public/legacy/pop/acs/ofm_acs_user_guide.pdf</a>
-Census Bureau] and the [<a href="https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf" class="external-link uri">https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf</a>
-National Center for Transit Research]. It is important that analysts
-consider the nuances of their datasets to understand potential sources
-of error in their estimates. These internal categories are part of an
-ongoing conversation and may change.</p>
+<p>These breakpoints are based on guidance from the <a href="https://ofm.wa.gov/sites/default/files/public/legacy/pop/acs/ofm_acs_user_guide.pdf" class="external-link">Census
+Bureau</a> and the [National Center for Transit Research] (<a href="https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf" class="external-link uri">https://www.nctr.usf.edu/wp-content/uploads/2010/04/77802.pdf</a>).
+It is important that analysts consider the nuances of their datasets to
+understand potential sources of error in their estimates. These internal
+categories are part of an ongoing conversation and may change.</p>
 </div>
-<div class="section level3">
-<h3 id="reliability-is-provided-on-all-data-tables-retrieved-via-psrccensus">Reliability is provided on all data tables retrieved via
-psrccensus<a class="anchor" aria-label="anchor" href="#reliability-is-provided-on-all-data-tables-retrieved-via-psrccensus"></a>
-</h3>
+<div class="section level4">
+<h4 id="reliability-is-provided-on-data-tables-retrieved-via-psrccensus">Reliability is provided on data tables retrieved via psrccensus<a class="anchor" aria-label="anchor" href="#reliability-is-provided-on-data-tables-retrieved-via-psrccensus"></a>
+</h4>
 <p>The psrccensus library contains functionality has been added to
 provide coefficients of variation, standard errors, and reliability
 labels to ACS data retrieved directly from the api. Every ACS data table
@@ -134,10 +135,10 @@ reliability. But often you need to transform the variables that come
 from the ACS to get at what you need to summarize, and this is not
 directly built into psrccensus.</p>
 </div>
-<div class="section level3">
-<h3 id="how-to-calculate-reliability-estimates-on-transformed-acs-dataframes">How to calculate reliability estimates on transformed ACS
+<div class="section level4">
+<h4 id="how-to-calculate-reliability-estimates-on-transformed-acs-dataframes">How to calculate reliability estimates on transformed ACS
 dataframes<a class="anchor" aria-label="anchor" href="#how-to-calculate-reliability-estimates-on-transformed-acs-dataframes"></a>
-</h3>
+</h4>
 <p>To calculate reliability using psrccensus, on user transformed
 tables, you may want to apply the function <a href="https://psrc.github.io/psrccensus/reference/reliability_calcs.html">reliability_calcs()</a>.
 This function requires you have a dataframe, a column holding the
