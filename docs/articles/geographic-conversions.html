@@ -46,6 +46,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/calculate-reliability-moe-transformed-acs.html">Reliability Measures for ACS data tables</a>
     <a class="dropdown-item" href="../articles/geographic-conversions.html">Census estimates for non-census geographies</a>
     <a class="dropdown-item" href="../articles/get-data.html">Get Data</a>
     <a class="dropdown-item" href="../articles/pums-1-basics.html">PUMS 1: Calculate basic summaries</a>
@@ -167,21 +168,6 @@ default)</li>
 <span>                  years <span class="op">=</span> <span class="fl">2019</span>,</span>
 <span>                  acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>label<span class="op">=</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">label</span>,<span class="st">"(^Estimate!!|Total:!!)"</span>,<span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 776 × 11</span></span></span>
-<span><span class="co">#&gt;    GEOID      name  state variable estimate   moe label concept census_geography</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 530330001… Cens… Wash… B26001_…       38    24 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 530330002… Cens… Wash… B26001_…       87   150 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 530330003… Cens… Wash… B26001_…       16     5 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 530330004… Cens… Wash… B26001_…       89    32 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 530330004… Cens… Wash… B26001_…      239   151 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 530330005… Cens… Wash… B26001_…       21    20 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 530330006… Cens… Wash… B26001_…       67    43 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 530330007… Cens… Wash… B26001_…       20    10 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 530330008… Cens… Wash… B26001_…       67    27 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 530330009… Cens… Wash… B26001_…       30    19 Esti… GROUP … Tract           </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 766 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: acs_type &lt;chr&gt;, year &lt;dbl&gt;</span></span></span>
 <span></span>
 <span><span class="va">y</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>

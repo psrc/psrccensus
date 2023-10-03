@@ -4,10 +4,14 @@
 \alias{reliability_calcs}
 \title{Add estimate reliability information}
 \usage{
-reliability_calcs(dfs)
+reliability_calcs(dfs, moe = "moe", estimate = "estimate")
 }
 \arguments{
-\item{dfs}{acs data frames already retrieved from the api}
+\item{dfs}{data frames already retrieved from the api, or created by a user}
+
+\item{moe}{character name of the column that has contains margin of error estimates}
+
+\item{estimate}{character name of the column that has contains data value estimates}
 }
 \value{
 the data frames with new columns for se, cv, and reliability
