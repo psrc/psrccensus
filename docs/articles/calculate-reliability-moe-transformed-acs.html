@@ -85,21 +85,32 @@
 dataframes<a class="anchor" aria-label="anchor" href="#how-to-calculate-reliability-estimates-on-transformed-acs-dataframes"></a>
 </h2>
 <p>This vignette explains how to calculate reliability measures for ACS
-metrics that require transformation.</p>
+metrics that require transformation. <a href="https://www.census.gov/content/dam/Census/library/publications/2018/acs/acs_general_handbook_2018_ch08.pdf" class="external-link">This
+document from Census</a> provides background on how to estimate margins
+of error on user derived estimates.</p>
 <p>The psrccensus library contains functionality has been added to
 provide coefficients of variation, standard errors, and reliability
-labels to ACS data retrieved directly from the api.</p>
+labels to ACS data retrieved directly from the api. Every ACS data table
+output from psrccensus via the function <a href="https://psrc.github.io/psrccensus/reference/get_acs_recs.html">get_acs_recs()</a>
+includes fields for standard error, coefficient of variation, and
+reliability. But often you need to transform the variables that come
+from the ACS to get at what you need to summarize, and this is not
+directly built into psrccensus.</p>
 <p>To calculate reliability using psrccensus, on user transformed
-tables, you may want to apply the function <a href="https://psrc.github.io/psrccensus/reference/reliability_calcs.html">reliability_calcs</a>.
+tables, you may want to apply the function <a href="https://psrc.github.io/psrccensus/reference/reliability_calcs.html">reliability_calcs()</a>.
 This function requires you have a dataframe, a column holding the
 margins of error, and a column holding the estimate. So you need to have
-pre-calculated the margin of error along the way to be able to retrieve
-the reliability of the estimate.</p>
+pre-calculated the margin of error transformed, along the way to be able
+to retrieve the reliability of the estimate.</p>
 <p>At each stage of calculation and aggregation, you need to
-re-calculate the margins of error. Here is a vignette about calculating
-margins of error from the ACS: <a href="https://walker-data.com/tidycensus/articles/margins-of-error.html" class="external-link uri">https://walker-data.com/tidycensus/articles/margins-of-error.html</a></p>
-<p>The functions that you need to use for calculating margins of error,
-depending on which data transformation is applied:</p>
+re-calculate the margins of error. The R library tidycensus has built in
+functions for (re-calculating margins of error)[<a href="https://walker-data.com/tidycensus/articles/margins-of-error.html" class="external-link uri">https://walker-data.com/tidycensus/articles/margins-of-error.html</a>]
+after data transformation. We recommend that users rely on these
+functions to derive margins of error when data needs to be aggregated.
+Another option would be to code the margin of error calculations into a
+user defined fucntions.</p>
+<p>Common functions from tidycensus for calculating margins of error,
+are the following:</p>
 <ul>
 <li><p>moe_product:<br>
 Calculate the margin of error for a derived product</p></li>
@@ -115,7 +126,9 @@ difference)</p></li>
 </h3>
 <p>In this example, we want to retrieve the percent of households that
 are cost-burdened by Census tract. Cost-burdened is defined in this case
-as spending more than 30% of household income on housing costs.</p>
+as spending more than 30% of household income on housing costs. This
+data will be used to create a map by Census Tract to show areas of
+greater housing cost burden geographically.</p>
 <p>To do the summary, first you need to aggregate the data provided by
 households spending over 30% based on the available fields-Less than
 10.0 percent,10.0 to 14.9 percent, 15.0 to 19.9 percent, 20.0 to 24.9
