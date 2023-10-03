@@ -341,12 +341,14 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
 #'
 #' After gathering data, add reliability information using moe and estimate
 #'
-#' @param dfs acs data frames already retrieved from the api
+#' @param dfs data frames already retrieved from the api, or created by a user
+#' @param moe character name of the column that has contains margin of error estimates
+#' @param estimate character name of the column that has contains data value estimates
 #' @author Suzanne
 #' @return the data frames with new columns for se, cv, and reliability
 #' @export
 
-reliability_calcs<- function(dfs){
+reliability_calcs<- function(dfs, moe='moe', estimate='estimate'){
   # A coefficient of variation (CV) measures the relative amount of sampling error that is associated with a sample       #estimate. The CV is calculated as the ratio of the SE for an estimate to the estimate itself and is usually
   #  expressed as a percent.
   # Note that since both the ACS and household travel survey are reported using a 90 percent confidence interval,         # where the Margin of Error (MOE) is reported in place of standard error, you can convert it to standard error by       # dividing by 1.645.
@@ -354,17 +356,18 @@ reliability_calcs<- function(dfs){
   # http://aws-linux/mediawiki/index.php/Understanding_Error_and_Determining_Statistical_Significance
   zscore_90<-1.645
 
-  dfs%<>%dplyr::mutate(se=moe/zscore_90)%>%
-    dplyr::mutate(cv= se/estimate)%>%
+  dfs%<>%dplyr::mutate(se=!!rlang::ensym(moe)/zscore_90)%>%
+    dplyr::mutate(cv= se/!!rlang::ensym(estimate))%>%
     dplyr::mutate(reliability=
                     dplyr::case_when(
-                      estimate==0 ~ 'estimate is 0, cannot compute',
+                      !!rlang::ensym(estimate)==0 ~ 'estimate is 0, cannot compute',
                       cv<=0.15 ~ 'good',
                       cv>0.15 & cv<=0.30 ~ 'fair',
                       cv>0.30 & cv<=0.50 ~ 'use with caution',
                       cv>0.50 ~ 'use with extreme caution',
                       .default = 'missing or N/A'
                     ))
+
 
   return(dfs)
 }

@@ -1,0 +1,140 @@
+---
+title: "Calculate Reliability Measures on Transformed ACS Metrics"
+description: >
+  How to calculate reliability and margins of error on transformed ACS data.
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{Calculate Reliability Measures on Transformed ACS Metrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+## How to calculate reliability estimates on transformed ACS dataframes
+
+This vignette explains how to calculate reliability measures for ACS metrics that require transformation.
+
+The psrccensus library contains functionality has been added to provide coefficients of variation, standard errors, and reliability labels to ACS data retrieved directly from the api.
+
+To calculate reliability using psrccensus, on user transformed tables, you may want to apply the function ``reliability_calcs``. This function requires you have a dataframe, a column holding the margins of error, and a column holding the estimate. So you need to have pre-calculated the margin of error along the way to be able to retrieve the reliability of the estimate.
+
+
+At each stage of calculation and aggregation, you need to re-calculate the margins of error. Here is a vignette about calculating margins of error from the ACS: https://walker-data.com/tidycensus/articles/margins-of-error.html
+
+The functions that you need to use for calculating margins of error, depending on which data transformation is applied:
+
+* moe_product: 	
+Calculate the margin of error for a derived product
+
+* moe_prop():
+	Calculate the margin of error for a derived proportion
+	
+* moe_ratio()
+Calculate the margin of error for a derived ratio
+
+* moe_sum()
+Calculate the margin of error for a derived sum (or difference)
+
+
+```{r, include=TRUE}
+library(psrccensus)
+library(tidycensus)
+library(dplyr)
+library(tidyr)
+```
+
+### Example: Housing Cost Burden
+In this example, we want to retrieve the percent of households that are cost-burdened by Census tract. Cost-burdened is defined in this case as spending more than 30% of household income on housing costs.
+
+To do the summary, first you need to aggregate the data provided by households spending over 30% based on the available fields-Less than 10.0 percent|10.0 to 14.9 percent|15.0 to 19.9 percent|20.0 to 24.9 percent|25.0 to 29.9 percent. This provides the numerator of your calculation.
+
+Next you need to redefine the total to remove when the values are not compute- this is denominator. Then you need to calculate the shares.
+
+For each data transformation, you need to recalculate the margin of error.
+
+#### Step 1. Get the data from the ACS api	via psrccensus
+
+```{r }
+# Finding the corresponding ACS table - this works if you know the correct concept label. If not, another option would be to visit https://data.census.gov/table and search for the right subject table and skip to the next step ----
+#x <- tidycensus::load_variables(2021,"acs5") %>% 
+# dplyr::filter(grepl("percent",
+#                    concept, ignore.case=TRUE) & 
+#               (geography=="tract"))
+
+# getting data by tract
+acs_data <- get_acs_recs(geography ='tract', 
+                         table.names = 'B25070', #subject table code
+                         years = c(2021),
+                         acs.type = 'acs5')
+```
+
+#### Step 2. Add a grouping for more than 30% of income going to housing cost
+```{r }
+# data wrangling for grouping >30% and under 30% - census tract and population
+acs_data <- acs_data %>% rename_at('label', ~'rent_burden')
+
+# Create variables
+acs_data <- acs_data %>% 
+  mutate(rent_burden_group=factor(
+    case_when(grepl("Less than 10.0 percent|10.0 to 14.9 percent|15.0 to 19.9 percent|
+                    20.0 to 24.9 percent|25.0 to 29.9 percent", rent_burden) ~
+                    "Less than 30 percent",
+              grepl("30.0 to 34.9 percent|35.0 to 39.9 percent|35.0 to 39.9 percent|
+                    40.0 to 49.9 percent|50.0 percent or more", rent_burden) ~ 
+                  "Cost Burdened (More than 30 percent)",
+              grepl("Not computed", rent_burden) ~ "Not computed",
+              !is.na(rent_burden) ~ "Total")))
+```
+
+
+### Step 3: Aggregate by the rent burden group and the tract id, calculate sums, and the moe_sum. 
+The moe_sum uses tidycensus.
+```{r }
+# filter only fields of interest - census tract and estimate
+
+# use the moe_sum function from tidycensus
+acs_data_group <- acs_data %>% 
+  dplyr::group_by(GEOID, rent_burden_group)%>%
+  dplyr::summarise(estimate=sum(estimate), moe=tidycensus::moe_sum(estimate=estimate, moe=moe))
+
+
+```
+
+###Step 4: Data wrangling to get the aggregated data in the right shape, pivot, subtract, divide.
+```{r, include=FALSE}
+# pivot data to calculate percentage by census tract, calculate estimates
+
+acs_data_group<- acs_data_group%>%   
+  pivot_wider(names_from = rent_burden_group, values_from = c(estimate,moe))%>%
+  rename('estimate_cost_burdened'='estimate_Cost Burdened (More than 30 percent)',
+         'moe_cost_burdened'= 'moe_Cost Burdened (More than 30 percent)')
+
+# weight averages for population & calculating percentage/share of population per tract instead of integer
+acs_data_group<-  acs_data_group%>%
+  mutate(estimate_new_total=(estimate_Total-`estimate_Not computed`))%>%
+  mutate(estimate_perc_cost_burdened=((estimate_cost_burdened/estimate_new_total)))
+```
+
+### Step 5: Calculate margins of error on the transformed data. 
+
+Because you are applying the function across the columns, as opposed to down the grouped rows, you need to apply the function rowwise. You would not need to do this if the data were not pivoted.
+
+Note the moe_sum is applied although you are taking a difference. Then moe_prop is applied when you are finding the shares. 
+```{r }
+#calculate moes
+acs_data_group<- acs_data_group%>%
+  rowwise()%>%
+  mutate(moe_new_total=moe_sum(estimate=c(estimate_Total, `estimate_Not computed`), 
+                               moe=c(moe_Total,`moe_Not computed`)))%>%
+  mutate(moe_perc_cost_burdened=moe_prop(num=estimate_cost_burdened,denom=estimate_new_total, moe_num=moe_cost_burdened, moe_denom=moe_new_total))
+
+
+acs_data_final<- acs_data_group %>% 
+  dplyr::select(GEOID, estimate_cost_burdened, estimate_new_total, estimate_perc_cost_burdened,
+                moe_cost_burdened, moe_new_total, moe_perc_cost_burdened) %>%
+  dplyr::filter(!is.na(estimate_cost_burdened))
+
+acs_data_final<-reliability_calcs(acs_data_final, estimate='estimate_perc_cost_burdened', moe='moe_perc_cost_burdened')
+
+head(acs_data_final%>%select(GEOID, estimate_perc_cost_burdened, moe_perc_cost_burdened))
+```
+
+Now the data is ready to be joined to the tract map.
