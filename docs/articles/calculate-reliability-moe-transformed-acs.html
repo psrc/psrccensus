@@ -7,12 +7,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="How to calculate reliability and margins of error on transformed ACS data.
 ">
-<title>Calculate Reliability Measures on Transformed ACS Metrics • psrccensus</title>
+<title>Reliability Measures on Transformed ACS Metrics • psrccensus</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate Reliability Measures on Transformed ACS Metrics">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reliability Measures on Transformed ACS Metrics">
 <meta property="og:description" content="How to calculate reliability and margins of error on transformed ACS data.
 ">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -46,7 +46,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/calculate-reliability-moe-transformed-acs.html">Calculate Reliability Measures on Transformed ACS Metrics</a>
+    <a class="dropdown-item" href="../articles/calculate-reliability-moe-transformed-acs.html">Reliability Measures on Transformed ACS Metrics</a>
     <a class="dropdown-item" href="../articles/geographic-conversions.html">Census estimates for non-census geographies</a>
     <a class="dropdown-item" href="../articles/get-data.html">Get Data</a>
     <a class="dropdown-item" href="../articles/pums-1-basics.html">PUMS 1: Calculate basic summaries</a>
@@ -71,7 +71,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Calculate Reliability Measures on Transformed ACS Metrics</h1>
+      <img src="" class="logo" alt=""><h1>Reliability Measures on Transformed ACS Metrics</h1>
             
       
       
@@ -110,20 +110,6 @@ ratio</p></li>
 <li><p>moe_sum() Calculate the margin of error for a derived sum (or
 difference)</p></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">## Attaching package: 'dplyr'</span></span></code></pre>
-<pre><code><span><span class="co">## The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">##     filter, lag</span></span></code></pre>
-<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">##     intersect, setdiff, setequal, union</span></span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="example-housing-cost-burden">Example: Housing Cost Burden<a class="anchor" aria-label="anchor" href="#example-housing-cost-burden"></a>
 </h3>
@@ -140,7 +126,25 @@ compute- this is denominator. Then you need to calculate the shares.</p>
 <p>For each data transformation, you need to recalculate the margin of
 error.</p>
 <div class="section level4">
-<h4 id="step-1--get-the-data-from-the-acs-api-via-psrccensus">Step 1. Get the data from the ACS api via psrccensus<a class="anchor" aria-label="anchor" href="#step-1--get-the-data-from-the-acs-api-via-psrccensus"></a>
+<h4 id="read-in-libraries">Read in Libraries<a class="anchor" aria-label="anchor" href="#read-in-libraries"></a>
+</h4>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'dplyr'</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     filter, lag</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, setequal, union</span></span></code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="get-the-data-from-the-acs-api-via-psrccensus">Get the data from the ACS api via psrccensus<a class="anchor" aria-label="anchor" href="#get-the-data-from-the-acs-api-via-psrccensus"></a>
 </h4>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Finding the corresponding ACS table - this works if you know the correct concept label. If not, another option would be to visit https://data.census.gov/table and search for the right subject table and skip to the next step ----</span></span>
@@ -157,7 +161,7 @@ error.</p>
 <pre><code><span><span class="co">## Getting data from the 2017-2021 5-year ACS</span></span></code></pre>
 </div>
 <div class="section level4">
-<h4 id="step-2--add-a-grouping">Step 2. Add a grouping<a class="anchor" aria-label="anchor" href="#step-2--add-a-grouping"></a>
+<h4 id="add-a-grouping">Add a grouping<a class="anchor" aria-label="anchor" href="#add-a-grouping"></a>
 </h4>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data wrangling for grouping &gt;30% and under 30% - census tract and population</span></span>
@@ -175,10 +179,9 @@ error.</p>
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Not computed"</span>, <span class="va">rent_burden</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Not computed"</span>,</span>
 <span>              <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">rent_burden</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Total"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level3">
-<h3 id="step-3-aggregate-and-calculate">Step 3: Aggregate and calculate<a class="anchor" aria-label="anchor" href="#step-3-aggregate-and-calculate"></a>
-</h3>
+<div class="section level4">
+<h4 id="aggregate-and-calculate">Aggregate and calculate<a class="anchor" aria-label="anchor" href="#aggregate-and-calculate"></a>
+</h4>
 <p>The moe_sum uses tidycensus.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># filter only fields of interest - census tract and estimate</span></span>
@@ -191,13 +194,13 @@ error.</p>
 <pre><code><span><span class="co">## `summarise()` has grouped output by 'GEOID'. You can override using the</span></span>
 <span><span class="co">## `.groups` argument.</span></span></code></pre>
 </div>
-<div class="section level3">
-<h3 id="step-4-data-wrangling">Step 4: Data wrangling<a class="anchor" aria-label="anchor" href="#step-4-data-wrangling"></a>
-</h3>
+<div class="section level4">
+<h4 id="data-wrangling">Data wrangling<a class="anchor" aria-label="anchor" href="#data-wrangling"></a>
+</h4>
 </div>
-<div class="section level3">
-<h3 id="step-5-calculate-margins-of-error">Step 5: Calculate margins of error<a class="anchor" aria-label="anchor" href="#step-5-calculate-margins-of-error"></a>
-</h3>
+<div class="section level4">
+<h4 id="calculate-margins-of-error">Calculate margins of error<a class="anchor" aria-label="anchor" href="#calculate-margins-of-error"></a>
+</h4>
 <p>Because you are applying the function across the columns, as opposed
 to down the grouped rows, you need to apply the function rowwise. You
 would not need to do this if the data were not pivoted.</p>
@@ -233,6 +236,7 @@ Then moe_prop is applied when you are finding the shares.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">5</span> 53033000300                       0.313 use with caution</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">6</span> 53033000402                       0.292 fair</span></span></code></pre>
 <p>Now the data is ready to be joined to the tract map, if desired.</p>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
