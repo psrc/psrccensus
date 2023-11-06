@@ -329,6 +329,57 @@ get_acs_blockgroup <- function (state="Washington", counties = c("King","Kitsap"
   return(census.data)
 }
 
+#' ACS Estimates by Census PUMA
+#'
+#' Generate ACS 5 year estimates for multiple tables by Census PUMA
+#'
+#' @param state A character string state name or abbreviation. Defaults to Washington.
+#' @param table.names A character string or vector of Census table codes.
+#' @param years A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.
+#'
+#' @author Christy Lam
+#'
+#' @return a tibble of acs estimates by PUMA for selected table codes. Includes detailed variable names.
+#'
+#'@importFrom rlang .data
+#'@keywords internal
+get_acs_puma <- function (state = "Washington", table.names, years) {
+
+  census.data <- geography <- NAME <- name <- NULL
+  for (table in table.names) {
+
+    yearly.data <- NULL
+
+    for (year in years) {
+
+      # Download ACS Data
+      tbl <- tidycensus::get_acs(state = state, geography = "public use microdata area", year = year, table = table)
+
+      # separate state from PUMA name, clean-up name column
+      tbl <- tbl %>%
+        tidyr::separate(col = NAME, into = c("name", "state"), sep = "Washington") %>%
+        dplyr::mutate(state = 'Washington') %>%
+        dplyr::mutate(name = stringr::str_replace_all(name, "[\\;|\\,]\\s*$", ""))
+
+      # Add labels, column for Census Geography, Type and Year of Data
+      tbl <- tbl %>%
+        label_acs_variables(table, year, "acs5") %>%
+        dplyr::mutate(census_geography = "public use microdata area (PUMA)", acs_type = "acs5", year = year)
+
+      # Store yearly data into final yearly data for current table - append if a year already exists
+      ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
+
+    }
+
+    # Store table data into final census data - append if a table set already exists
+    ifelse(is.null(census.data), census.data <- yearly.data, census.data <- dplyr::bind_rows(census.data, yearly.data))
+
+  }
+
+  return(census.data)
+}
+
+
 #' Add estimate reliability information
 #'
 #' After gathering data, add reliability information using moe and estimate
@@ -406,6 +457,8 @@ get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Ki
     dfs <- get_acs_tract(state, counties, table.names, years)
   } else if(geography == 'block group') {
     dfs <- get_acs_blockgroup(state, counties, table.names, years)
+  } else if(geography == 'puma') {
+    dfs <- get_acs_puma(state, table.names, years)
   }
 
   dfs<-reliability_calcs(dfs)
