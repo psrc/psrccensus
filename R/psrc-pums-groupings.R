@@ -227,3 +227,27 @@ psrc_lum_jobsector <- function(dt){
                                    !is.na(NAICSP)|as.character(NAICSP)=='999920',  NA_character_))]
   return(dt)
 }
+
+#' PSRC Standard Published products employment sector
+#'
+#' @param dt the data.table
+#' @return the data.table with standard published covered employment sector, "STANDARD_JOBSECTOR"
+#' @author Michael Jensen
+psrc_standard_jobsector <- function(dt){
+  STANDARD_JOBSECTOR <- NAICSP <- patterns <- NULL                                                 # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
+    dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
+    dt[, NAICSP:=fcoalesce(.SD), .SDcols=patterns("^NAICSP\\d+$")]
+  }
+  dt[, STANDARD_JOBSECTOR:=factor(fcase(grepl("^11|^21|^23", as.character(NAICSP)), "1 - Const/Res",
+                                   grepl("^3", as.character(NAICSP)),               "3 - Manufacturing",
+                                   grepl("^22|^42|^48|^49", as.character(NAICSP)),  "6 - WTU",
+                                   grepl("^44|^45|^4MS", as.character(NAICSP)),     "4 - Retail",
+                                   grepl("^52|^53", as.character(NAICSP)),          "2 - FIRE",
+                                   grepl("^611|62441", as.character(NAICSP)),       "8 - Public Education",
+                                   grepl("^5|^6|^7|^8", as.character(NAICSP)),      "5 - Services",
+                                   grepl("^92", as.character(NAICSP)),              "7 - Government",
+                                   !is.na(NAICSP)|as.character(NAICSP)=='999920',   NA_character_))]
+  return(dt)
+}
