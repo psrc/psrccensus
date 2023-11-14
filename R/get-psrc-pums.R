@@ -89,10 +89,12 @@ filter2region <- function(dt, dyear){
     .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL] %>%                                        # Where multiple PUMA fields reported, use latest
     .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                     # Drop variables static to our region
     setkey(SERIALNO)
-  if(dyear>2011){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                          # Filter to PSRC region
-  }else if(dyear>=2000 & dyear<2012){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(14,10,17,20)]                                            # PUMAs renumbered in 2012
+  if(dyear>2021){                                                                                  # Filter to PSRC region
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(233,235,253,261)]                                  # 2020 PUMA codes became active for data year 2022
+  }else if(dyear>2011){
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                          # 2010 PUMA codes became active for data year 2012
+  }else if(dyear>=2000){
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(14,10,17,20)]                                      # PUMAs renumbered in 2012
   }
   return(dt)
 }
