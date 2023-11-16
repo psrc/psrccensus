@@ -184,7 +184,8 @@ psrc_ed_attain<- function(dt, dyear){
 psrc_mi_jobsector <- function(dt){
   MI_JOBSECTOR <- NAICSP <- patterns <- NULL                                                       # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
-  if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
+  if(any(grepl("^NAICSP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^NAICSP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^NAICSP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
     dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
     dt[, NAICSP:=fcoalesce(.SD), .SDcols=patterns("^NAICSP\\d+$")]
   }
@@ -208,7 +209,8 @@ psrc_mi_jobsector <- function(dt){
 psrc_lum_jobsector <- function(dt){
   LUM_JOBSECTOR <- NAICSP <- patterns <- NULL                                                      # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
-  if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
+  if(any(grepl("^NAICSP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^NAICSP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^NAICSP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
     dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
     dt[, NAICSP:=fcoalesce(.SD), .SDcols=patterns("^NAICSP\\d+$")]
   }
@@ -236,7 +238,8 @@ psrc_lum_jobsector <- function(dt){
 psrc_standard_jobsector <- function(dt){
   STANDARD_JOBSECTOR <- NAICSP <- patterns <- NULL                                                 # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
-  if(any(grepl("^NAICSP\\d+$", colnames(dt)))){
+  if(any(grepl("^NAICSP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^NAICSP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^NAICSP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
     dt[, grep("^NAICSP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^NAICSP\\d+$")]
     dt[, NAICSP:=fcoalesce(.SD), .SDcols=patterns("^NAICSP\\d+$")]
   }
