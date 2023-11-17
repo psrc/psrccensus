@@ -3,6 +3,7 @@
 #'
 library(magrittr)
 library(dplyr)
+library(lubridate)
 
 get_tblnames <- function(surveytype){
   singleyear <- function(year, survey){
@@ -15,15 +16,15 @@ get_tblnames <- function(surveytype){
   }else{
     paste0("acs", surveytype)
   }
-  census_published_date <- lubridate::now() - lubridate::years(1)
-  year_range <- c(2014:lubridate::year(census_published_date)) %>% .[. != 2020]
-  inputlist <- expand.grid(year=year_range, survey=survey, stringsAsFactors=FALSE) %>%
-    subset(year != 2014 | survey !="acs5/cprofile")
-  if(lubridate::month(census_published_date) %in% c(1,9:12)){
+  census_published_date <- lubridate::now() - years(1) - months(9)                      # Adjust for Census release lag
+  year_range <- c(2014:year(census_published_date)) %>% .[. != 2020]                    # 2020 not published as standard year
+  inputlist <- expand.grid(year=year_range, survey=survey, stringsAsFactors=FALSE) %>%  # Create all combos
+    subset(year != 2014 | survey !="acs5/cprofile")                                     # This combo doesn't exist
+  if(month(census_published_date) %in% c(1:4)){                                         # Between Sept and Jan, 5yr not yet published
     inputlist <- inputlist %>% filter(row_number() <= n()-1)
   }
   rs <- list()
-  rs <- mapply(singleyear, inputlist$year, inputlist$survey) %>% unlist() %>% unique()
+  rs <- mapply(singleyear, inputlist$year, inputlist$survey) %>% unlist() %>% unique()  # Build the table
   return(rs)
 }
 
@@ -33,4 +34,4 @@ acs_tbltypes_lookup$profile  <- get_tblnames("/profile")
 acs_tbltypes_lookup$cprofile <- get_tblnames("/cprofile")
 acs_tbltypes_lookup$acsse    <- get_tblnames("se")
 
-usethis::use_data(acs_tbltypes_lookup, internal=TRUE, overwrite=TRUE)
+usethis::use_data(acs_tbltypes_lookup, internal=TRUE, overwrite=TRUE)                   # Makes part of the package; push this to repo
