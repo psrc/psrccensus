@@ -157,7 +157,7 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
 
       # Add labels, column for Census Geography, Type and Year of Data
       tbl %<>% label_acs_variables(table, year, acs.type) %>%
-        dplyr::mutate(census_geography="MSA", acs_type=acs.type, year=year) %>%
+        dplyr::mutate(census_geography="MSA", acs_type=acs.type, year=year)
 
 
         # Store yearly data into final yearly data for current table - append if a year already exists
