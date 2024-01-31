@@ -16,7 +16,7 @@ get_tblnames <- function(surveytype){
   }else{
     paste0("acs", surveytype)
   }
-  census_published_date <- lubridate::now() - years(1) - months(9)                      # Adjust for Census release lag
+  census_published_date <- lubridate::now() - years(1) - days(274)                      # Adjust for Census release lag
   year_range <- c(2014:year(census_published_date)) %>% .[. != 2020]                    # 2020 not published as standard year
   inputlist <- expand.grid(year=year_range, survey=survey, stringsAsFactors=FALSE) %>%  # Create all combos
     subset(year != 2014 | survey !="acs5/cprofile")                                     # This combo doesn't exist
