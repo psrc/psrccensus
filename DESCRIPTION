@@ -35,14 +35,14 @@ Imports:
     tidycensus,
     tidyr,
     tidyselect,
-    tigris,
-    usethis
+    tigris
 Suggests: 
     psrcelmer,
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
-    R.utils
+    R.utils,
+    usethis
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://psrc.github.io/psrccensus/
