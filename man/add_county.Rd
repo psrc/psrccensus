@@ -4,12 +4,10 @@
 \alias{add_county}
 \title{Add County Name to PUMS API Result}
 \usage{
-add_county(dt, dyear)
+add_county(dt)
 }
 \arguments{
 \item{dt}{PSRC data.table}
-
-\item{dyear}{The data year}
 }
 \value{
 PSRC data.table with county names

@@ -82,20 +82,32 @@ read_pums <- function(target_file, dyear){
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 filter2region <- function(dt, dyear){
-  PUMA <- SERIALNO <- NULL                                                                         # Bind tidycensus::pums_variables variable locally (for documentation, not function)
-  pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)        # PUMA boundary version correlates to last diennial census
+  PUMA <- SERIALNO <- PUMA00 <- PUMA10 <- PUMA20 <- NULL                                           # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   dt %<>% pums_recode_na() %>%
-    setnames(c(pumayr),c("PUMA"), skip_absent=TRUE) %>%                                            # Single PUMA column name
-    .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL] %>%                                        # Where multiple PUMA fields reported, use latest
-    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE] %>%                     # Drop variables static to our region
-    setkey(SERIALNO)
-  if(dyear>2021){                                                                                  # Filter to PSRC region
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(233,235,253,261)]                                  # 2020 PUMA codes became active for data year 2022
-  }else if(dyear>2011){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(115:118)]                                          # 2010 PUMA codes became active for data year 2012
-  }else if(dyear>=2000){
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% c(14,10,17,20)]                                      # PUMAs renumbered in 2012
+    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE]                         # Drop variables static to our region
+
+  if("PUMA" %in% colnames(dt)){                                                                    # For 1yr data or spans with identical geography
+    pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # Identify which geography
+    if(pumayr==2000){                                                                              # New decadal PUMA code scheme begins use in year 2012, 2022, etc
+      dt[(as.integer(PUMA) %/% 100) %in% c(14,10,17,20)]                                           # Filter region by code
+    }else if(pumayr==2010){
+      dt[(as.integer(PUMA) %/% 100) %in%c(115:118)]
+    }else if(pumayr==2020){
+      dt[(as.integer(PUMA20) %/% 100) %in% c(233,235,253,261)]
+    }
+  }else{
+    if("PUMA00" %in% colnames(dt)){                                                                # For multiyear data with differing PUMA geographies
+      dt[(as.integer(PUMA00) %/% 100) %in% c(14,10,17,20), PUMA:=PUMA00]                           # Populate new PUMA field for region
+    }
+    if("PUMA10" %in% colnames(dt)){
+      dt[(as.integer(PUMA10) %/% 100) %in% c(115:118), PUMA:=PUMA10]
+    }
+    if("PUMA20" %in% colnames(dt)){
+      dt[(as.integer(PUMA20) %/% 100) %in% c(233,235,253,261), PUMA:=PUMA20]
+    }
+    dt %<>% .[!is.na(PUMA)] %>% .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL]                # Filter region & drop limited PUMA fields                                                                       # Filter by dropping empty
   }
+  dt %<>% setkey(SERIALNO)
   return(dt)
 }
 
@@ -280,21 +292,20 @@ adjust_dollars <- function(dt){
 #' Helper to \code{\link{get_psrc_pums}} function.
 #' Attaches county name.
 #' @param dt PSRC data.table
-#' @param dyear The data year
 #' @return PSRC data.table with county names
 #' @author Michael Jensen
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
-add_county <- function(dt, dyear){
-  PUMA <- COUNTY <- NULL                                                                           # Bind variables locally (for documentation, not function)
-  PUMA3 <- if(dyear > 2021){c(253,233,261,235)}
-           else if(dyear>2011){c(115:118)}
-           else if(dyear<=2011 & dyear>=2000){c(14,20,10,17)}            # PUMAs renumbered in 2012
-  county_lookup <- data.frame(PUMA3, COUNTY=as.factor(c("Pierce","King","Snohomish","Kitsap"))) %>%
-    setDT() %>% setkey(PUMA3)
-  dt %<>% .[, PUMA3:=(as.integer(PUMA) %/% 100)] %>%
-    .[county_lookup, COUNTY:=COUNTY, on=.(PUMA3=PUMA3)] %>%
-    .[, PUMA3:=NULL]
+add_county <- function(dt){
+  PUMA <- COUNTY <- PUMA_start <- puma_start <- county <- NULL                                     # Bind variables locally (for documentation, not function)
+  county_lookup <- data.frame(
+    GeoYr=c(rep(2000,4),rep(2010,4),rep(2020,4)),
+    puma_start=c(14,20,10,17,115:118,253,233,261,235),                                             # New PUMAs every 20X2 year
+    county=as.factor(rep(c("Pierce","King","Snohomish","Kitsap"),3))) %>%                          # . . . mind the order here
+    setDT() %>% setkey(puma_start)
+  dt %<>% .[, PUMA_start:=(as.integer(PUMA) %/% 100)] %>%
+    .[county_lookup, COUNTY:=county, on=.(PUMA_start=puma_start)] %>%                              # Recode all--multiyear PUMS may have two PUMA schemes
+    .[, PUMA_start:=NULL]
   return(dt)
 }
 
@@ -388,7 +399,7 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
   dt <- pums_ftp_gofer(span, dyear, level, vars, dir)
   swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
   rwgt <- paste0(swgt, 1:80)                                                                       # Specify replication weights
-  dt %<>% add_county(dyear) %>% setcolorder(c(unit_var, "COUNTY")) %>%
+  dt %<>% add_county() %>% setcolorder(c(unit_var, "COUNTY")) %>%
     adjust_dollars()                                                                               # Apply standard inflation adjustment
   if(labels==TRUE){dt %<>% codes2labels(dyear, vars)}                                              # Replace codes with labels where available
   dt %<>% ensure_datatypes()                                                                       # Confirm correct datatypes for weights and group_vars
