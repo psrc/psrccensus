@@ -392,12 +392,16 @@ get_acs_puma <- function (state = "Washington", table.names, years) {
 #' @export
 
 reliability_calcs<- function(dfs, moe='moe', estimate='estimate'){
-  # A coefficient of variation (CV) measures the relative amount of sampling error that is associated with a sample       #estimate. The CV is calculated as the ratio of the SE for an estimate to the estimate itself and is usually
-  #  expressed as a percent.
-  # Note that since both the ACS and household travel survey are reported using a 90 percent confidence interval,         # where the Margin of Error (MOE) is reported in place of standard error, you can convert it to standard error by       # dividing by 1.645.
+  # A coefficient of variation (CV) measures the relative amount of sampling error that is associated with a sample
+  # estimate. The CV is calculated as the ratio of the SE for an estimate to the estimate itself and is usually
+  # expressed as a percent.
+  # Note that since both the ACS and household travel survey are reported using a 90 percent confidence interval,
+  # where the Margin of Error (MOE) is reported in place of standard error, you can convert it to standard error by
+  # dividing by 1.645.
   # to do: put 1.645 in a better place in the package, it's a magic number
   # http://aws-linux/mediawiki/index.php/Understanding_Error_and_Determining_Statistical_Significance
-  zscore_90<-1.645
+  se <- NULL               # Bind variables locally (for documentation, not function)
+  zscore_90<-1.645         # Conversion factor from standard error to 90 percent confidence interval
 
   dfs%<>%dplyr::mutate(se=!!rlang::ensym(moe)/zscore_90)%>%
     dplyr::mutate(cv= se/!!rlang::ensym(estimate))%>%

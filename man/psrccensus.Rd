@@ -2,8 +2,8 @@
 % Please edit documentation in R/psrccensus-details.R
 \docType{package}
 \name{psrccensus}
-\alias{psrccensus}
 \alias{psrccensus-package}
+\alias{psrccensus}
 \title{psrccensus: A package for easy compilation of census estimates for the Puget Sound Region.}
 \description{
 This package provides functions to easily collect census estimates across geographies within the

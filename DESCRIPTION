@@ -14,7 +14,7 @@ Description: Various functions to pull, process and visualize Census data for ge
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Imports:
     curl,
     data.table,
