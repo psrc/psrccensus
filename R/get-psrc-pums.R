@@ -82,19 +82,15 @@ read_pums <- function(target_file, dyear){
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 filter2region <- function(dt, dyear){
-  PUMA <- SERIALNO <- PUMA00 <- PUMA10 <- PUMA20 <- NULL                                           # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- psrc_pumas <- SERIALNO <- NULL                             # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   dt %<>% pums_recode_na() %>%
     .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE]                         # Drop variables static to our region
 
   if("PUMA" %in% colnames(dt)){                                                                    # For 1yr data or spans with identical geography
-    pumayr <- as.character(floor(dyear/10)*10) %>% stringr::str_sub(3,4) %>% paste0("PUMA",.)      # Identify which geography
-    if(pumayr==2000){                                                                              # New decadal PUMA code scheme begins use in year 2012, 2022, etc
-      dt[(as.integer(PUMA) %/% 100) %in% c(14,10,17,20)]                                           # Filter region by code
-    }else if(pumayr==2010){
-      dt[(as.integer(PUMA) %/% 100) %in%c(115:118)]
-    }else if(pumayr==2020){
-      dt[(as.integer(PUMA20) %/% 100) %in% c(233,235,253,261)]
-    }
+    psrc_pumas <- dplyr::case_when(dyear > 2021 ~c(233,235,253,261),
+                                   dyear > 2011 ~c(115:118),                                       # New decadal PUMA code scheme begins use in year 2012, 2022, etc
+                                   dyear > 2001 ~c(14,10,17,20))
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% get("psrc_pumas", parent.frame())]                   # Filter region by code
   }else{
     if("PUMA00" %in% colnames(dt)){                                                                # For multiyear data with differing PUMA geographies
       dt[(as.integer(PUMA00) %/% 100) %in% c(14,10,17,20), PUMA:=PUMA00]                           # Populate new PUMA field for region
