@@ -90,7 +90,7 @@ filter2region <- function(dt, dyear){
     psrc_pumas <- dplyr::case_when(dyear > 2021 ~c(233,235,253,261),
                                    dyear > 2011 ~c(115:118),                                       # New decadal PUMA code scheme begins use in year 2012, 2022, etc
                                    dyear > 2001 ~c(14,10,17,20))
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% get("psrc_pumas", parent.frame())]                   # Filter region by code
+    dt %<>% .[(as.integer(PUMA) %/% 100) %in% get("psrc_pumas")]                                   # Filter region by code
   }else{
     if("PUMA00" %in% colnames(dt)){                                                                # For multiyear data with differing PUMA geographies
       dt[(as.integer(PUMA00) %/% 100) %in% c(14,10,17,20), PUMA:=PUMA00]                           # Populate new PUMA field for region
