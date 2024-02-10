@@ -220,6 +220,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   if("MI_JOBSECTOR" %in% vars){dt %<>% psrc_mi_jobsector()}                                        # - "
   if("LUM_JOBSECTOR" %in% vars){dt %<>% psrc_lum_jobsector()}                                      # - "
   if("STANDARD_JOBSECTOR" %in% vars){dt %<>% psrc_standard_jobsector()}                            # - "
+  if("SOCP3" %in% vars){dt %<>% psrc_socp3()}                                                      # - "
+  if("SOCP5" %in% vars){dt %<>% psrc_socp5()}                                                      # - "
   swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight
   setnames(dt, toupper(names(dt)))                                                                 # All column names to uppercase
   wgtrgx <- paste0("^",swgt,"\\d+$")
@@ -333,7 +335,9 @@ codes2labels <- function(dt, dyear, vars){
   recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
   recoder[[5]] <- copy(recoder[[2]]) %>% .[, var_code:="ARACE"]
   recoder[[6]] <- copy(recoder[[4]]) %>% .[, var_code:="ADIS"]
-  recoder %<>% rbindlist() %>% setDT() %>% .[var_code %in% vars] %>% setkeyv("val_max")            # Add to label lookup; filter variables
+  recoder[[7]] <- pums_labels_xtra
+  recoder %<>% rbindlist(use.names=TRUE) %>% setDT() %>%
+    .[var_code %in% vars] %>% setkeyv("val_max")                                                   # Add to label lookup; filter variables
   chg_vars <- c("YBL","RELP","SCHG","SCHL")                                                        # The code-to-label match for these vars
   if(dyear < 2012 & any(vars %in% chg_vars)){                                                      # -- changed in 2012 but names were kept
     recoder %<>% .[var_code %not_in% chg_vars]                                                     # -- so keep codes to avoid miscategorization

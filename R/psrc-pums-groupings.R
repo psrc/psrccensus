@@ -254,3 +254,39 @@ psrc_standard_jobsector <- function(dt){
                                    !is.na(NAICSP)|as.character(NAICSP)=='999920',   NA_character_))]
   return(dt)
 }
+
+#' 5-digit SOC variable
+#'
+#' @param dt the data.table
+#' @return the data.table with 5-digit SOC variable, "SOCP5"
+#' @author Michael Jensen
+psrc_socp5 <- function(dt){
+  SOCP5 <- SOCP <- NULL                                                                             # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if("SOCP" %not_in% colnames(dt) & any(grepl("^SOCP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^SOCP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^SOCP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
+    dt[, grep("^SOCP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^SOCP\\d+$")]
+    dt[, SOCP:=fcoalesce(.SD), .SDcols=patterns("^SOCP\\d+$")]
+  }
+  dt[, SOCP5:= dplyr::case_when(is.na(SOCP) | grepl("^N/?A",as.character(SOCP)) ~NA_character_,
+                                TRUE ~paste0(stringr::str_sub(as.character(SOCP),1L,5L),"0"))]
+  return(dt)
+}
+
+#' 3-digit SOC variable
+#'
+#' @param dt the data.table
+#' @return the data.table with 3-digit SOC variable, "SOCP3"
+#' @author Michael Jensen
+psrc_socp3 <- function(dt){
+  SOCP3 <- SOCP <- NULL                                                                             # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if("SOCP" %not_in% colnames(dt) & any(grepl("^SOCP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^SOCP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^SOCP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
+    dt[, grep("^SOCP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^SOCP\\d+$")]
+    dt[, SOCP:=fcoalesce(.SD), .SDcols=patterns("^SOCP\\d+$")]
+  }
+  dt[, SOCP3:= dplyr::case_when(is.na(SOCP) | grepl("^N/?A",as.character(SOCP)) ~NA_character_,
+                                TRUE ~paste0(stringr::str_sub(as.character(SOCP),1L,3L),"000"))]
+  return(dt)
+}
