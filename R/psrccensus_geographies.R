@@ -132,7 +132,7 @@ census_to_rgc <- function(df, wgt="total_pop"){
 #' @title Translate psrccensus data to Regional Manufacturing-Industrial Centers
 #' @export
 census_to_mic <- function(df, wgt="total_pop"){
-  rs <- use_geography_splits(df, planning_geog_type="MIC (2022 RTP)", wgt=wgt)
+  rs <- use_geography_splits(df, planning_geog_type="MIC (1/5/2024)", wgt=wgt)
   return(rs)
 }
 
