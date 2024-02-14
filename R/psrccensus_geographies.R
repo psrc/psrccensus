@@ -151,3 +151,11 @@ census_to_hct <- function(df, wgt="total_pop"){
   rs <- use_geography_splits(df, planning_geog_type="HCT Station Areas (VISION 2050)", wgt=wgt)
   return(rs)
 }
+
+#' @rdname census_to_psrcgeo
+#' @title Translate psrccensus data to 2020 Jurisdictional boundaries
+#' @export
+census_to_juris <- function(df, wgt="total_pop"){
+  rs <- use_geography_splits(df, planning_geog_type="Jurisdiction 2020", wgt=wgt)
+  return(rs)
+}

@@ -261,7 +261,7 @@ psrc_standard_jobsector <- function(dt){
 #' @return the data.table with 5-digit SOC variable, "SOCP5"
 #' @author Michael Jensen
 psrc_socp5 <- function(dt){
-  SOCP5 <- SOCP <- NULL                                                                             # Bind variables locally (for documentation, not function)
+  SOCP5 <- SOCP <- patterns <- NULL                                                                # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
   if("SOCP" %not_in% colnames(dt) & any(grepl("^SOCP\\d+$", colnames(dt), ignore.case=TRUE))){
     dt %<>% setnames(grep("^SOCP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^SOCP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
@@ -279,7 +279,7 @@ psrc_socp5 <- function(dt){
 #' @return the data.table with 3-digit SOC variable, "SOCP3"
 #' @author Michael Jensen
 psrc_socp3 <- function(dt){
-  SOCP3 <- SOCP <- NULL                                                                             # Bind variables locally (for documentation, not function)
+  SOCP3 <- SOCP <- patterns <- NULL                                                                # Bind variables locally (for documentation, not function)
   dt %<>% setDT()
   if("SOCP" %not_in% colnames(dt) & any(grepl("^SOCP\\d+$", colnames(dt), ignore.case=TRUE))){
     dt %<>% setnames(grep("^SOCP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^SOCP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))

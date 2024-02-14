@@ -7,6 +7,7 @@
 \alias{census_to_mic}
 \alias{census_to_taz}
 \alias{census_to_hct}
+\alias{census_to_juris}
 \title{Translate psrccensus data to planning geographies}
 \usage{
 census_to_rgs(df, wgt = "total_pop")
@@ -18,6 +19,8 @@ census_to_mic(df, wgt = "total_pop")
 census_to_taz(df, wgt = "total_pop")
 
 census_to_hct(df, wgt = "total_pop")
+
+census_to_juris(df, wgt = "total_pop")
 }
 \arguments{
 \item{df}{acs or decennial dataset returned from psrccensus}
@@ -39,6 +42,8 @@ Translate psrccensus data to Regional Manufacturing-Industrial Centers
 Translate psrccensus data to Traffic Analysis Zones
 
 Translate psrccensus data to HCT Station Areas (VISION 2050)
+
+Translate psrccensus data to 2020 Jurisdictional boundaries
 }
 \author{
 Michael Jensen

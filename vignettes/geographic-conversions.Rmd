@@ -29,6 +29,7 @@ With this in mind, PSRC has developed demographic ratios to convert estimates fr
   *  Manufacturing-Industrial Centers    - `census_to_mic()`
   *  Traffic Analysis Zones              - `census_to_taz()`
   *  High Capacity Transit Station areas - `census_to_hct()`
+  *  2020 Jurisdictional boundaries      - `census_to_juris()`
 
 As long as you're using the default proxy variable (total population), you only need a single argument: the name of the dataframe (as returned by `get_acs_recs()` or `get_decennial_recs()`) you wish to convert.
 
