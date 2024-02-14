@@ -53,8 +53,10 @@ In addition to variables listed in the Census PUMS data dictionary, you can also
   * **OWN_RENT** - dichotomous tenure (simplified from TEN)
   * **ED_ATTAIN** - educational attainment (simplified from SCHL)
   * **MI_JOBSECTOR** - PSRC-defined Manufacturing-Industrial groups (from NAICSP)
-  * **LUM_JOBSECTOR** - PSRC-defined land use modeling employment sector (from NAICSP)  
-
+  * **LUM_JOBSECTOR** - PSRC-defined land use modeling employment sector (from NAICSP)
+  * **SOCP3** - [Standard Occupational Code (SOC)](https://www.bls.gov/soc/socguide.htm#LINK3) minor group (from SOCP)
+  * **SOCP5** - [Standard Occupational Code (SOC)](https://www.bls.gov/soc/socguide.htm#LINK3) broad occupation (from SOCP)
+ 
 If codes change (and they have in the past), it may be necessary to confirm these custom variable definitions match the new data dictionary.
   
 **DATA_YEAR, PRODUCT, UNIT,** and **COUNTY** variables are always included in the table without you having to specify them; the first three of these can be used to identify the dataset. It is also possible to define your own variables, as described in [this accompanying article](pums-2-make-vars.html).

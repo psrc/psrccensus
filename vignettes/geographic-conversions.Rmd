@@ -44,10 +44,9 @@ x <- get_acs_recs(geography = 'block group',
 
 x %>% dplyr::filter(variable=="B03002_012") %>% .[,c(1,5:8)] %>% head()
 
-#isn't working
-#rgc_race <- census_to_rgc(x)
+rgc_race <- census_to_rgc(x)
 
-#rgc_race %>% dplyr::filter(variable=="B03002_012") %>% .[,c(1,3,7:8)] %>% head()
+rgc_race %>% dplyr::filter(variable=="B03002_012") %>% .[,c(1,3,7:8)] %>% head()
 
                           
 ```
@@ -74,9 +73,9 @@ y <- get_acs_recs(geography = 'tract',
 
 y %>% .[,c(1,5:8)] %>% head()
 
-#rgc_gq_age <- census_to_rgs(y, wgt="group_quarters_pop")
+rgc_gq_age <- census_to_rgs(y, wgt="group_quarters_pop")
 
-#rgc_gq_age %>% .[,c(1,3,4,7,8)]
+rgc_gq_age %>% .[,c(1,3,4,7,8)]
 
 
 ```

@@ -223,11 +223,12 @@ error.</p>
 <span>                         years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2021</span><span class="op">)</span>,</span>
 <span>                         acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Getting data from the 2017-2021 5-year ACS</span></span></code></pre>
+<pre><code><span><span class="co">## Loading ACS5 variables for 2021 from table B25070. To cache this dataset for faster access to ACS tables in the future, run this function with `cache_table = TRUE`. You only need to do this once per ACS dataset.</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="add-a-grouping">Add a grouping<a class="anchor" aria-label="anchor" href="#add-a-grouping"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data wrangling for grouping &gt;30% and under 30% - census tract and population</span></span>
 <span><span class="va">acs_data</span> <span class="op">&lt;-</span> <span class="va">acs_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select_all.html" class="external-link">rename_at</a></span><span class="op">(</span><span class="st">'label'</span>, <span class="op">~</span><span class="st">'rent_burden'</span><span class="op">)</span></span>
 <span></span>
@@ -247,7 +248,7 @@ error.</p>
 <h4 id="aggregate-and-calculate">Aggregate and calculate<a class="anchor" aria-label="anchor" href="#aggregate-and-calculate"></a>
 </h4>
 <p>The moe_sum uses tidycensus.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># filter only fields of interest - census tract and estimate</span></span>
 <span></span>
 <span><span class="co"># use the moe_sum function from tidycensus</span></span>
@@ -261,7 +262,7 @@ error.</p>
 <div class="section level4">
 <h4 id="data-wrangling">Data wrangling<a class="anchor" aria-label="anchor" href="#data-wrangling"></a>
 </h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># pivot data to calculate percentage by census tract, calculate estimates</span></span>
 <span></span>
 <span><span class="va">acs_data_group</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>   </span>
@@ -282,7 +283,7 @@ to down the grouped rows, you need to apply the function rowwise. You
 would not need to do this if the data were not pivoted.</p>
 <p>Note the moe_sum is applied although you are taking a difference.
 Then moe_prop is applied when you are finding the shares.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#calculate moes</span></span>
 <span><span class="va">acs_data_group</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise</a></span><span class="op">(</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
