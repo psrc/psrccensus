@@ -10,7 +10,7 @@ psrc_standard_jobsector(dt)
 \item{dt}{the data.table}
 }
 \value{
-the data.table with standard published covered employment sector, "STANDARD_JOBSECTOR"
+the data.table with standard published covered employment sector, "STANDARD_JOBSECTOR"  # Not fully equivalent because government limited to code 92
 }
 \description{
 PSRC Standard Published products employment sector

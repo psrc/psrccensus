@@ -40,4 +40,5 @@ acs_tbltypes_lookup$profile  <- get_tblnames("/profile")
 acs_tbltypes_lookup$cprofile <- get_tblnames("/cprofile")
 acs_tbltypes_lookup$acsse    <- get_tblnames("se")
 
-#usethis::use_data(acs_tbltypes_lookup, internal=TRUE, overwrite=TRUE)                   # Makes part of the package; push this to repo
+#pums_labels_xtra <- psrccensus:::pums_labels_xtra
+#usethis::use_data(acs_tbltypes_lookup, pums_labels_xtra, internal=TRUE, overwrite=TRUE)                   # Makes part of the package; push this to repo

@@ -220,6 +220,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   if("MI_JOBSECTOR" %in% vars){dt %<>% psrc_mi_jobsector()}                                        # - "
   if("LUM_JOBSECTOR" %in% vars){dt %<>% psrc_lum_jobsector()}                                      # - "
   if("STANDARD_JOBSECTOR" %in% vars){dt %<>% psrc_standard_jobsector()}                            # - "
+  if("SOCP2" %in% vars){dt %<>% psrc_socp2()}                                                      # - "
   if("SOCP3" %in% vars){dt %<>% psrc_socp3()}                                                      # - "
   if("SOCP5" %in% vars){dt %<>% psrc_socp5()}                                                      # - "
   swgt <- if(level %in% c("p","persons")){"PWGTP"}else{"WGTP"}                                     # Specify sample weight

@@ -233,7 +233,7 @@ psrc_lum_jobsector <- function(dt){
 #' PSRC Standard Published products employment sector
 #'
 #' @param dt the data.table
-#' @return the data.table with standard published covered employment sector, "STANDARD_JOBSECTOR"
+#' @return the data.table with standard published covered employment sector, "STANDARD_JOBSECTOR"  # Not fully equivalent because government limited to code 92
 #' @author Michael Jensen
 psrc_standard_jobsector <- function(dt){
   STANDARD_JOBSECTOR <- NAICSP <- patterns <- NULL                                                 # Bind variables locally (for documentation, not function)
@@ -288,5 +288,23 @@ psrc_socp3 <- function(dt){
   }
   dt[, SOCP3:= dplyr::case_when(is.na(SOCP) | grepl("^N/?A",as.character(SOCP)) ~NA_character_,
                                 TRUE ~paste0(stringr::str_sub(as.character(SOCP),1L,3L),"000"))]
+  return(dt)
+}
+
+#' 2-digit SOC variable
+#'
+#' @param dt the data.table
+#' @return the data.table with 2-digit SOC variable, "SOCP2"
+#' @author Michael Jensen
+psrc_socp2 <- function(dt){
+  SOCP2 <- SOCP <- patterns <- NULL                                                                # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if("SOCP" %not_in% colnames(dt) & any(grepl("^SOCP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^SOCP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^SOCP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
+    dt[, grep("^SOCP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^SOCP\\d+$")]
+    dt[, SOCP:=fcoalesce(.SD), .SDcols=patterns("^SOCP\\d+$")]
+  }
+  dt[, SOCP2:= dplyr::case_when(is.na(SOCP) | grepl("^N/?A",as.character(SOCP)) ~NA_character_,
+                                TRUE ~paste0(stringr::str_sub(as.character(SOCP),1L,2L),"0000"))]
   return(dt)
 }
