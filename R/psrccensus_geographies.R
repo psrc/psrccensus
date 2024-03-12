@@ -25,6 +25,23 @@ get_psrc_places <- function(year){
   return(place_lookup)
 }
 
+#' Helper to return census geography from psrccensus table
+#'
+#' @param df acs or decennial dataset returned from psrccensus
+#' @return string with census geography & year
+#' @author Michael Jensen
+#'
+#' @importFrom dplyr pull
+#'
+identify_censusgeo <- function(df){
+  data_year <- dplyr::pull(df, year) %>% unique()
+  cb_geo_yr <- (data_year - (data_year %% 10)) %% 100 %>% as.character()
+  fips_lookup <- data.frame(digits=c(11,12,15), geo=c("tract","blockgroup","block")) %>% setDT()
+  fips_length <- dplyr::pull(df, GEOID) %>% as.character() %>% nchar() %>% max()
+  cb_geo <- fips_lookup[digits==fips_length, geo] %>% paste0(cb_geo_yr)
+  return(cbgeo)
+}
+
 #' Helper to translate psrccensus estimates to planning geographies
 #'
 #' @param df acs or decennial dataset returned from psrccensus
@@ -50,10 +67,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
     digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen
     fullwgt <- paste0("percent_of_", wgt)
     data_year <- dplyr::pull(df, year) %>% unique()
-    cb_geo_yr <- (data_year - (data_year %% 10)) %% 100 %>% as.character()
-    fips_lookup <- data.frame(digits=c(11,12,15), geo=c("tract","blockgroup","block")) %>% setDT()
-    fips_length <- dplyr::pull(df, GEOID) %>% as.character() %>% nchar() %>% max()
-    cb_geo <- fips_lookup[digits==fips_length, geo] %>% paste0(cb_geo_yr)                          # Stored as census geography & last two digits of yr
+    cb_geo <- identify_censusgeo(df)
     if(data_year < 2010){
       warning("Splits for this year are not yet stored in Elmer")
       return(NULL)
@@ -82,7 +96,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
         setnames("data_geog", "GEOID") %>% setkey(GEOID)
       df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
       if(agg_fct=="sum" & value_col=="value"){                                                     # Decennial
-        rs <- df[, .(value=sum(value * get(fullwgt))), by=mget(group_cols)]
+        rsi <- df[, .(value=sum(value * get(fullwgt))), by=mget(group_cols)]
       }else if(agg_fct=="sum" & value_col=="estimate"){                                            # ACS
         rsi <- df[, .(estimate = sum(estimate * get(fullwgt)),
                      moe = tidycensus::moe_sum((moe * get(fullwgt)), (estimate * get(fullwgt)), na.rm=TRUE)), # MOE calculation
