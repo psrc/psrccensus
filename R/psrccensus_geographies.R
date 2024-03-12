@@ -34,12 +34,13 @@ get_psrc_places <- function(year){
 #' @importFrom dplyr pull
 #'
 identify_censusgeo <- function(df){
+  data_year <- cb_geo_yr <- fips_lookup <- fips_length <- cb_geo <- NULL # For Roxygen
   data_year <- dplyr::pull(df, year) %>% unique()
   cb_geo_yr <- (data_year - (data_year %% 10)) %% 100 %>% as.character()
   fips_lookup <- data.frame(digits=c(11,12,15), geo=c("tract","blockgroup","block")) %>% setDT()
   fips_length <- dplyr::pull(df, GEOID) %>% as.character() %>% nchar() %>% max()
   cb_geo <- fips_lookup[digits==fips_length, geo] %>% paste0(cb_geo_yr)
-  return(cbgeo)
+  return(cb_geo)
 }
 
 #' Helper to translate psrccensus estimates to planning geographies
