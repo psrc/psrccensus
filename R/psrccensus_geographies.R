@@ -15,7 +15,7 @@ globalVariables(c(":=", "!!", ".", "enquos"))
 #' @importFrom dplyr filter select rename
 #' @export
 get_psrc_places <- function(year){
-  psrc_region <- counties <- COUNTYFP <- place_lookup <- places <- GEOID <- NAME <- geometry <- NULL
+  psrc_region <- counties <- COUNTYFP <- place_lookup <- places <- GEOID <- NAME <- geometry <- NULL # For Roxygen
   psrc_region <- tigris::counties("53", cb=TRUE, progress_bar=FALSE) %>%
     filter(COUNTYFP %in% c("033","035","053","061")) %>% dplyr::summarize() %>%
     st_transform(2285) # planar projection to allow intersect
@@ -25,7 +25,18 @@ get_psrc_places <- function(year){
   return(place_lookup)
 }
 
-#' Helper to return census geography from psrccensus table
+#' Helper to ascertain datatype of variable
+#'
+#' @param x vector, e.g. variable
+#' @return string with census geography & year
+testInteger <- function(x){
+  func <- function(x){all.equal(x, as.integer(x), check.attributes = FALSE)}
+  test <- x %>% lapply(func) %>% unlist() %>% all()
+  if(test==TRUE){return(TRUE)
+  }else{return(FALSE)}
+}
+
+#' Helper to ascertain census geography from psrccensus table
 #'
 #' @param df acs or decennial dataset returned from psrccensus
 #' @return string with census geography & year
@@ -34,7 +45,7 @@ get_psrc_places <- function(year){
 #' @importFrom dplyr pull
 #'
 identify_censusgeo <- function(df){
-  data_year <- cb_geo_yr <- fips_lookup <- fips_length <- cb_geo <- NULL # For Roxygen
+  data_year <- cb_geo_yr <- fips_lookup <- fips_length <- cb_geo <- digits <- geo <- NULL # For Roxygen
   data_year <- dplyr::pull(df, year) %>% unique()
   cb_geo_yr <- (data_year - (data_year %% 10)) %% 100 %>% as.character()
   fips_lookup <- data.frame(digits=c(11,12,15), geo=c("tract","blockgroup","block")) %>% setDT()
@@ -53,18 +64,13 @@ identify_censusgeo <- function(df){
 #' @return table with planning geography units in place of census geography units
 #' @author Michael Jensen
 #'
+#' @importFrom psrcelmer get_query
+#' @importFrom dplyr pull
+#' @importFrom tidycensus moe_sum
 #' @rawNamespace import(data.table, except = c(month, year))
-use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fct="sum"){
+use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fct = "sum"){
 
-  testInteger <- function(x){
-    func <- function(x){all.equal(x, as.integer(x), check.attributes = FALSE)}
-    test <- x %>% lapply(func) %>% unlist() %>% all()
-    if(test==TRUE){return(TRUE)
-    }else{return(FALSE)}
-  }
-  est_is_integer <- testInteger(df$estimate)
-
-  geography_splits_helper <- function(df, planning_geog_type, wgt="total_pop", agg_fct="sum"){
+  geography_splits_helper <- function(df, planning_geog_type, wgt, agg_fct){
     digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen
     fullwgt <- paste0("percent_of_", wgt)
     data_year <- dplyr::pull(df, year) %>% unique()
@@ -86,7 +92,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
       sql_str <- paste0("SELECT * FROM Elmer.general.get_current_geography_splits(",               # SQL table-value function returns data
                        paste(sQuote(cb_geo), sQuote(planning_geog_type),
                        data_year, sep=", "), ");")
-      group_cols <- grep("(year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
+      group_cols <- grep("(state|year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
         append("planning_geog", after=0)
       value_col <- grep("(value|estimate)", colnames(df), value=TRUE)                              # Decennial:value; ACS:estimate
       rosetta <- psrcelmer::get_query(sql_str) %>% setDT() %>%                                     # Must be on PSRC VPN to connect to Elmer
@@ -96,6 +102,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
           grepl("(_geog$|^percent_of)", colnames(.)), with=FALSE] %>%
         setnames("data_geog", "GEOID") %>% setkey(GEOID)
       df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
+      est_is_integer <- testInteger(df %>% dplyr::pull({{value_col}}))
       if(agg_fct=="sum" & value_col=="value"){                                                     # Decennial
         rsi <- df[, .(value=sum(value * get(fullwgt))), by=mget(group_cols)]
       }else if(agg_fct=="sum" & value_col=="estimate"){                                            # ACS
@@ -111,7 +118,7 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop", agg_fc
   rso <- df %>% split(.$year)                                                                      # In case table has multiple years
   rso %<>% mapply(geography_splits_helper, df=.,
                   planning_geog_type=planning_geog_type,
-                  wgt=wgt, SIMPLIFY=FALSE) %>% rbindlist()
+                  wgt=wgt, agg_fct="sum", SIMPLIFY=FALSE) %>% rbindlist()
   return(rso)
 }
 

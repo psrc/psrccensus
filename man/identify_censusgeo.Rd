@@ -2,7 +2,7 @@
 % Please edit documentation in R/psrccensus_geographies.R
 \name{identify_censusgeo}
 \alias{identify_censusgeo}
-\title{Helper to return census geography from psrccensus table}
+\title{Helper to ascertain census geography from psrccensus table}
 \usage{
 identify_censusgeo(df)
 }
@@ -13,7 +13,7 @@ identify_censusgeo(df)
 string with census geography & year
 }
 \description{
-Helper to return census geography from psrccensus table
+Helper to ascertain census geography from psrccensus table
 }
 \author{
 Michael Jensen
