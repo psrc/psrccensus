@@ -146,7 +146,7 @@ census_to_rgs <- function(df, wgt="total_pop"){
 #' @title Translate psrccensus data to Regional Growth Centers
 #' @export
 census_to_rgc <- function(df, wgt="total_pop"){
-  rs <- use_geography_splits(df, planning_geog_type="Regional Growth Center (2022 RTP)", wgt=wgt)
+  rs <- use_geography_splits(df, planning_geog_type="Regional Growth Center (12/12/2023)", wgt=wgt)
   return(rs)
 }
 
