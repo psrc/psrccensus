@@ -20,6 +20,7 @@ Imports:
     data.table,
     dplyr,
     fredr,
+    glue,
     httr,
     lubridate,
     magrittr,

@@ -4,12 +4,7 @@
 \alias{use_geography_splits}
 \title{Helper to translate psrccensus estimates to planning geographies}
 \usage{
-use_geography_splits(
-  df,
-  planning_geog_type,
-  wgt = "total_pop",
-  agg_fct = "sum"
-)
+use_geography_splits(df, planning_geog_type, wgt = "total_pop")
 }
 \arguments{
 \item{df}{acs or decennial dataset returned from psrccensus}
@@ -18,8 +13,6 @@ use_geography_splits(
 
 \item{wgt}{measure share used as split weight
 either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"}
-
-\item{agg_fct}{aggregation}
 }
 \value{
 table with planning geography units in place of census geography units
