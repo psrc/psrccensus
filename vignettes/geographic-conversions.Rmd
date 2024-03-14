@@ -22,7 +22,7 @@ Since the Census Bureau cannot publish data at every conceivable scale, data use
 
 For more geographic precision, we in effect disaggregate the estimate to a granular scale--specifically, parcel--by assuming the estimate is in direct proportion either to a variable reported at that scale (housing units), or to one of several population measures we can apportion to that scale (e.g. OFM total population).
 
-With this in mind, PSRC has developed demographic ratios to convert estimates from Census geographies to its own planning geographies. Each planning geography has its own [function](./reference/census_to_psrcgeo.html): 
+With this in mind, PSRC has developed demographic ratios to convert estimates from Census geographies to its own planning geographies. Each planning geography has its own [function](../reference/census_to_psrcgeo.html): 
 
   *  Regional Growth Strategy classes    - `census_to_rgs()`
   *  Regional Growth Centers             - `census_to_rgc()`
@@ -86,7 +86,7 @@ If your dataframe combines tables that would most appropriately apply two differ
 
 The set of planning geographies is not strictly limited to the five listed above; with approval, the set can be expanded (see the [documentation](http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer) - PSRC VPN required to view). 
 
-To convert census estimates to custom geographies that don't have stored splits, use the [`census_to_customgeo()`](./reference/census_to_customgeo.html) function. This performs an analogous conversion using the same parcel-level proxy variables, but requires two additional arguments: an `sf` package object (i.e. your custom geography/geometry), and the variable name in that file that labels the geography. This function is much slower than [the PSRC planning geography functions listed above](#geographic-conversion-via-a-granular-proxy-variable.html) because it must get parcel-level data from Elmer and create the custom splits rather than just read them. Depending on your download speed and the complexity of the geography, it'll take a minute or two to run (still, not shabby for this level of detail). 
+To convert census estimates to custom geographies that don't have stored splits, use the `census_to_customgeo()` function. This performs an analogous conversion using the same parcel-level proxy variables, but requires two additional arguments: an `sf` package object (i.e. your custom geography/geometry), and the variable name in that file that labels the geography. This function is much slower than the PSRC planning geography functions listed above because it must get parcel-level data from Elmer and create the custom splits rather than just read them. Depending on your download speed and the complexity of the geography, it'll take a minute or two to run (still, not shabby for this level of detail). 
 
 ### Error margins & limitations
 

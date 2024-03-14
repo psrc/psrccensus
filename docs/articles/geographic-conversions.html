@@ -97,7 +97,7 @@ units), or to one of several population measures we can apportion to
 that scale (e.g. OFM total population).</p>
 <p>With this in mind, PSRC has developed demographic ratios to convert
 estimates from Census geographies to its own planning geographies. Each
-planning geography has its own <a href="./reference/census_to_psrcgeo.html">function</a>:</p>
+planning geography has its own <a href="../reference/census_to_psrcgeo.html">function</a>:</p>
 <ul>
 <li>Regional Growth Strategy classes - <code><a href="../reference/census_to_psrcgeo.html">census_to_rgs()</a></code>
 </li>
@@ -194,8 +194,8 @@ default)</li>
 <span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">7</span>,<span class="fl">8</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;    planning_geog   variable  label  year estimate</span></span>
 <span><span class="co">#&gt;           &lt;char&gt;     &lt;char&gt; &lt;char&gt; &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:         Metro B26001_001 Total:  2019    38944</span></span>
-<span><span class="co">#&gt; 2:         Rural B26001_001 Total:  2019     4848</span></span>
+<span><span class="co">#&gt; 1:         Rural B26001_001 Total:  2019     4848</span></span>
+<span><span class="co">#&gt; 2:         Metro B26001_001 Total:  2019    38944</span></span>
 <span><span class="co">#&gt; 3:           HCT B26001_001 Total:  2019     8117</span></span>
 <span><span class="co">#&gt; 4:          Core B26001_001 Total:  2019    11580</span></span>
 <span><span class="co">#&gt; 5:            UU B26001_001 Total:  2019     7224</span></span>
@@ -213,17 +213,16 @@ the geographic conversion.</p>
 listed above; with approval, the set can be expanded (see the <a href="http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer" class="external-link">documentation</a>
 - PSRC VPN required to view).</p>
 <p>To convert census estimates to custom geographies that don’t have
-stored splits, use the <a href="./reference/census_to_customgeo.html"><code>census_to_customgeo()</code></a>
-function. This performs an analogous conversion using the same
-parcel-level proxy variables, but requires two additional arguments: an
-<code>sf</code> package object (i.e. your custom geography/geometry),
-and the variable name in that file that labels the geography. This
-function is much slower than <a href="#geographic-conversion-via-a-granular-proxy-variable.html">the
-PSRC planning geography functions listed above</a> because it must get
-parcel-level data from Elmer and create the custom splits rather than
-just read them. Depending on your download speed and the complexity of
-the geography, it’ll take a minute or two to run (still, not shabby for
-this level of detail).</p>
+stored splits, use the <code><a href="../reference/census_to_customgeo.html">census_to_customgeo()</a></code> function. This
+performs an analogous conversion using the same parcel-level proxy
+variables, but requires two additional arguments: an <code>sf</code>
+package object (i.e. your custom geography/geometry), and the variable
+name in that file that labels the geography. This function is much
+slower than the PSRC planning geography functions listed above because
+it must get parcel-level data from Elmer and create the custom splits
+rather than just read them. Depending on your download speed and the
+complexity of the geography, it’ll take a minute or two to run (still,
+not shabby for this level of detail).</p>
 </div>
 <div class="section level3">
 <h3 id="error-margins-limitations">Error margins &amp; limitations<a class="anchor" aria-label="anchor" href="#error-margins-limitations"></a>
