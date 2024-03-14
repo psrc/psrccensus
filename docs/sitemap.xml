@@ -55,6 +55,9 @@
     <loc>https://psrc.github.io/psrccensus/reference/adjust_dollars.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/census_to_customgeo.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.html</loc>
   </url>
   <url>
@@ -121,6 +124,9 @@
     <loc>https://psrc.github.io/psrccensus/reference/group_recs.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/identify_censusgeo.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/index.html</loc>
   </url>
   <url>
@@ -160,6 +166,9 @@
     <loc>https://psrc.github.io/psrccensus/reference/psrc_pums_stat.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/psrc_socp2.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/psrc_socp3.html</loc>
   </url>
   <url>
@@ -196,7 +205,16 @@
     <loc>https://psrc.github.io/psrccensus/reference/reliability_calcs.html</loc>
   </url>
   <url>
+    <loc>https://psrc.github.io/psrccensus/reference/testInteger.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/test_df_for_conversion.html</loc>
+  </url>
+  <url>
     <loc>https://psrc.github.io/psrccensus/reference/use_geography_splits.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrccensus/reference/verify_custom_geo.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrccensus/reference/z_score.html</loc>

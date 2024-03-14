@@ -87,23 +87,23 @@ test_df_for_conversion <- function(df){
 
 #' Helper to verify custom geometry input meets criteria for geographic conversion
 #'
-#' @param desired_geography custom sf file with intended geography/geometry
-#' @param desired_rpt_field grouping field from custom geography file, i.e. geography label
+#' @param custom_geo custom sf file with intended geography/geometry
+#' @param custom_geo_var grouping field from custom geography file, i.e. geography label
 #' @return verified sf object
 #' @author Michael Jensen
 #'
 #' @importFrom dplyr pull select
 #' @importFrom sf st_make_valid st_transform
 #'
-verify_custom_geography <- function(desired_geography, desired_rpt_field){
+verify_custom_geo <- function(custom_geo, custom_geo_var){
   tryCatch({
-    customgeo <- desired_geography %>% sf::st_make_valid() %>%
-      dplyr::select(!!desired_rpt_field) %>% sf::st_transform(2285)
+    customgeo <- custom_geo %>% sf::st_make_valid() %>%
+      dplyr::select(!!custom_geo_var) %>% sf::st_transform(2285)
     return(customgeo)
   },
   error = function(cond) {
-    message("desired_geography input must be sf polygon file")
-    message("desired_rpt_field must exist as column label in sf polygon file")
+    message("custom_geo input must be sf polygon file")
+    message("custom_geo_var must exist as column label in sf polygon file")
     return(NULL)
   })
 }
@@ -224,8 +224,8 @@ census_to_juris <- function(df, wgt="total_pop"){
 #' Function to flexibly convert psrccensus estimates to any regional sf geography
 #'
 #' @param df acs or decennial dataset returned from psrccensus
-#' @param desired_geography custom sf file with intended geography/geometry
-#' @param desired_rpt_field grouping field from custom geography file, i.e. geography label
+#' @param custom_geo custom sf file with intended geography/geometry
+#' @param custom_geo_var grouping variable from custom geography file, i.e. geography label
 #' @param wgt measure share used as split weight
 #'            either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"
 #' @return table with custom geographic units in place of census geography units
@@ -238,10 +238,10 @@ census_to_juris <- function(df, wgt="total_pop"){
 #' @rawNamespace import(data.table, except = c(month, year))
 #'
 #' @export
-psrc_geo_convert <- function(df, desired_geography, desired_rpt_field, wgt="total_pop"){
+census_to_customgeo <- function(df, custom_geo, custom_geo_var, wgt="total_pop"){
   parcel_dim_id <- x_coord_state_plane <- y_coord_state_plane <- customgeo <- rso <- NULL # For roxygen
 
-  custom_geosplits_helper <- function(df){
+  ready_geosplits_helper <- function(df){
     planning_geog <- fraction <- value <- estimate <- moe <- rsi <- NULL
     if(!test_df_for_conversion(df)==TRUE){
       return(NULL)
@@ -264,7 +264,7 @@ psrc_geo_convert <- function(df, desired_geography, desired_rpt_field, wgt="tota
       parcel_geo <- parcel_geo %>% sf::st_join(customgeo, left=FALSE) %>%                          # Associate parcels with custom geog
         sf::st_drop_geometry() %>% setDT() %>% setkey(parcel_dim_id)
       parcel_share %<>% setDT() %>% setkey(parcel_dim_id) %>%
-        .[parcel_geo, planning_geog:=get(desired_rpt_field)] %>%
+        .[parcel_geo, planning_geog:=get(custom_geo_var)] %>%
         .[, .(split=sum(fraction)), by=.(GEOID, planning_geog)] %>% setkey(GEOID)                  # Summarize to custom geog x census geog level
       df %<>% setDT() %>% setkey(GEOID) %>% merge(parcel_share, allow.cartesian=TRUE)              # Merge on key=GEOID
       est_is_integer <- testInteger(df %>% dplyr::pull({{value_col}}))
@@ -280,12 +280,12 @@ psrc_geo_convert <- function(df, desired_geography, desired_rpt_field, wgt="tota
     }
   }
 
-  customgeo <- verify_custom_geography(desired_geography, desired_rpt_field)
+  customgeo <- verify_custom_geo(custom_geo, custom_geo_var)
   if(is.null(customgeo)){
     return(NULL)
   }else{
     rso <- df %>% split(.$year) %>%                                                                    # In case table has multiple years
-      lapply(custom_geosplits_helper) %>% rbindlist()
+      lapply(ready_geosplits_helper) %>% rbindlist()
   }
   return(rso)
 }

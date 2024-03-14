@@ -143,14 +143,14 @@ population), you only need a single argument: the name of the dataframe
 <span><span class="va">rgc_race</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/census_to_psrcgeo.html">census_to_rgc</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rgc_race</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">variable</span><span class="op">==</span><span class="st">"B03002_012"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      planning_geog               label estimate   moe</span></span>
-<span><span class="co">#&gt;                             &lt;char&gt;              &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:   not in regional growth center Hispanic or Latino:   416251  9537</span></span>
-<span><span class="co">#&gt; 2:               Seattle Northgate Hispanic or Latino:      719   327</span></span>
-<span><span class="co">#&gt; 3:    Seattle University Community Hispanic or Latino:     1946   392</span></span>
-<span><span class="co">#&gt; 4:                  Seattle Uptown Hispanic or Latino:      673   227</span></span>
-<span><span class="co">#&gt; 5: Seattle First Hill/Capitol Hill Hispanic or Latino:     3318   625</span></span>
-<span><span class="co">#&gt; 6:        Seattle South Lake Union Hispanic or Latino:      380   211</span></span></code></pre></div>
+<span><span class="co">#&gt;                      planning_geog   variable  year estimate</span></span>
+<span><span class="co">#&gt;                             &lt;char&gt;     &lt;char&gt; &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:   not in regional growth center B03002_012  2021   415884</span></span>
+<span><span class="co">#&gt; 2:               Seattle Northgate B03002_012  2021      719</span></span>
+<span><span class="co">#&gt; 3:    Seattle University Community B03002_012  2021     1921</span></span>
+<span><span class="co">#&gt; 4:                  Seattle Uptown B03002_012  2021      649</span></span>
+<span><span class="co">#&gt; 5: Seattle First Hill/Capitol Hill B03002_012  2021     3318</span></span>
+<span><span class="co">#&gt; 6:        Seattle South Lake Union B03002_012  2021      380</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="selecting-the-correct-proxy">Selecting the correct proxy<a class="anchor" aria-label="anchor" href="#selecting-the-correct-proxy"></a>
@@ -192,19 +192,38 @@ default)</li>
 <span><span class="va">rgc_gq_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/census_to_psrcgeo.html">census_to_rgs</a></span><span class="op">(</span><span class="va">y</span>, wgt<span class="op">=</span><span class="st">"group_quarters_pop"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rgc_gq_age</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">.</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">7</span>,<span class="fl">8</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;    planning_geog  label                   concept estimate   moe</span></span>
-<span><span class="co">#&gt;           &lt;char&gt; &lt;char&gt;                    &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:         Rural Total: GROUP QUARTERS POPULATION     4848   547</span></span>
-<span><span class="co">#&gt; 2:         Metro Total: GROUP QUARTERS POPULATION    38944  1818</span></span>
-<span><span class="co">#&gt; 3:           HCT Total: GROUP QUARTERS POPULATION     8117   617</span></span>
-<span><span class="co">#&gt; 4:          Core Total: GROUP QUARTERS POPULATION    11580   843</span></span>
-<span><span class="co">#&gt; 5:            UU Total: GROUP QUARTERS POPULATION     7224   733</span></span>
-<span><span class="co">#&gt; 6:   CitiesTowns Total: GROUP QUARTERS POPULATION     4945   441</span></span></code></pre></div>
+<span><span class="co">#&gt;    planning_geog   variable  label  year estimate</span></span>
+<span><span class="co">#&gt;           &lt;char&gt;     &lt;char&gt; &lt;char&gt; &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:         Rural B26001_001 Total:  2019     4848</span></span>
+<span><span class="co">#&gt; 2:         Metro B26001_001 Total:  2019    38944</span></span>
+<span><span class="co">#&gt; 3:           HCT B26001_001 Total:  2019     8117</span></span>
+<span><span class="co">#&gt; 4:          Core B26001_001 Total:  2019    11580</span></span>
+<span><span class="co">#&gt; 5:            UU B26001_001 Total:  2019     7224</span></span>
+<span><span class="co">#&gt; 6:   CitiesTowns B26001_001 Total:  2019     4945</span></span></code></pre></div>
 <p>If your dataframe combines tables that would most appropriately apply
 two different proxy metrics–for example, one linked to total population,
 and another linked to housing units–you might divide the dataframe (or
 alter your code to retrieve separate tables originally) before applying
 the geographic conversion.</p>
+</div>
+<div class="section level3">
+<h3 id="further-geographies">Further geographies<a class="anchor" aria-label="anchor" href="#further-geographies"></a>
+</h3>
+<p>The set of planning geographies is not strictly limited to the five
+listed above; with approval, the set can be expanded (see the <a href="http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer" class="external-link">documentation</a>
+- PSRC VPN required to view).</p>
+<p>To convert census estimates to custom geographies that don’t have
+stored splits, use the <a href="reference/census_to_customgeo.html"><code>census_to_customgeo()</code></a>
+function. This performs an analogous conversion using the same
+parcel-level proxy variables, but requires two additional arguments: an
+<code>sf</code> package object (i.e. your custom geography/geometry),
+and the variable name in that file that labels the geography. This
+function is much slower than <a href="geographic-conversion-via-a-granular-proxy-variable">the PSRC
+planning geography functions listed above</a> because it must get
+parcel-level data from Elmer and create the custom splits rather than
+just read them. Depending on your download speed and the complexity of
+the geography, it’ll take a minute or two to run (still, not shabby for
+this level of detail).</p>
 </div>
 <div class="section level3">
 <h3 id="error-margins-limitations">Error margins &amp; limitations<a class="anchor" aria-label="anchor" href="#error-margins-limitations"></a>
@@ -217,18 +236,6 @@ the appropriate geography.</p>
 directly proportional to the split weight, the assumption is applied
 identically to both estimate and MOE, which seemed the best choice of
 the available options.</p>
-</div>
-<div class="section level3">
-<h3 id="further-geographies">Further geographies<a class="anchor" aria-label="anchor" href="#further-geographies"></a>
-</h3>
-<p>The set of planning geographies is not strictly limited to the five
-listed above; with approval, the set can be expanded (see the <a href="http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer" class="external-link">documentation</a>
-- PSRC VPN required to view). We realize there is also a need to split
-Census estimates using custom geographies besides those central to
-PSRC’s own planning (such as those involved in jurisdictional data
-requests). We are considering several methods to do this and in the
-future will update this page with links to documentation of those
-methods.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

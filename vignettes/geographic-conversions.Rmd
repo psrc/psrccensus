@@ -82,13 +82,14 @@ rgc_gq_age %>% .[,c(1,3,4,7,8)]
 ```
 If your dataframe combines tables that would most appropriately apply two different proxy metrics--for example, one linked to total population, and another linked to housing units--you might divide the dataframe (or alter your code to retrieve separate tables originally) before applying the geographic conversion. 
 
+### Further geographies
+
+The set of planning geographies is not strictly limited to the five listed above; with approval, the set can be expanded (see the [documentation](http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer) - PSRC VPN required to view). 
+
+To convert census estimates to custom geographies that don't have stored splits, use the [`census_to_customgeo()`](reference/census_to_customgeo.html) function. This performs an analogous conversion using the same parcel-level proxy variables, but requires two additional arguments: an `sf` package object (i.e. your custom geography/geometry), and the variable name in that file that labels the geography. This function is much slower than [the PSRC planning geography functions listed above](geographic-conversion-via-a-granular-proxy-variable) because it must get parcel-level data from Elmer and create the custom splits rather than just read them. Depending on your download speed and the complexity of the geography, it'll take a minute or two to run (still, not shabby for this level of detail). 
+
 ### Error margins & limitations
 
 Currently, split-derived calculations are limited to estimates only; medians cannot be determined via this method. Analysts can calculate shares by converting estimates of both the numerator and denominator to the appropriate geography.
 
 Although it may be harder to assume Margins of Error (MOE) are directly proportional to the split weight, the assumption is applied identically to both estimate and MOE, which seemed the best choice of the available options.
-
-
-### Further geographies
-
-The set of planning geographies is not strictly limited to the five listed above; with approval, the set can be expanded (see the [documentation](http://aws-linux/mediawiki/index.php/Geography_Split_Tables_in_Elmer) - PSRC VPN required to view). We realize there is also a need to split Census estimates using custom geographies besides those central to PSRC's own planning (such as those involved in jurisdictional data requests). We are considering several methods to do this and in the future will update this page with links to documentation of those methods.
