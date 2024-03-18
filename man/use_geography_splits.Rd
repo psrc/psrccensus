@@ -4,7 +4,13 @@
 \alias{use_geography_splits}
 \title{Helper to translate psrccensus estimates to planning geographies}
 \usage{
-use_geography_splits(df, planning_geog_type, wgt = "total_pop")
+use_geography_splits(
+  df,
+  planning_geog_type,
+  wgt,
+  ofm_vintage = "NULL",
+  parcel_year = "NULL"
+)
 }
 \arguments{
 \item{df}{acs or decennial dataset returned from psrccensus}
@@ -12,7 +18,11 @@ use_geography_splits(df, planning_geog_type, wgt = "total_pop")
 \item{planning_geog_type}{planning geography type as listed in Elmer.general.geography_splits}
 
 \item{wgt}{measure share used as split weight
-either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"}
+either "total_pop", "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"}
+
+\item{ofm_vintage}{for deprecated splits; otherwise keep default. See <http://aws-linux/mediawiki/index.php/Get_geography_splits_(Elmer_Function)>}
+
+\item{parcel_year}{for deprecated baseyear; otherwise keep default. See <http://aws-linux/mediawiki/index.php/Get_geography_splits_(Elmer_Function)>}
 }
 \value{
 table with planning geography units in place of census geography units

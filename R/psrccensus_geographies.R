@@ -113,7 +113,9 @@ verify_custom_geo <- function(custom_geo, custom_geo_var){
 #' @param df acs or decennial dataset returned from psrccensus
 #' @param planning_geog_type planning geography type as listed in Elmer.general.geography_splits
 #' @param wgt measure share used as split weight
-#'            either "total_pop" (default), "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"
+#'            either "total_pop", "household_pop", "group_quarters_pop", "housing_units" or "occupied_housing_units"
+#' @param ofm_vintage for deprecated splits; otherwise keep default. See <http://aws-linux/mediawiki/index.php/Get_geography_splits_(Elmer_Function)>
+#' @param parcel_year for deprecated baseyear; otherwise keep default. See <http://aws-linux/mediawiki/index.php/Get_geography_splits_(Elmer_Function)>
 #' @return table with planning geography units in place of census geography units
 #' @author Michael Jensen
 #'
@@ -121,7 +123,7 @@ verify_custom_geo <- function(custom_geo, custom_geo_var){
 #' @importFrom dplyr pull
 #' @importFrom tidycensus moe_sum
 #' @rawNamespace import(data.table, except = c(month, year))
-use_geography_splits <- function(df, planning_geog_type, wgt="total_pop"){
+use_geography_splits <- function(df, planning_geog_type, wgt, ofm_vintage="NULL", parcel_year="NULL"){
 
   geography_splits_helper <- function(df){
     digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen
@@ -132,9 +134,9 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop"){
       fullwgt <- paste0("percent_of_", wgt)
       data_year <- dplyr::pull(df, year) %>% unique()
       cb_geo <- identify_censusgeo(df)
-      sql_str <- paste0("SELECT * FROM Elmer.general.get_current_geography_splits(",               # SQL table-value function returns data
-                       paste(sQuote(cb_geo), sQuote(planning_geog_type),
-                       data_year, sep=", "), ");")
+      sql_str <- paste0("SELECT * FROM Elmer.general.get_any_geography_splits(",                   # SQL table-value function returns data
+                   paste(sQuote(cb_geo), sQuote(planning_geog_type),
+                   data_year, ofm_vintage, parcel_year, sep=", "), ");")
       group_cols <- grep("(state|year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
         append("planning_geog", after=0)
       value_col <- grep("(value|estimate)", colnames(df), value=TRUE)                              # Decennial:value; ACS:estimate
@@ -155,12 +157,13 @@ use_geography_splits <- function(df, planning_geog_type, wgt="total_pop"){
         if(est_is_integer){rsi[, `:=`(estimate=round(estimate), moe=round(moe))]}
       }else{rsi <- NULL}
       return(rsi)
+      }
     }
-  }
   rso <- df %>% split(.$year) %>%
     lapply(geography_splits_helper) %>% rbindlist()
   return(rso)
 }
+
 
 #' Translate psrccensus data to planning geographies
 #'
