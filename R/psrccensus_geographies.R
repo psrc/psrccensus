@@ -123,7 +123,7 @@ verify_custom_geo <- function(custom_geo, custom_geo_var){
 #' @importFrom dplyr pull
 #' @importFrom tidycensus moe_sum
 #' @rawNamespace import(data.table, except = c(month, year))
-use_geography_splits <- function(df, planning_geog_type, wgt, ofm_vintage="NULL", parcel_year="NULL"){
+use_geography_splits <- function(df, planning_geog_type, wgt, ofm_vintage="default", parcel_year="default"){
 
   geography_splits_helper <- function(df){
     digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen

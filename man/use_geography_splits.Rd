@@ -8,8 +8,8 @@ use_geography_splits(
   df,
   planning_geog_type,
   wgt,
-  ofm_vintage = "NULL",
-  parcel_year = "NULL"
+  ofm_vintage = "default",
+  parcel_year = "default"
 )
 }
 \arguments{
