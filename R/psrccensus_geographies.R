@@ -108,6 +108,35 @@ verify_custom_geo <- function(custom_geo, custom_geo_var){
   })
 }
 
+#' Internal helper to apply splits in `use_geography_splits` or `census_to_customgeo`
+#'
+#' @param df acs or decennial dataset returned from psrccensus
+#' @param rosetta splits file either from Elmer TVF or calculated from parcel data
+#' @return dataframe summarized to planning geography
+#' @author Michael Jensen
+#'
+#' @rawNamespace import(data.table, except = c(month, year))
+apply_splits <- function(df, rosetta){
+  value <- estimate <- moe <- NULL # For Roxygen
+  group_cols <- grep("(state|year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
+    append("planning_geog", after=0)
+  value_col <- grep("(value|estimate)", colnames(df), value=TRUE)
+  df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
+  rosetta %<>% setkey(GEOID)
+  est_is_integer <- testInteger(df %>% dplyr::pull({{value_col}}))
+  if(value_col=="value"){                                                                      # Decennial
+    rsi <- df[, .(value=sum(value * split)), by=mget(group_cols)]
+  }else if(value_col=="estimate"){                                                             # ACS
+    rsi <- df[, .(estimate = sum(estimate * split),
+                  moe = tidycensus::moe_sum((moe * split), (estimate * split), na.rm=TRUE)),   # MOE calculation
+              by=mget(group_cols)]
+    if(est_is_integer){rsi[, `:=`(estimate=round(estimate), moe=round(moe))]}
+  }else{
+    rsi <- NULL
+  }
+  return(rsi)
+}
+
 #' Helper to translate psrccensus estimates to planning geographies
 #'
 #' @param df acs or decennial dataset returned from psrccensus
@@ -124,38 +153,20 @@ verify_custom_geo <- function(custom_geo, custom_geo_var){
 #' @importFrom tidycensus moe_sum
 #' @rawNamespace import(data.table, except = c(month, year))
 use_geography_splits <- function(df, planning_geog_type, wgt, ofm_vintage="default", parcel_year="default"){
+  digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL         # For roxygen
 
   geography_splits_helper <- function(df){
-    digits <- geo <- data_geog_type <- ofm_estimate_year <- value <- estimate <- moe <- NULL       # For roxygen
     if(!test_df_for_conversion(df)==TRUE){
       return(NULL)
     }else{
-      options(useFancyQuotes = FALSE)
-      fullwgt <- paste0("percent_of_", wgt)
       data_year <- dplyr::pull(df, year) %>% unique()
       cb_geo <- identify_censusgeo(df)
-      sql_str <- paste0("SELECT * FROM Elmer.general.get_any_geography_splits(",                   # SQL table-value function returns data
-                   paste(sQuote(cb_geo), sQuote(planning_geog_type),
-                   data_year, ofm_vintage, parcel_year, sep=", "), ");")
-      group_cols <- grep("(state|year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
-        append("planning_geog", after=0)
-      value_col <- grep("(value|estimate)", colnames(df), value=TRUE)                              # Decennial:value; ACS:estimate
-      rosetta <- psrcelmer::get_query(sql_str) %>% setDT() %>%                                     # Must be on PSRC VPN to connect to Elmer
-        .[(data_geog_type=={{cb_geo}} &                                                            # Keep only necessary rows & columns
-           planning_geog_type=={{planning_geog_type}} &
-           ofm_estimate_year=={{data_year}}),
-          grepl("(_geog$|^percent_of)", colnames(.)), with=FALSE] %>%
-        setnames("data_geog", "GEOID") %>% setkey(GEOID)
-      df %<>% setDT() %>% setkey(GEOID) %>% merge(rosetta, allow.cartesian=TRUE)                   # Merge on key=GEOID
-      est_is_integer <- testInteger(df %>% dplyr::pull({{value_col}}))
-      if(value_col=="value"){                                                                      # Decennial
-        rsi <- df[, .(value=sum(value * get(fullwgt))), by=mget(group_cols)]
-      }else if(value_col=="estimate"){                                                             # ACS
-        rsi <- df[, .(estimate = sum(estimate * get(fullwgt)),
-                     moe = tidycensus::moe_sum((moe * get(fullwgt)), (estimate * get(fullwgt)), na.rm=TRUE)), # MOE calculation
-                 by=mget(group_cols)]
-        if(est_is_integer){rsi[, `:=`(estimate=round(estimate), moe=round(moe))]}
-      }else{rsi <- NULL}
+      sql_str <- paste0("SELECT data_geog AS GEOID, planning_geog, percent_of_", wgt,              # SQL table-value function returns data
+                        " AS split FROM Elmer.general.get_any_geography_splits(",
+                        paste(sQuote(cb_geo, q=FALSE), sQuote(planning_geog_type, q=FALSE),
+                        data_year, ofm_vintage, parcel_year, sep=", "), ");")
+      rosetta <- psrcelmer::get_query(sql_str) %>% setDT() %>% setkey(GEOID)                       # Must be on PSRC VPN to connect to Elmer
+      rsi <- apply_splits(df, rosetta)
       return(rsi)
       }
     }
@@ -163,7 +174,6 @@ use_geography_splits <- function(df, planning_geog_type, wgt, ofm_vintage="defau
     lapply(geography_splits_helper) %>% rbindlist()
   return(rso)
 }
-
 
 #' Translate psrccensus data to planning geographies
 #'
@@ -250,36 +260,23 @@ census_to_customgeo <- function(df, custom_geo, custom_geo_var, wgt="total_pop")
       return(NULL)
     }else{
       data_year <- pull(df, year) %>% unique() # Census data year from df
-      group_cols <- grep("(state|year|variable|label|concept|acs_type)", colnames(df), value=TRUE) %>%
-        append("planning_geog", after=0)
-      value_col <- grep("(value|estimate)", colnames(df), value=TRUE)
       cb_geo <- identify_censusgeo(df)
-      sql <- paste("SELECT p.parcel_dim_id, p.x_coord_state_plane, p.y_coord_state_plane,",
-                   paste0("p.", cb_geo), "AS GEOID,",paste0("p.", wgt, "_share_", cb_geo),
-                   "AS fraction FROM Elmer.general.parcel_level_census_splits AS p",
-                   "WHERE p.estimate_year=", data_year, ";")
+      sql_str <- paste("SELECT p.parcel_dim_id, p.x_coord_state_plane, p.y_coord_state_plane,",
+                       paste0("p.", cb_geo), "AS GEOID,",paste0("p.", wgt, "_share_", cb_geo),
+                       "AS fraction FROM Elmer.general.parcel_level_census_splits AS p",
+                       "WHERE p.estimate_year=", data_year, ";")
       message("1 of 2 - Downloading parcel-level splits from Elmer. This may take a minute or two.")
-      parcel_share <- psrcelmer::get_query(sql) %>% setDT() %>% .[, GEOID:=as.character(GEOID)]
-      parcel_geo <- dplyr::select(parcel_share, c(parcel_dim_id, x_coord_state_plane, y_coord_state_plane)) %>%
+      rosetta <- psrcelmer::get_query(sql_str) %>% setDT() %>% .[, GEOID:=as.character(GEOID)]
+      parcel_geo <- copy(rosetta) %>% .[, .(parcel_dim_id, x_coord_state_plane, y_coord_state_plane)] %>%
         sf::st_as_sf(coords = c(2:3))
       sf::st_crs(parcel_geo) <- 2285
       message("2 of 2 - Performing spatial join & applying splits. This may take several seconds.")
       parcel_geo <- parcel_geo %>% sf::st_join(customgeo, left=FALSE) %>%                          # Associate parcels with custom geog
         sf::st_drop_geometry() %>% setDT() %>% setkey(parcel_dim_id)
-      parcel_share %<>% setDT() %>% setkey(parcel_dim_id) %>%
-        .[parcel_geo, planning_geog:=get(custom_geo_var)] %>%
-        .[, .(split=sum(fraction)), by=.(GEOID, planning_geog)] %>% setkey(GEOID)                  # Summarize to custom geog x census geog level
-      df %<>% setDT() %>% setkey(GEOID) %>% merge(parcel_share, allow.cartesian=TRUE)              # Merge on key=GEOID
-      est_is_integer <- testInteger(df %>% dplyr::pull({{value_col}}))
-      if(value_col=="value"){                                                                      # Decennial
-        rsi <- df[, .(value=sum(value * split)), by=mget(group_cols)]
-      }else if(value_col=="estimate"){                                                             # ACS
-        rsi <- df[, .(estimate = sum(estimate * split),
-                      moe = tidycensus::moe_sum((moe * split), (estimate * split), na.rm=TRUE)), # MOE calculation
-                  by=mget(group_cols)]
-        if(est_is_integer){rsi[, `:=`(estimate=round(estimate), moe=round(moe))]}
-      }
-    return(rsi)
+      rosetta %<>% setkey(parcel_dim_id) %>% .[parcel_geo, planning_geog:=get(custom_geo_var)] %>%
+        .[, .(split=sum(fraction)), by=.(GEOID, planning_geog)]                                    # Summarize to custom geog x census geog level
+      rsi <- apply_splits(df, rosetta)
+      return(rsi)
     }
   }
 
@@ -287,7 +284,7 @@ census_to_customgeo <- function(df, custom_geo, custom_geo_var, wgt="total_pop")
   if(is.null(customgeo)){
     return(NULL)
   }else{
-    rso <- df %>% split(.$year) %>%                                                                    # In case table has multiple years
+    rso <- df %>% split(.$year) %>%                                                                # In case table has multiple years
       lapply(ready_geosplits_helper) %>% rbindlist()
   }
   return(rso)
