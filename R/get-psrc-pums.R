@@ -67,8 +67,10 @@ read_pums <- function(target_file, dyear){
     num_types <- colnames(var_codes) %>% .[. %not_in% chr_types]                                   # Reflect back so as not to specify variables that don't exist in that year
   }
   col_typelist <- list(character = chr_types, numeric = num_types)
-  dt <- data.table::fread(target_file, sep=",", stringsAsFactors=FALSE, colClasses=col_typelist) %>% # The room where it happens; reads the file with correct datatypes
-    filter2region(dyear)
+  dt <- suppressWarnings(                                                                          # fread warns when colClasses items aren't present; OK to use combined list
+    data.table::fread(target_file, sep=",", stringsAsFactors=FALSE, colClasses=col_typelist)       # The room where it happens; reads the file with correct datatypes
+    ) %>% filter2region(dyear)
+
   return(dt)
 }
 
@@ -163,6 +165,7 @@ fetch_ftp <- function(span, dyear, level){
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
 #' @author Michael Jensen
+#' @importFrom readr read_rds
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
@@ -174,14 +177,14 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   if(!is.null(dir)){                                                                               # For server tool; gz files already downloaded & filtered
     hfile <- paste0(dir,"/", dyear, "h", span, ".gz")
     pfile <- paste0(dir,"/", dyear, "p", span, ".gz")
-    dt_h  <- suppressWarnings(read_pums(hfile, dyear))
-    dt_p  <- suppressWarnings(read_pums(pfile, dyear))
+    dt_h  <- readr::read_rds(hfile) %>% setDT()
+    dt_p  <- readr::read_rds(pfile) %>% setDT()
     dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
                         RAC1P %in% c("3","4","5"), "I",
                         !is.na(RAC1P), as.character(RAC1P))]
   }else{
-    dt_h <- suppressWarnings(fetch_ftp(span, dyear, "h")) %>% setDT()                              # Otherwise, ftp source
-    dt_p <- suppressWarnings(fetch_ftp(span, dyear, "p")) %>% setDT()
+    dt_h <- fetch_ftp(span, dyear, "h") %>% setDT()                                                # Otherwise, ftp source
+    dt_p <- fetch_ftp(span, dyear, "p") %>% setDT()
     dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
                        RAC1P %in% c("3","4","5"), "I",
                        !is.na(RAC1P), as.character(RAC1P))]
