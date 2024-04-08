@@ -12,8 +12,6 @@ vignette: >
 
 ```{r setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-library(psrccensus)
-library(magrittr)
 library(knitr)
 ```
 
@@ -93,6 +91,8 @@ Since PUMS records are sampled rather than comprising a full census, **psrccensu
 ### Examples
 As an example, to calculate 2019 median household income for the region you would use the following function calls:
 ```{r median, message=FALSE, eval=FALSE}
+library(psrccensus)
+
 x <- get_psrc_pums(span = 5,                     # Denoting ACS 5-year estimates; 1-year also available
                    dyear = 2019,                 # Last data year of span
                    level = "h",                  # Unit of analysis == household ("p" used for person)

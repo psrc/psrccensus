@@ -11,10 +11,6 @@ vignette: >
 
 ```{r setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-library(psrccensus)
-library(magrittr)
-library(dplyr)
-library(srvyr)
 library(knitr)
 ```
 
@@ -45,8 +41,6 @@ While writing multi-year functions, keep in mind `get_psrc_pums()` downloads and
 library(psrccensus)
 library(magrittr)
 library(dplyr)
-library(srvyr)
-library(data.table)
 
 # Build a single year function first
 # -- it can include as many individual stat analyses as needed (see list items at end)
@@ -70,7 +64,7 @@ pums_singleyear <- function(dyear, span=1){
 # Multiyear function runs the single-year function across years and combines results
 pums_multiyear <- function(dyears){
   multiyear_rs <- lapply(dyears, pums_singleyear) %>% lapply(as.vector) %>% 
-    do.call(rbind, .) %>% as.data.frame() %>% setDT() %>% lapply(rbindlist)
+    do.call(rbind, .) %>% as.data.frame() %>% lapply(data.table::rbindlist)
   return(multiyear_rs)
 }
 

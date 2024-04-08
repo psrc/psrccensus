@@ -11,10 +11,7 @@ vignette: >
 
 ```{r setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-library(psrccensus)
 library(magrittr)
-library(dplyr)
-library(srvyr)
 library(knitr)
 ```
 
