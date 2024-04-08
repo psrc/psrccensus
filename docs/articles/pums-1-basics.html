@@ -52,6 +52,7 @@
     <a class="dropdown-item" href="../articles/pums-1-basics.html">PUMS 1: Calculate basic summaries</a>
     <a class="dropdown-item" href="../articles/pums-2-make-vars.html">PUMS 2: Make your own variables</a>
     <a class="dropdown-item" href="../articles/pums-3-multiyear.html">PUMS 3: Script multiyear functions</a>
+    <a class="dropdown-item" href="../articles/pums-4-local-downloads.html">PUMS 4: Download optimization</a>
   </div>
 </li>
       </ul>
@@ -80,8 +81,6 @@
 
     
     
-<pre><code><span><span class="co">## Have you updated tidycensus since the release date of the data you'll use?</span></span>
-<span><span class="co">## devtools::install_github('walkerke/tidycensus')</span></span></code></pre>
 <div class="section level2">
 <h2 id="what-is-census-microdata">What is Census microdata?<a class="anchor" aria-label="anchor" href="#what-is-census-microdata"></a>
 </h2>
@@ -292,8 +291,10 @@ column.</p>
 </h3>
 <p>As an example, to calculate 2019 median household income for the
 region you would use the following function calls:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_pums.html">get_psrc_pums</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">5</span>,                     <span class="co"># Denoting ACS 5-year estimates; 1-year also available</span></span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_pums.html">get_psrc_pums</a></span><span class="op">(</span>span <span class="op">=</span> <span class="fl">5</span>,                     <span class="co"># Denoting ACS 5-year estimates; 1-year also available</span></span>
 <span>                   dyear <span class="op">=</span> <span class="fl">2019</span>,                 <span class="co"># Last data year of span</span></span>
 <span>                   level <span class="op">=</span> <span class="st">"h"</span>,                  <span class="co"># Unit of analysis == household ("p" used for person)</span></span>
 <span>                   vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HINCP"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># PUMS household income &amp; housing tenure variables; using tenure later. </span></span>
@@ -301,7 +302,7 @@ region you would use the following function calls:</p>
 <span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, stat_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>          <span class="co"># Median Household income (without regard to tenure)</span></span></code></pre></div>
 <p>To calculate by a subgroup category (here, housing tenure–e.g. own
 vs. rent), use the optional grouping variable argument.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>,                              <span class="co"># the assigned result of get_psrc_pums()</span></span>
 <span>                 stat_var <span class="op">=</span> <span class="st">"HINCP"</span>,             <span class="co"># Summarizing household income . . .</span></span>
 <span>                 group_vars <span class="op">=</span> <span class="st">"TEN"</span>,             <span class="co"># . . . grouped by housing tenure</span></span>
@@ -312,11 +313,11 @@ grouping category, depending on the level you specified in
 weighting), not the survey sample. If you intend to count things other
 than people or households, such as number of bedrooms, you should use
 the ‘total’ function instead, which sums the target variable.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">x</span>, group_vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COUNTY"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># If omitting stat_var argument, group_var must be labeled</span></span></code></pre></div>
 <p>The summary function provides all four statistics and their margins
 of error in the same table.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_summary</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Notice the statistical functions leave the data object itself
 unchanged, so if desired it can be used repeatedly, with various
@@ -368,7 +369,7 @@ with 5yr), especially if they overlap (as the same observations may be
 exist in both).</p>
 <p>The <code><a href="../reference/z_score.html">z_score()</a></code> convenience function performs this
 calculation:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span></span>
 <span><span class="va">c1</span> <span class="op">&lt;-</span> <span class="va">rs</span><span class="op">[</span><span class="fl">1</span>,<span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">]</span>                <span class="co"># First-line estimate and its MOE (as numeric vector)</span></span>
 <span><span class="va">c2</span> <span class="op">&lt;-</span> <span class="va">rs</span><span class="op">[</span><span class="fl">3</span>,<span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">]</span>                <span class="co"># Third-line estimate and its MOE (as numeric vector)</span></span>

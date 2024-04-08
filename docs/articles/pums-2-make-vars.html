@@ -52,6 +52,7 @@
     <a class="dropdown-item" href="../articles/pums-1-basics.html">PUMS 1: Calculate basic summaries</a>
     <a class="dropdown-item" href="../articles/pums-2-make-vars.html">PUMS 2: Make your own variables</a>
     <a class="dropdown-item" href="../articles/pums-3-multiyear.html">PUMS 3: Script multiyear functions</a>
+    <a class="dropdown-item" href="../articles/pums-4-local-downloads.html">PUMS 4: Download optimization</a>
   </div>
 </li>
       </ul>
@@ -80,8 +81,6 @@
 
     
     
-<pre><code><span><span class="co">## Have you updated tidycensus since the release date of the data you'll use?</span></span>
-<span><span class="co">## devtools::install_github('walkerke/tidycensus')</span></span></code></pre>
 <div class="section level2">
 <h2 id="defining-your-own-variables-in-pums">Defining your own variables in PUMS<a class="anchor" aria-label="anchor" href="#defining-your-own-variables-in-pums"></a>
 </h2>
@@ -165,7 +164,7 @@ your unit of analysis).</p>
 <h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h3>
 <p>Adding two custom variables with one mutate command:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -195,7 +194,7 @@ using value ranges</li>
 <li>All variables use values (including ESR; grepl() used above only
 works with labels)</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pvars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGEP"</span>,<span class="st">"FOD1P"</span>,<span class="st">"FOD2P"</span>,<span class="st">"INDP"</span>,<span class="st">"ESR"</span><span class="op">)</span></span>
 <span><span class="va">ftr_int</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">}</span>                                        <span class="co"># Micro-helper conversion function</span></span>
 <span><span class="va">pums18_5p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_pums.html">get_psrc_pums</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2018</span>, <span class="st">"p"</span>, <span class="va">pvars</span>, labels<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>                              <span class="co"># Labels=FALSE leaves values--but they are still Factors!</span></span>
