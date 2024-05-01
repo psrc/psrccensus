@@ -198,7 +198,7 @@ census_to_rgs <- function(df, wgt="total_pop"){
 #' @title Translate psrccensus data to Regional Growth Centers
 #' @export
 census_to_rgc <- function(df, wgt="total_pop"){
-  rs <- use_geography_splits(df, planning_geog_type="Regional Growth Center (12/12/2023)", wgt=wgt)
+  rs <- use_geography_splits(df, planning_geog_type="Regional Growth Center (4/23/2024)", wgt=wgt)
   return(rs)
 }
 
@@ -206,7 +206,7 @@ census_to_rgc <- function(df, wgt="total_pop"){
 #' @title Translate psrccensus data to Regional Manufacturing-Industrial Centers
 #' @export
 census_to_mic <- function(df, wgt="total_pop"){
-  rs <- use_geography_splits(df, planning_geog_type="MIC (1/5/2024)", wgt=wgt)
+  rs <- use_geography_splits(df, planning_geog_type="MIC (4/23/2024)", wgt=wgt)
   return(rs)
 }
 
