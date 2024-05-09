@@ -65,6 +65,8 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE, rr
                                               reliability <= .3  ~ "fair",
                                               reliability <= .5  ~ "weak",
                                               reliability >= .5  ~ "unreliable")]
+  }else if(rr=="cv"){
+    setnames(rs, "reliability", "cv")
   }else{
     rs[,reliability:=NULL]                                                                         # Drop if not selected
   }
