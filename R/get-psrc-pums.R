@@ -333,7 +333,7 @@ codes2labels <- function(dt, dyear, vars){
     rbind(list(
       c(rep("",3)),
       c("I","H","M"),
-      c("American Indian or Alaskan Native Alone", "Hispanic or Latino","Multiple Races"))) %>%    # PSRC non-overlapping race category (Hispanic as a race)
+      c("American Indian or Alaskan Native alone", "Hispanic or Latino","Multiple Races"))) %>%    # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
   recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
