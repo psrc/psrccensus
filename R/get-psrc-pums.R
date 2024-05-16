@@ -150,7 +150,6 @@ fetch_ftp <- function(span, dyear, level){
   if(!httr::http_error(url)){                                                                      # First verify the target file exists
     dt <- fetch_zip(url, csv_name, dyear) %>%
       setDT()
-    file.remove(csv_name)
     return(dt)
   }else{return(NULL)}
 }
