@@ -195,7 +195,7 @@ psrc_mi_jobsector <- function(dt){
                                   grepl("^48|^49", as.character(NAICSP)),"Transportation, Distribution & Logistics (TDL)",
                                   grepl("^23", as.character(NAICSP)),    "Construction",
                                   grepl("^33|^3M", as.character(NAICSP)),"Manufacturing",
-                                  !is.na(NAICSP),                         NA_character_),
+                                  default = NA_character_),
                             levels=c("Construction","Manufacturing","Warehousing & Wholesale",
                                      "Transportation, Distribution & Logistics (TDL)","Other Industrial"))]
   return(dt)
@@ -226,7 +226,7 @@ psrc_lum_jobsector <- function(dt){
                                    grepl("^722", as.character(NAICSP)),            "10 - Food Services",
                                    grepl("^7", as.character(NAICSP)),              "11 - Personal Services",
                                    grepl("^92", as.character(NAICSP)),             "12 - Government",
-                                   !is.na(NAICSP)|as.character(NAICSP)=='999920',  NA_character_))]
+                                   default = NA_character_))]
   return(dt)
 }
 
@@ -251,7 +251,7 @@ psrc_standard_jobsector <- function(dt){
                                    grepl("^611|62441", as.character(NAICSP)),       "8 - Public Education",
                                    grepl("^5|^6|^7|^8", as.character(NAICSP)),      "5 - Services",
                                    grepl("^92", as.character(NAICSP)),              "7 - Government",
-                                   !is.na(NAICSP)|as.character(NAICSP)=='999920',   NA_character_))]
+                                   default = NA_character_))]
   return(dt)
 }
 
@@ -306,5 +306,38 @@ psrc_socp2 <- function(dt){
   }
   dt[, SOCP2:= dplyr::case_when(is.na(SOCP) | grepl("^N/?A",as.character(SOCP)) ~NA_character_,
                                 TRUE ~paste0(stringr::str_sub(as.character(SOCP),1L,2L),"0000"))]
+  return(dt)
+}
+
+#' PSRC Modeling Occupation variable
+#'
+#' @param dt the data.table
+#' @return the data.table with custom PSRC variable "LUM_OCCUPATION"
+#' @author Michael Jensen
+psrc_lum_occupation <- function(dt){
+  LUM_OCCUPATION <- SOCP <- patterns <- NULL                                                       # Bind variables locally (for documentation, not function)
+  dt %<>% setDT()
+  if("SOCP" %not_in% colnames(dt) & any(grepl("^SOCP\\d+$", colnames(dt), ignore.case=TRUE))){
+    dt %<>% setnames(grep("^SOCP\\d+$", colnames(dt), ignore.case=TRUE), toupper(grep("^SOCP\\d+$", colnames(dt), value=TRUE, ignore.case=TRUE)))
+    dt[, grep("^SOCP\\d+$", colnames(dt)):=lapply(.SD, as.character), .SDcols=patterns("^SOCP\\d+$")]
+    dt[, SOCP:=fcoalesce(.SD), .SDcols=patterns("^SOCP\\d+$")]
+  }
+  dt[, LUM_OCCUPATION:= factor(fcase(is.na(SOCP) | grepl("^N/?A",as.character(SOCP)), NA_character_,
+                                     grepl("^11", as.character(SOCP))        , "01 - Management",
+                                     grepl("^(13|23)", as.character(SOCP))   , "02 - Finance & Legal",
+                                     grepl("^15", as.character(SOCP))        , "03 - Computers & Math",
+                                     grepl("^17", as.character(SOCP))        , "04 - Engineering",
+                                     grepl("^(19|29)", as.character(SOCP))   , "05 - Science & Medicine",
+                                     grepl("^(21|25)", as.character(SOCP))   , "06 - Education & Social Service",
+                                     grepl("^(31|39)", as.character(SOCP))   , "07 - Personal Care & Health Support",
+                                     grepl("^27", as.character(SOCP))        , "08 - Arts & Entertainment",
+                                     grepl("^33", as.character(SOCP))        , "09 - Protective Service",
+                                     grepl("^35", as.character(SOCP))        , "10 - Food Service",
+                                     grepl("^(41|43)", as.character(SOCP))   , "11 - Office, Admin & Sales",
+                                     grepl("^(47|49|51)", as.character(SOCP)), "12 - Construction, Installation & Production",
+                                     grepl("^(37|45)", as.character(SOCP))   , "13 - Janitorial, Groundskeeping & Agriculture",
+                                     grepl("^53", as.character(SOCP))        , "14 - Transportation",
+                                     grepl("^55", as.character(SOCP))        , "15 - Military",
+                                     default = NA_character_))]
   return(dt)
 }
