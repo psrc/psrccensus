@@ -169,7 +169,7 @@ fetch_ftp <- function(span, dyear, level){
 #' @rawNamespace import(data.table, except = c(month, year))
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   SPORDER <- SERIALNO <- TYPE <- TYPEHUGQ <- VACS <- DIS <- NULL
-  RAC1P <- PRACE <- ARACE <- HRACE <- HISP <- AGEP <- WORKER <- COW <- NULL
+  RAC1P <- PRACE <- ARACE <- HRACE <- HISP <- AGEP <- WORKER <- ESR <- NULL
 
   # Bind variables locally (for documentation, not function)
   unit_key <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
@@ -192,8 +192,8 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
     .[, which(grepl("^PUMA$|^ADJINC$|^ADJUST", colnames(.))):=NULL]                                # Remove duplicate columns
-  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS, COW)]
-  tmp_p[COW>0 & COW<9, WORKER:=1L]
+  tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS, ESR)]
+  tmp_p[ESR %in% c(1,2,4,5), WORKER:=1L]
   if(!any(grepl("^DIS$", colnames(tmp_p)))){tmp_p[, DIS:=0]}
   pp_hh <- tmp_p[, .(HRACE=stuff(PRACE),
                      HDIS=min(DIS, na.rm=TRUE),
@@ -213,6 +213,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   }else if(level %in% c("p","persons")){                                                           # For population analysis, keep only individuals
     dt <- merge(dt_p, dt_h, by="SERIALNO", all.x=TRUE) %>% .[!is.na(SPORDER)]
   }
+  dt %<>% setDT()
   if("BINCOME" %in% vars){dt %<>% psrc_bincome()}                                                  # See psrc-pums-groupings for custom binned variables
   if("BIN_AGE" %in% vars){dt %<>% psrc_bin_age()}                                                  # - "
   if("BIN_POVRATIO" %in% vars){dt %<>% psrc_bin_povratio()}                                        # - "
