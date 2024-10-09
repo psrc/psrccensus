@@ -396,9 +396,13 @@ ensure_datatypes <- function(dt){
 #' @export
 get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
                            # These vars kept name but changed dictionary;
-  if(dyear<2017){
-    warning(paste("Use data dictionary to confirm earlier-year codes are identical to 2017",         # Until an archive lookup is finished
-                  "try 'labels=FALSE' option w/ manual recode for accuracy"))                        # -- warn users to verify labels are OK
+  if(dyear==2020 & span==1){
+    warning(paste("Due to collection issues, there was no public release of 1-yr 2020 PUMS data.",
+                  "Data with experimental weights exists, but may not be directly comparable."))
+    return(NULL)
+  }else if(dyear<2017){
+    warning(paste("Use data dictionary to confirm earlier-year codes are identical to 2017",       # Until an archive lookup is finished
+                  "try 'labels=FALSE' option w/ manual recode for accuracy"))                      # -- warn users to verify labels are OK
   }
   unit_var <- if(level %in% c("p","persons")){c("SERIALNO","SPORDER")}else{"SERIALNO"}
   dt <- pums_ftp_gofer(span, dyear, level, vars, dir)
