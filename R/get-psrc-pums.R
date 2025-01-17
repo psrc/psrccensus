@@ -198,18 +198,14 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
           NWRK=sum(WORKER, na.rm=TRUE)), by=.(SERIALNO)] %>%                                       # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
   pp_hh[(HRACE %like% ","), HRACE:=case_when(
-    (grepl("\\b6\\b", HRACE) & grepl("\\b1\\b", HRACE)) ~"MAW",
-    !grepl("\\b(1|6)\\b", HRACE) ~"MNAW",
-    grepl("\\b6\\b", HRACE) ~"MA",
-    grepl("\\b1\\b", HRACE) ~"MW")]                                                                # - Characterize multiracial or household-level disability
+    grepl("\\b1\\b", HRACE) ~"MW",
+    !grepl("\\b1\\b", HRACE) ~"MNW")]                                                              # - Characterize multiracial or household-level disability
   pp_aa <- copy(tmp_p) %>%
     .[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>%                         # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
   pp_aa[(ARACE %like% ","), ARACE:=case_when(                                                      # - Characterize multiracial or household-level disability
-    grepl("\\b6\\b", ARACE) & grepl("\\b1\\b", ARACE) ~"MAW",
-    !grepl("\\b(1|6)\\b", ARACE) ~"MNAW",
-    grepl("\\b6\\b", ARACE) ~"MA",
-    grepl("\\b1\\b", ARACE) ~"MW")]
+    grepl("\\b1\\b", ARACE) ~"MW",
+    !grepl("\\b1\\b", ARACE) ~"MNW")]
   dt_h %<>% merge(pp_hh, by="SERIALNO", all.x=TRUE)                                                # Relate household-composition variables
   dt_h %<>% merge(pp_aa, by="SERIALNO", all.x=TRUE)                                                # Relate adult-restricted household-composition variables
   adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
@@ -340,14 +336,11 @@ codes2labels <- function(dt, dyear, vars){
   recoder[[2]] <- copy(recoder[[1]]) %>%
     .[var_code=="RAC1P" & !(val_max %in% c("3","4","5"))] %>%
     rbind(data.frame(
-      var_code=c(rep("",7)),
-      val_max=c("I","H","M","MAW","MNAW","MA","MW"),
+      var_code=c(rep("",4)),
+      val_max=c("I","H","MNW","MW"),
       val_label=c("American Indian or Alaskan Native alone",
                   "Hispanic or Latino",
-                  "Multiple Races",
-                  "Multiracial incl. Asian, white",
-                  "Multiracial not Asian or white",
-                  "Multiracial incl. Asian",
+                  "Multiracial not white",
                   "Multiracial incl. white"))) %>%                                                 # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
