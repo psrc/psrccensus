@@ -38,7 +38,7 @@ pums_varsearch <- function(regex){
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 pums_recode_na <- function(dt){
-  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.(\\/)?|^NA$|^$",dt[[col]]), j=col, value=NA) # Recode all PUMS NA variations to the NA R recognizes
+  for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.(\\/)?|^NA$|^$",dt[[col]]), j=col, value=NA)  # Recode all PUMS NA variations to the NA R recognizes
   dt %<>% .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=FALSE]                     # Drop columns composed completely of N/A values
   return(dt)
 }
@@ -53,7 +53,7 @@ pums_recode_na <- function(dt){
 #'
 #' @rawNamespace import(data.table, except = c(month, year))
 read_pums <- function(target_file, dyear){
-  data_type <- var_code <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  var_code <- var_label <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
   type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
     .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
@@ -330,7 +330,8 @@ codes2labels <- function(dt, dyear, vars){
   recoder[[1]] <- tidycensus::pums_variables %>% setDT() %>%                                       # Get the value-label correspondence for any/all factor variables
     .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
     unique()
-  recoder[[2]] <- copy(recoder[[1]]) %>% .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
+  recoder[[2]] <- copy(recoder[[1]]) %>%
+    .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
     rbind(list(
       c(rep("",3)),
       c("I","H","M"),

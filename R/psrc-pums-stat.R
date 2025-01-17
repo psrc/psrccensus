@@ -154,7 +154,7 @@ psrc_pums_summary <- function(so, stat_var, group_vars=NULL, incl_na=TRUE, rr=FA
 #' @return A table with the variable names and labels, summary statistic and margin of error
 #' @author Michael Jensen
 #'
-#' @importFrom data.table rbindlist setDF
+#' @importFrom data.table rbindlist
 #' @importFrom dplyr mutate rename relocate
 #' @export
 pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na=TRUE, rr=FALSE){
