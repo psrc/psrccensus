@@ -58,8 +58,8 @@ read_pums <- function(target_file, dyear){
     var_codes <- data.table::fread(target_file, sep=",", nrows=1, stringsAsFactors=FALSE)
     allwgts <- grep("^(P)?WGTP(\\d+)?$", colnames(var_codes), value=TRUE)
     num_types %<>% c(allwgts) %>% unique()
-    chr_types <- colnames(var_codes) %>% .[. %not_in% num_types]                                   # For dyears before the dictionary, keep known numbers as numbers
-    num_types <- colnames(var_codes) %>% .[. %not_in% chr_types]                                   # Reflect back so as not to specify variables that don't exist in that year
+    chr_types <- colnames(var_codes) %>% .[!(. %in% num_types)]                                    # For dyears before the dictionary, keep known numbers as numbers
+    num_types <- colnames(var_codes) %>% .[!(. %in% chr_types)]                                    # Reflect back so as not to specify variables that don't exist in that year
   }
   col_typelist <- list(character = chr_types, numeric = num_types)
   dt <- suppressWarnings(                                                                          # fread warns when colClasses items aren't present; OK to use combined list
@@ -77,8 +77,14 @@ read_pums <- function(target_file, dyear){
 #' @return filtered data.table
 #' @author Michael Jensen
 filter2region <- function(dt, dyear){
+<<<<<<< HEAD
   stopifnot(data.table::is.data.table(dt))
   dt <- pums_recode_na(data.table::copy(dt))
+=======
+  PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- psrc_pumas <- SERIALNO <- NULL                             # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  dt %<>% pums_recode_na() %>%
+    .[, !(colnames(.) %in% c("RT","DIVISION","REGION","ST")), with=FALSE]                          # Drop variables static to our region
+>>>>>>> 11ce074 (Switch from 1 to 4 multiracial categories.)
 
   # Drop variables static to the region (if present)
   drop <- intersect(names(dt), c("RT","DIVISION","REGION","ST","STATE"))
@@ -180,16 +186,13 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
     pfile <- paste0(dir,"/", dyear, "p", span, ".gz")
     dt_h  <- readr::read_rds(hfile) %>% setDT()
     dt_p  <- readr::read_rds(pfile) %>% setDT()
-    dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
-                        RAC1P %in% c("3","4","5"), "I",
-                        !is.na(RAC1P), as.character(RAC1P))]
   }else{
     dt_h <- fetch_ftp(span, dyear, "h") %>% setDT()                                                # Otherwise, ftp source
     dt_p <- fetch_ftp(span, dyear, "p") %>% setDT()
-    dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                  # PSRC non-overlapping race category (Hispanic its own race)
-                       RAC1P %in% c("3","4","5"), "I",
-                       !is.na(RAC1P), as.character(RAC1P))]
   }
+  dt_p[, PRACE:=fcase(as.integer(HISP)!=1, "H",                                                    # PSRC non-overlapping race category (Hispanic its own race)
+                      RAC1P %in% c("3","4","5"), "I",
+                      !is.na(RAC1P), as.character(RAC1P))]
   if("TYPE" %in% colnames(dt_h)){setnames(dt_h,"TYPE","TYPEHUGQ")}
   setkeyv(dt_h, "SERIALNO")
   dt_p %<>% setkeyv("SERIALNO") %>%
@@ -197,14 +200,24 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   tmp_p <- copy(dt_p) %>% .[!is.na(SPORDER), .(SERIALNO, AGEP, PRACE, DIS, ESR)]
   tmp_p[ESR %in% c(1,2,4,5), WORKER:=1L]
   if(!any(grepl("^DIS$", colnames(tmp_p)))){tmp_p[, DIS:=0]}
-  pp_hh <- tmp_p[, .(HRACE=stuff(PRACE),
-                     HDIS=min(DIS, na.rm=TRUE),
-                     NWRK=sum(WORKER, na.rm=TRUE)), by=.(SERIALNO)] %>%                            # Summarize households for race/ethnic composition, disability status
+  pp_hh <- copy(tmp_p) %>%
+    .[, .(HRACE=stuff(PRACE),
+          HDIS=min(DIS, na.rm=TRUE),
+          NWRK=sum(WORKER, na.rm=TRUE)), by=.(SERIALNO)] %>%                                       # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
-  pp_hh[(HRACE %like% ","), HRACE:="M"]                                                            # - Characterize multiracial or household-level disability
-  pp_aa <- tmp_p[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>%              # Summarize households for race/ethnic composition, disability status
+  pp_hh[(HRACE %like% ","), HRACE:=case_when(
+    (grepl("\\b6\\b", HRACE) & grepl("\\b1\\b", HRACE)) ~"MAW",
+    !grepl("\\b(1|6)\\b", HRACE) ~"MNAW",
+    grepl("\\b6\\b", HRACE) ~"MA",
+    grepl("\\b1\\b", HRACE) ~"MW")]                                                                # - Characterize multiracial or household-level disability
+  pp_aa <- copy(tmp_p) %>%
+    .[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>%                         # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
-  pp_aa[(ARACE %like% ","), ARACE:="M"]                                                            # - Characterize multiracial or household-level disability
+  pp_aa[(ARACE %like% ","), ARACE:=case_when(                                                      # - Characterize multiracial or household-level disability
+    grepl("\\b6\\b", ARACE) & grepl("\\b1\\b", ARACE) ~"MAW",
+    !grepl("\\b(1|6)\\b", ARACE) ~"MNAW",
+    grepl("\\b6\\b", ARACE) ~"MA",
+    grepl("\\b1\\b", ARACE) ~"MW")]
   dt_h %<>% merge(pp_hh, by="SERIALNO", all.x=TRUE)                                                # Relate household-composition variables
   dt_h %<>% merge(pp_aa, by="SERIALNO", all.x=TRUE)                                                # Relate adult-restricted household-composition variables
   adjvars <- if("ADJINC" %in% colnames(dt_h)){c("ADJINC","ADJHSG")}else{"ADJUST"}
@@ -325,12 +338,18 @@ codes2labels <- function(dt, dyear, vars){
     .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
     unique()
   recoder[[2]] <- copy(recoder[[1]]) %>%
-    .[var_code=="RAC1P" & !val_max %in% c("3","4","5")] %>%
+    .[var_code=="RAC1P" & !(val_max %in% c("3","4","5"))] %>%
     .[, val_label:=gsub(" alone", "", gsub("and Other", "or", val_label))] %>%
-    rbind(list(
-      c(rep("",3)),
-      c("I","H","M"),
-      c("American Indian or Alaskan Native", "Hispanic or Latino", "Multirace"))) %>%              # PSRC non-overlapping race category (Hispanic as a race)
+    rbind(data.frame(
+      var_code=c(rep("",7)),
+      val_max=c("I","H","M","MAW","AM","MA","MW"),
+      val_label=c("American Indian or Alaskan Native",
+                  "Hispanic or Latino",
+                  "Multirace",
+                  "Multirace incl. Asian, white",
+                  "Another multirace",
+                  "Multirace incl. Asian",
+                  "Multirace incl. white"))) %>%                                                 # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
   recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
@@ -341,7 +360,7 @@ codes2labels <- function(dt, dyear, vars){
     .[var_code %in% vars] %>% setkeyv("val_max")                                                   # Add to label lookup; filter variables
   chg_vars <- c("YBL","RELP","SCHG","SCHL")                                                        # The code-to-label match for these vars
   if(dyear < 2012 & any(vars %in% chg_vars)){                                                      # -- changed in 2012 but names were kept
-    recoder %<>% .[var_code %not_in% chg_vars]                                                     # -- so keep codes to avoid miscategorization
+    recoder %<>% .[!(var_code %in% chg_vars)]                                                      # -- so keep codes to avoid miscategorization
   }
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
@@ -364,7 +383,7 @@ ensure_datatypes <- function(dt){
   allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
   dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
   ftr_vars <- dt[1, sapply(dt, is.character), with=FALSE] %>% colnames() %>%
-    .[. %not_in% c("SERIALNO","SPORDER","PUMA","DATA_YEAR","PRODUCT","UNIT")]
+    .[!(. %in% c("SERIALNO","SPORDER","PUMA","DATA_YEAR","PRODUCT","UNIT"))]
   if(length(ftr_vars)>0){
     dt[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]                                     # Ensure grouping variables are factors (required by srvyr)
   }
