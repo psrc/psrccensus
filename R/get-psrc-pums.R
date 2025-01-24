@@ -1,4 +1,5 @@
 #' @importFrom magrittr %<>% %>%
+#' @rawNamespace import(data.table, except = c(month, year))
 NULL
 
 globalVariables(c(":=", "!!", ".", "enquos"))
@@ -19,8 +20,6 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #'
 #' # Entry for specific variable, 'Employment Status Recode'
 #' pums_varsearch("^ESR$")
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 #' @export
 pums_varsearch <- function(regex){
   var_code <- var_label <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
@@ -35,8 +34,6 @@ pums_varsearch <- function(regex){
 #' @param dt data.table with Census Bureau "N/A" code--"b" or "bbb..."
 #' @return filtered input data.table with values "b" recoded to NA
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 pums_recode_na <- function(dt){
   for(col in colnames(dt)) set(dt, i=grep("^b+$|^N.A.(\\/)?|^NA$|^$",dt[[col]]), j=col, value=NA)  # Recode all PUMS NA variations to the NA R recognizes
   dt %<>% .[, which(unlist(lapply(., function(x)!all(is.na(x))))), with=FALSE]                     # Drop columns composed completely of N/A values
@@ -50,10 +47,8 @@ pums_recode_na <- function(dt){
 #' @param dyear The data year
 #' @return unzipped table
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 read_pums <- function(target_file, dyear){
-  var_code <- var_label <- NULL                                                                    # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  var_code <- var_label <- data_type <- NULL                                                       # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
   type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
     .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
@@ -81,12 +76,10 @@ read_pums <- function(target_file, dyear){
 #' @param dyear The data year
 #' @return filtered data.table
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 filter2region <- function(dt, dyear){
   PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- psrc_pumas <- SERIALNO <- NULL                             # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   dt %<>% pums_recode_na() %>%
-    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST"), with=FALSE]                         # Drop variables static to our region
+    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST","STATE"), with=FALSE]                 # Drop variables static to our region
 
   if("PUMA" %in% colnames(dt)){                                                                    # For 1yr data or spans with identical geography
     psrc_pumas <- dplyr::case_when(dyear > 2021 ~c(233,235,253,261),
@@ -138,8 +131,6 @@ fetch_zip <- function(zip_filepath, target_file, dyear){
 #' @param level Either "p" or "h", for "persons" or "households" respectively
 #' @return data.table
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 fetch_ftp <- function(span, dyear, level){
   subdir <- if(dyear>2006){paste0("/", as.character(span), "-Year/")}else{"/"}
   url <- paste0("https://www2.census.gov/programs-surveys/acs/data/pums/",                         # No multi-year PUMS before 2007
@@ -165,8 +156,6 @@ fetch_ftp <- function(span, dyear, level){
 #' sample & replication weights, and if needed, inflation adjustments
 #' @author Michael Jensen
 #' @importFrom readr read_rds
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   SPORDER <- SERIALNO <- TYPE <- TYPEHUGQ <- VACS <- DIS <- NULL
   RAC1P <- PRACE <- ARACE <- HRACE <- HISP <- AGEP <- WORKER <- ESR <- NULL
@@ -246,8 +235,6 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
 #' @return data.table with all requested variables,
 #' sample & replication weights, and if needed, inflation adjustments
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 pums_api_gofer <- function(span, dyear, level, vars){
   varlist <- unlist(vars) %>% c("ADJINC","ADJHSG") %>% unique()                                    # Include adjustment variables
   vf <- if(dyear<2020){list(TYPE=1, SPORDER=1)}else{list(TYPEHUGQ=1, SPORDER=1)}
@@ -271,8 +258,6 @@ pums_api_gofer <- function(span, dyear, level, vars){
 #' @param dt The data.table
 #' @return full input data.table with all dollar values adjusted
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 adjust_dollars <- function(dt){
   adj_inc <- if("ADJINC" %in% colnames(dt)){"ADJINC"}else{"ADJUST"}
   adj_hsg <- if("ADJHSG" %in% colnames(dt)){"ADJHSG"}else{"ADJUST"}
@@ -297,8 +282,6 @@ adjust_dollars <- function(dt){
 #' @param dt PSRC data.table
 #' @return PSRC data.table with county names
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 add_county <- function(dt){
   PUMA <- COUNTY <- PUMA_start <- puma_start <- county <- NULL                                     # Bind variables locally (for documentation, not function)
   county_lookup <- data.frame(
@@ -321,8 +304,6 @@ add_county <- function(dt){
 #' @param vars PUMS variable/s as an UPPERCASE string element or list
 #' @return PSRC data.table with labels
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 codes2labels <- function(dt, dyear, vars){
   recode <- val_min <- val_max <- var_code <- val_label <- i.val_label <- NULL                     # Bind variables locally (for documentation, not function)
   ddyear  <- if(dyear>2016){dyear}else{2017}                                                       # Temporary - until 2005-15 lookup is ready
@@ -365,8 +346,6 @@ codes2labels <- function(dt, dyear, vars){
 #' @param dt PSRC data.table
 #' @return PSRC data.table with types confirmed
 #' @author Michael Jensen
-#'
-#' @rawNamespace import(data.table, except = c(month, year))
 ensure_datatypes <- function(dt){
   allwgts <- grep("^WGTP(\\d+)?$|^PWGTP(\\d+)?$", colnames(dt), value=TRUE)
   dt[, (allwgts):=lapply(.SD, as.numeric), .SDcols=allwgts]                                        # Ensure weights are numeric
@@ -388,7 +367,6 @@ ensure_datatypes <- function(dt){
 #' @author Michael Jensen
 #'
 #' @importFrom tidyselect all_of
-#' @rawNamespace import(data.table, except = c(month, year))
 #'
 #' @examples
 #' \dontrun{
