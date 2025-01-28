@@ -18,7 +18,6 @@ pums_varsearch("internet")
 
 # Entry for specific variable, 'Employment Status Recode'
 pums_varsearch("^ESR$")
-
 }
 \author{
 Michael Jensen

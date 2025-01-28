@@ -403,3 +403,28 @@ get_psrc_pums <- function(span, dyear, level, vars, dir=NULL, labels=TRUE){
                          rscale=rep(1,80))
   return(dt)
 }
+
+#' Save PUMS data for offline access
+#'
+#' @param dyear The data year
+#' @param dir Directory for .gz file
+#' @return Message; saves separate .rds files in specified location
+#'
+#' @importFrom readr write_rds
+#' @author Michael Jensen
+write_pums_rds <- function(dyear, dir){
+  helper <- function(level, span){
+    dt <- fetch_ftp(span, dyear=dyear, level) %>% setDT()
+    readr::write_rds(dt, paste0(dir, "/", dyear, level, span, ".gz"), compress="gz" )
+    return(NULL)
+  }
+  if(dyear==2020){ # No 1-yr for 2020 due to pandemic issues
+    x <- data.frame(levels=c("h","p"), spans=5)
+  }else if(dyear>2008){ # 5-yr ACS data starts with 2005-2009
+    x <- data.frame(expand.grid(levels=c("h","p"), spans=c(1,5)))
+  }else if(dyear %in% 2005:2008){ # 1-yr ACS data starts with 2005
+    x <- data.frame(levels=c("h","p"), spans=1)
+  }
+  mapply(helper, x$levels, x$spans)
+  return("Finished writing to .rds")
+}

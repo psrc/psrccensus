@@ -32,26 +32,13 @@ You can also skip the download altogether by loading prepared household and pers
 ```{make .gz file, message=FALSE, eval=FALSE}
 library(data.table)
 library(magrittr)
-pums_rds <- "your/desired/storage/directory/path" # Specify your directory, or change your working directory to the storage location
+dir <- "your/desired/storage/directory/path" # Specify your storage directory
+ 
+write_pums_rds(2023, dir) # Save local .rds files for a single year (2023)
 
-make_offline_pums <- function(yr_lv_sp){
-  dyear <- as.integer(stringr::str_sub(yr_lv_sp, 1L, 4L))
-  level <- stringr::str_sub(yr_lv_sp, 5L, 5L)
-  span  <- as.integer(stringr::str_sub(yr_lv_sp, 6L, 6L))
-  filenm <- paste0(pums_rds, "/", yr_lv_sp, ".gz")
-  dt <- psrccensus:::fetch_ftp(span, dyear, level)
-  readr::write_rds(dt, file = filenm, compress = "gz")    # export compressed .rds
-  rm(dt)
-  return(NULL)
-}
+lapply(2005:2023, write_pums_rds) # Save local .rds files for a range
+# Function exclude combos that don't exist (e.g. 2005 5-yr; 2020 1-yr)
 
-arg_vector <- expand.grid(dyear=c(2005:2019,2021:2022),
-                          level=c("p","h"), 
-                          span=c(1,5)) %>%                # Not using (discontinued) 3-yr
-  transpose() %>% lapply(paste0, collapse="") %>%  
-  grep("0[5-8]\\w5$", ., invert=TRUE) %>% unlist()        # Starting 5-yr ACS data with 2005-2009
-
-lapply(arg_vector, make_offline_pums)
 ```
 
 ### Utilize the local file option

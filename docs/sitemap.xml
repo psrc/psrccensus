@@ -1,228 +1,80 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://psrc.github.io/psrccensus/404.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/calculate-reliability-moe-transformed-acs.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/geographic-conversions.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/get-data.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/psrccensus.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/pums-1-basics.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/pums-2-make-vars.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/pums-3-multiyear.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/articles/pums-4-local-downloads.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/acs_tbltypes_lookup.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/acs_varsearch.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/add_acs_share.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/add_county.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/add_decennial_share.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/adjust_dollars.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/apply_splits.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/census_to_customgeo.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/codes2labels.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/dicennial_varsearch.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/ensure_datatypes.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/fetch_ftp.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/fetch_zip.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/filter2region.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/format_estimates.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_blockgroup.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_county.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_msa.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_place.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_puma.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_recs.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_acs_tract.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_decennial_msa.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_decennial_place.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_decennial_recs.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_decennial_tract_county_bg.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_psrc_places.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/get_psrc_pums.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/group_recs.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/identify_censusgeo.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/label_acs_variables.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pce_deflator.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrccensus.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_bincome.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_bin_age.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_bin_povratio.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_bin_ybl.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_ed_attain.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_lum_jobsector.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_mi_jobsector.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_own_rent.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_pums_stat.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_socp2.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_socp3.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_socp5.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/psrc_standard_jobsector.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pums_api_gofer.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pums_bulk_stat.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pums_ftp_gofer.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pums_recode_na.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pums_stat.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/pums_varsearch.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/read_pums.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/real_dollars.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/reliability_calcs.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/testInteger.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/test_df_for_conversion.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/use_geography_splits.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/verify_custom_geo.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrccensus/reference/z_score.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://psrc.github.io/psrccensus/404.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/calculate-reliability-moe-transformed-acs.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/geographic-conversions.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/get-data.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/index.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/psrccensus.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/pums-1-basics.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/pums-2-make-vars.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/pums-3-multiyear.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/articles/pums-4-local-downloads.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/authors.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/index.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/LICENSE-text.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/acs_tbltypes_lookup.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/acs_varsearch.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/add_acs_share.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/add_county.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/add_decennial_share.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/adjust_dollars.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/apply_splits.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/census_to_customgeo.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/codes2labels.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/dicennial_varsearch.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/ensure_datatypes.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/fetch_ftp.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/fetch_zip.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/filter2region.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/format_estimates.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_blockgroup.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_county.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_msa.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_place.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_puma.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_recs.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_acs_tract.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_decennial_msa.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_decennial_place.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_decennial_recs.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_decennial_tract_county_bg.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_psrc_places.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/get_psrc_pums.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/group_recs.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/identify_censusgeo.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/index.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/label_acs_variables.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pce_deflator.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrccensus.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_bincome.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_bin_age.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_bin_povratio.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_bin_ybl.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_ed_attain.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_lum_jobsector.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_lum_occupation.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_mi_jobsector.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_own_rent.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_pums_stat.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_socp2.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_socp3.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_socp5.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/psrc_standard_jobsector.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pums_api_gofer.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pums_bulk_stat.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pums_ftp_gofer.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pums_recode_na.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pums_stat.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/pums_varsearch.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/read_pums.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/real_dollars.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/reliability_calcs.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/testInteger.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/test_df_for_conversion.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/use_geography_splits.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/verify_custom_geo.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/write_pums_rds.html</loc></url>
+<url><loc>https://psrc.github.io/psrccensus/reference/z_score.html</loc></url>
 </urlset>
+

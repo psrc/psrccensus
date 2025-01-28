@@ -1,5 +1,5 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: '3.2'
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   calculate-reliability-moe-transformed-acs: calculate-reliability-moe-transformed-acs.html
@@ -10,8 +10,7 @@ articles:
   pums-2-make-vars: pums-2-make-vars.html
   pums-3-multiyear: pums-3-multiyear.html
   pums-4-local-downloads: pums-4-local-downloads.html
-last_built: 2024-04-08T21:27Z
+last_built: 2025-01-28T21:26Z
 urls:
   reference: https://psrc.github.io/psrccensus/reference
   article: https://psrc.github.io/psrccensus/articles
-
