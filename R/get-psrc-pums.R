@@ -197,7 +197,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
           HDIS=min(DIS, na.rm=TRUE),
           NWRK=sum(WORKER, na.rm=TRUE)), by=.(SERIALNO)] %>%                                       # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
-  pp_hh[(HRACE %like% ","), HRACE:=case_when(
+  pp_hh[(HRACE %like% ","), HRACE:=dplyr::case_when(
     (grepl("\\b6\\b", HRACE) & grepl("\\b1\\b", HRACE)) ~"MAW",
     !grepl("\\b(1|6)\\b", HRACE) ~"MNAW",
     grepl("\\b6\\b", HRACE) ~"MA",
@@ -205,7 +205,7 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
   pp_aa <- copy(tmp_p) %>%
     .[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>%                         # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
-  pp_aa[(ARACE %like% ","), ARACE:=case_when(                                                      # - Characterize multiracial or household-level disability
+  pp_aa[(ARACE %like% ","), ARACE:=dplyr::case_when(                                                      # - Characterize multiracial or household-level disability
     grepl("\\b6\\b", ARACE) & grepl("\\b1\\b", ARACE) ~"MAW",
     !grepl("\\b(1|6)\\b", ARACE) ~"MNAW",
     grepl("\\b6\\b", ARACE) ~"MA",
