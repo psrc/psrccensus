@@ -197,13 +197,13 @@ pums_ftp_gofer <- function(span, dyear, level, vars, dir=NULL){
           HDIS=min(DIS, na.rm=TRUE),
           NWRK=sum(WORKER, na.rm=TRUE)), by=.(SERIALNO)] %>%                                       # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
-  pp_hh[(HRACE %like% ","), HRACE:=case_when(
+  pp_hh[(HRACE %like% ","), HRACE:=dplyr::case_when(
     grepl("\\b1\\b", HRACE) ~"MW",
     !grepl("\\b1\\b", HRACE) ~"MNW")]                                                              # - Characterize multiracial or household-level disability
   pp_aa <- copy(tmp_p) %>%
     .[AGEP > 18, .(ARACE=stuff(PRACE), ADIS=min(DIS)), by=.(SERIALNO)] %>%                         # Summarize households for race/ethnic composition, disability status
     setkey("SERIALNO")
-  pp_aa[(ARACE %like% ","), ARACE:=case_when(                                                      # - Characterize multiracial or household-level disability
+  pp_aa[(ARACE %like% ","), ARACE:=dplyr::case_when(                                                      # - Characterize multiracial or household-level disability
     grepl("\\b1\\b", ARACE) ~"MW",
     !grepl("\\b1\\b", ARACE) ~"MNW")]
   dt_h %<>% merge(pp_hh, by="SERIALNO", all.x=TRUE)                                                # Relate household-composition variables
