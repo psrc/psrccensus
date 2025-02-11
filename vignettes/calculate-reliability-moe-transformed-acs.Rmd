@@ -8,6 +8,13 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(magrittr)
+library(knitr)
+library(psrccensus)
+```
 ## Reliability measures for ACS estimates
 
 

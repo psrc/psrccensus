@@ -292,14 +292,33 @@ region you would use the following function calls:</p>
 <span>                   level <span class="op">=</span> <span class="st">"h"</span>,                  <span class="co"># Unit of analysis == household ("p" used for person)</span></span>
 <span>                   vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HINCP"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># PUMS household income &amp; housing tenure variables; using tenure later. </span></span>
 <span>                                                 <span class="co">#  - You can choose as many variables as you need.</span></span>
-<span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, stat_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>          <span class="co"># Median Household income (without regard to tenure)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, stat_var <span class="op">=</span> <span class="st">"HINCP"</span><span class="op">)</span>          <span class="co"># Median Household income (without regard to tenure)</span></span>
+<span><span class="co">#&gt; Index: &lt;COUNTY&gt;</span></span>
+<span><span class="co">#&gt;    DATA_YEAR COUNTY HINCP_median HINCP_median_moe</span></span>
+<span><span class="co">#&gt;        &lt;num&gt; &lt;char&gt;        &lt;num&gt;            &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:      2019 Region     85875.92         462.0012</span></span></code></pre></div>
 <p>To calculate by a subgroup category (here, housing tenure–e.g. own
 vs. rent), use the optional grouping variable argument.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>,                              <span class="co"># the assigned result of get_psrc_pums()</span></span>
 <span>                 stat_var <span class="op">=</span> <span class="st">"HINCP"</span>,             <span class="co"># Summarizing household income . . .</span></span>
 <span>                 group_vars <span class="op">=</span> <span class="st">"TEN"</span>,             <span class="co"># . . . grouped by housing tenure</span></span>
-<span>                 rr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>                        <span class="co"># w/ optional relative reliability measure</span></span></code></pre></div>
+<span>                 rr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>                        <span class="co"># w/ optional relative reliability measure</span></span>
+<span><span class="co">#&gt; Index: &lt;COUNTY&gt;</span></span>
+<span><span class="co">#&gt;    DATA_YEAR COUNTY                                                     TEN</span></span>
+<span><span class="co">#&gt;        &lt;num&gt; &lt;char&gt;                                                  &lt;fctr&gt;</span></span>
+<span><span class="co">#&gt; 1:      2019 Region                        Occupied without payment of rent</span></span>
+<span><span class="co">#&gt; 2:      2019 Region                                    Owned free and clear</span></span>
+<span><span class="co">#&gt; 3:      2019 Region Owned with mortgage or loan (include home equity loans)</span></span>
+<span><span class="co">#&gt; 4:      2019 Region                                                  Rented</span></span>
+<span><span class="co">#&gt; 5:      2019 Region                                                   Total</span></span>
+<span><span class="co">#&gt;    HINCP_median HINCP_median_moe reliability</span></span>
+<span><span class="co">#&gt;           &lt;num&gt;            &lt;num&gt;      &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:     35853.20        3461.4687        good</span></span>
+<span><span class="co">#&gt; 2:     75141.43        1207.3342        good</span></span>
+<span><span class="co">#&gt; 3:    121012.64         779.3520        good</span></span>
+<span><span class="co">#&gt; 4:     59039.70         590.5977        good</span></span>
+<span><span class="co">#&gt; 5:     85875.92         462.0012        good</span></span></code></pre></div>
 <p>The count function tabulates the number people or households by
 grouping category, depending on the level you specified in
 <code><a href="../reference/get_psrc_pums.html">get_psrc_pums()</a></code>. The result represents the population (via
@@ -307,7 +326,55 @@ weighting), not the survey sample. If you intend to count things other
 than people or households, such as number of bedrooms, you should use
 the ‘total’ function instead, which sums the target variable.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">x</span>, group_vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COUNTY"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># If omitting stat_var argument, group_var must be labeled</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/pums_stat.html">psrc_pums_count</a></span><span class="op">(</span><span class="va">x</span>, group_vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COUNTY"</span>,<span class="st">"TEN"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># If omitting stat_var argument, group_var must be labeled</span></span>
+<span><span class="co">#&gt;     DATA_YEAR    COUNTY                                                     TEN</span></span>
+<span><span class="co">#&gt;         &lt;num&gt;    &lt;fctr&gt;                                                  &lt;fctr&gt;</span></span>
+<span><span class="co">#&gt;  1:      2019      King                        Occupied without payment of rent</span></span>
+<span><span class="co">#&gt;  2:      2019      King                                    Owned free and clear</span></span>
+<span><span class="co">#&gt;  3:      2019      King Owned with mortgage or loan (include home equity loans)</span></span>
+<span><span class="co">#&gt;  4:      2019      King                                                  Rented</span></span>
+<span><span class="co">#&gt;  5:      2019      King                                                   Total</span></span>
+<span><span class="co">#&gt;  6:      2019    Kitsap                        Occupied without payment of rent</span></span>
+<span><span class="co">#&gt;  7:      2019    Kitsap                                    Owned free and clear</span></span>
+<span><span class="co">#&gt;  8:      2019    Kitsap Owned with mortgage or loan (include home equity loans)</span></span>
+<span><span class="co">#&gt;  9:      2019    Kitsap                                                  Rented</span></span>
+<span><span class="co">#&gt; 10:      2019    Kitsap                                                   Total</span></span>
+<span><span class="co">#&gt; 11:      2019    Pierce                        Occupied without payment of rent</span></span>
+<span><span class="co">#&gt; 12:      2019    Pierce                                    Owned free and clear</span></span>
+<span><span class="co">#&gt; 13:      2019    Pierce Owned with mortgage or loan (include home equity loans)</span></span>
+<span><span class="co">#&gt; 14:      2019    Pierce                                                  Rented</span></span>
+<span><span class="co">#&gt; 15:      2019    Pierce                                                   Total</span></span>
+<span><span class="co">#&gt; 16:      2019 Snohomish                        Occupied without payment of rent</span></span>
+<span><span class="co">#&gt; 17:      2019 Snohomish                                    Owned free and clear</span></span>
+<span><span class="co">#&gt; 18:      2019 Snohomish Owned with mortgage or loan (include home equity loans)</span></span>
+<span><span class="co">#&gt; 19:      2019 Snohomish                                                  Rented</span></span>
+<span><span class="co">#&gt; 20:      2019 Snohomish                                                   Total</span></span>
+<span><span class="co">#&gt; 21:      2019    Region                                                   Total</span></span>
+<span><span class="co">#&gt;     DATA_YEAR    COUNTY                                                     TEN</span></span>
+<span><span class="co">#&gt;       count count_moe       share    share_moe</span></span>
+<span><span class="co">#&gt;       &lt;num&gt;     &lt;num&gt;       &lt;num&gt;        &lt;num&gt;</span></span>
+<span><span class="co">#&gt;  1:    9809  911.8524 0.011121000 0.0010298861</span></span>
+<span><span class="co">#&gt;  2:  139287 2584.2387 0.157917293 0.0028450240</span></span>
+<span><span class="co">#&gt;  3:  360264 4093.7687 0.408451008 0.0045028055</span></span>
+<span><span class="co">#&gt;  4:  372665 3705.7797 0.422510700 0.0041018443</span></span>
+<span><span class="co">#&gt;  5:  882025 2590.7544 0.550215058 0.0007820053</span></span>
+<span><span class="co">#&gt;  6:    1050  264.3761 0.010104704 0.0025303543</span></span>
+<span><span class="co">#&gt;  7:   20613  932.9733 0.198369774 0.0091042955</span></span>
+<span><span class="co">#&gt;  8:   50188 1303.0872 0.482985603 0.0120890741</span></span>
+<span><span class="co">#&gt;  9:   32061 1438.1421 0.308539918 0.0133138978</span></span>
+<span><span class="co">#&gt; 10:  103912  825.0617 0.064821232 0.0005014429</span></span>
+<span><span class="co">#&gt; 11:    4842  633.5231 0.014976987 0.0019467030</span></span>
+<span><span class="co">#&gt; 12:   55867 1533.3655 0.172804489 0.0047299721</span></span>
+<span><span class="co">#&gt; 13:  144747 2256.6103 0.447722830 0.0063607655</span></span>
+<span><span class="co">#&gt; 14:  117840 1987.7314 0.364495694 0.0060002722</span></span>
+<span><span class="co">#&gt; 15:  323296 1667.2687 0.201674927 0.0008483700</span></span>
+<span><span class="co">#&gt; 16:    2725  572.2176 0.009274323 0.0019470961</span></span>
+<span><span class="co">#&gt; 17:   49858 1504.8450 0.169687770 0.0051290576</span></span>
+<span><span class="co">#&gt; 18:  146424 2358.2766 0.498342534 0.0076139486</span></span>
+<span><span class="co">#&gt; 19:   94815 2360.0541 0.322695373 0.0079455338</span></span>
+<span><span class="co">#&gt; 20:  293822 1169.4687 0.183288783 0.0007286581</span></span>
+<span><span class="co">#&gt; 21: 1603055 3804.6599 1.000000000 0.0000000000</span></span>
+<span><span class="co">#&gt;       count count_moe       share    share_moe</span></span></code></pre></div>
 <p>The summary function provides all four statistics and their margins
 of error in the same table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -366,7 +433,10 @@ calculation:</p>
 <code class="sourceCode R"><span><span class="va">rs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pums_stat.html">psrc_pums_median</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"HINCP"</span>, <span class="st">"TEN"</span><span class="op">)</span></span>
 <span><span class="va">c1</span> <span class="op">&lt;-</span> <span class="va">rs</span><span class="op">[</span><span class="fl">1</span>,<span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">]</span>                <span class="co"># First-line estimate and its MOE (as numeric vector)</span></span>
 <span><span class="va">c2</span> <span class="op">&lt;-</span> <span class="va">rs</span><span class="op">[</span><span class="fl">3</span>,<span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span><span class="op">]</span>                <span class="co"># Third-line estimate and its MOE (as numeric vector)</span></span>
-<span><span class="fu"><a href="../reference/z_score.html">z_score</a></span><span class="op">(</span><span class="va">c1</span>, <span class="va">c2</span><span class="op">)</span>                                  <span class="co"># A true difference indicated by score &gt; 1</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/z_score.html">z_score</a></span><span class="op">(</span><span class="va">c1</span>, <span class="va">c2</span><span class="op">)</span>                                  <span class="co"># A true difference indicated by score &gt; 1</span></span>
+<span><span class="co">#&gt;    HINCP_median HINCP_median_moe</span></span>
+<span><span class="co">#&gt;           &lt;num&gt;            &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:           NA               NA</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -183,92 +183,28 @@ error.</p>
 <h4 id="read-in-libraries">Read in Libraries<a class="anchor" aria-label="anchor" href="#read-in-libraries"></a>
 </h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_FITS.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_FITS.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF4.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF4.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF5.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF5.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_KEA.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_KEA.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_netCDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_netCDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_PDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_PDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_FileGDB.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_FileGDB.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_MSSQLSpatial.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_MSSQLSpatial.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_FITS.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_FITS.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF4.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF4.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF5.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_HDF5.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_KEA.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_KEA.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_netCDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_netCDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_PDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/gdal_PDF.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_FileGDB.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_FileGDB.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_MSSQLSpatial.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span>
-<span><span class="co">## Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:/Program Files/GDAL/gdalplugins/ogr_MSSQLSpatial.dll</span></span>
-<span><span class="co">## 126: The specified module could not be found.</span></span></code></pre>
-<pre><code><span><span class="co">## Have you updated tidycensus since the release date of the data you'll use?</span></span>
-<span><span class="co">## devtools::install_github('walkerke/tidycensus')</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">## Attaching package: 'dplyr'</span></span></code></pre>
-<pre><code><span><span class="co">## The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">##     filter, lag</span></span></code></pre>
-<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">##     intersect, setdiff, setequal, union</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrccensus/">psrccensus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'tidyr'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:magrittr':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     extract</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="get-the-data-from-the-acs-api-via-psrccensus">Get the data from the ACS api via psrccensus<a class="anchor" aria-label="anchor" href="#get-the-data-from-the-acs-api-via-psrccensus"></a>
 </h4>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Finding the corresponding ACS table - this works if you know the correct concept label. If not, another option would be to visit https://data.census.gov/table and search for the right subject table and skip to the next step ----</span></span>
 <span><span class="co">#x &lt;- tidycensus::load_variables(2021,"acs5") %&gt;% </span></span>
 <span><span class="co"># dplyr::filter(grepl("percent",</span></span>
@@ -279,13 +215,13 @@ error.</p>
 <span><span class="va">acs_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_acs_recs.html">get_acs_recs</a></span><span class="op">(</span>geography <span class="op">=</span><span class="st">'tract'</span>, </span>
 <span>                         table.names <span class="op">=</span> <span class="st">'B25070'</span>, <span class="co">#subject table code</span></span>
 <span>                         years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2021</span><span class="op">)</span>,</span>
-<span>                         acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Getting data from the 2017-2021 5-year ACS</span></span></code></pre>
+<span>                         acs.type <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Getting data from the 2017-2021 5-year ACS</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="add-a-grouping">Add a grouping<a class="anchor" aria-label="anchor" href="#add-a-grouping"></a>
 </h4>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data wrangling for grouping &gt;30% and under 30% - census tract and population</span></span>
 <span><span class="va">acs_data</span> <span class="op">&lt;-</span> <span class="va">acs_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select_all.html" class="external-link">rename_at</a></span><span class="op">(</span><span class="st">'label'</span>, <span class="op">~</span><span class="st">'rent_burden'</span><span class="op">)</span></span>
 <span></span>
@@ -305,21 +241,21 @@ error.</p>
 <h4 id="aggregate-and-calculate">Aggregate and calculate<a class="anchor" aria-label="anchor" href="#aggregate-and-calculate"></a>
 </h4>
 <p>The moe_sum uses tidycensus.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># filter only fields of interest - census tract and estimate</span></span>
 <span></span>
 <span><span class="co"># use the moe_sum function from tidycensus</span></span>
 <span><span class="va">acs_data_group</span> <span class="op">&lt;-</span> <span class="va">acs_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">rent_burden_group</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span>, </span>
-<span>                   moe<span class="op">=</span><span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_sum.html" class="external-link">moe_sum</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="va">estimate</span>, moe<span class="op">=</span><span class="va">moe</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## `summarise()` has grouped output by 'GEOID'. You can override using the</span></span>
-<span><span class="co">## `.groups` argument.</span></span></code></pre>
+<span>                   moe<span class="op">=</span><span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/moe_sum.html" class="external-link">moe_sum</a></span><span class="op">(</span>estimate<span class="op">=</span><span class="va">estimate</span>, moe<span class="op">=</span><span class="va">moe</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'GEOID'. You can override using the</span></span>
+<span><span class="co">#&gt; `.groups` argument.</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="data-wrangling">Data wrangling<a class="anchor" aria-label="anchor" href="#data-wrangling"></a>
 </h4>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># pivot data to calculate percentage by census tract, calculate estimates</span></span>
 <span></span>
 <span><span class="va">acs_data_group</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>   </span>
@@ -340,7 +276,7 @@ to down the grouped rows, you need to apply the function rowwise. You
 would not need to do this if the data were not pivoted.</p>
 <p>Note the moe_sum is applied although you are taking a difference.
 Then moe_prop is applied when you are finding the shares.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#calculate moes</span></span>
 <span><span class="va">acs_data_group</span><span class="op">&lt;-</span> <span class="va">acs_data_group</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise</a></span><span class="op">(</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -358,17 +294,17 @@ Then moe_prop is applied when you are finding the shares.</p>
 <span><span class="va">acs_data_final</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/reliability_calcs.html">reliability_calcs</a></span><span class="op">(</span><span class="va">acs_data_final</span>, estimate<span class="op">=</span><span class="st">'estimate_perc_cost_burdened'</span>, </span>
 <span>                                  moe<span class="op">=</span><span class="st">'moe_perc_cost_burdened'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">acs_data_final</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">estimate_perc_cost_burdened</span>, <span class="va">reliability</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Rowwise:  GEOID</span></span></span>
-<span><span class="co">##   GEOID       estimate_perc_cost_burdened reliability     </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 53033000101                       0.298 fair            </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 53033000102                       0.325 fair            </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 53033000201                       0.339 fair            </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 53033000202                       0.241 use with caution</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 53033000300                       0.313 use with caution</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 53033000402                       0.292 fair</span></span></code></pre>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">acs_data_final</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">estimate_perc_cost_burdened</span>, <span class="va">reliability</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Rowwise:  GEOID</span></span></span>
+<span><span class="co">#&gt;   GEOID       estimate_perc_cost_burdened reliability     </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 53033000101                       0.298 fair            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 53033000102                       0.325 fair            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 53033000201                       0.339 fair            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 53033000202                       0.241 use with caution</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 53033000300                       0.313 use with caution</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 53033000402                       0.292 fair</span></span></code></pre></div>
 <p>Now the data is ready to be joined to the tract map, if desired.</p>
 </div>
 </div>

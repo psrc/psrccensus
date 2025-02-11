@@ -9,9 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, echo = FALSE, message = FALSE}
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(magrittr)
 library(knitr)
+library(psrccensus)
 ```
 
 Every Census estimate is linked to a geography. However, not every geography is linked to a Census estimate.
