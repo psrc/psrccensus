@@ -160,8 +160,8 @@ get_acs_msa <- function (table.names, years, acs.type, FIPS = c("14740","42660")
         dplyr::mutate(census_geography="MSA", acs_type=acs.type, year=year)
 
 
-        # Store yearly data into final yearly data for current table - append if a year already exists
-        ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
+      # Store yearly data into final yearly data for current table - append if a year already exists
+      ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
 
     }
 
@@ -379,6 +379,60 @@ get_acs_puma <- function (state = "Washington", table.names, years) {
   return(census.data)
 }
 
+#' ACS Estimates by State
+#'
+#' Generate ACS estimates for multiple tables by state
+#' This is a helper function for the main function get_acs_recs.
+#' @param states A character string of state names or abbreviations. Defaults to Washington.
+#' @param table.names A character string or vector of Census table codes.
+#' @param years A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.
+#' @param acs.type A character string as either 'acs1', 'acs3' or acs5'.
+#'
+#' @author Craig Helmann
+#'
+#' @return a tibble of acs estimates by states for selected table codes.
+#' Includes detailed variable names.
+#'
+#'@importFrom rlang .data
+#'@importFrom dplyr filter
+
+get_acs_state <- function (states="Washington", table.names, years, acs.type) {
+
+  census.data <- geography <- NAME <- name <- variable <- NULL
+  estimate <- moe <- sumest <- summoe <- label <- NULL
+
+  for (table in table.names) {
+
+    yearly.data <- NULL
+
+    for (year in years) {
+
+      # Download ACS Data
+      tbl <- tidycensus::get_acs(geography="state", state=states, year=year, survey=acs.type, table=table) %>%
+        dplyr::mutate(estimate =tidyr::replace_na(estimate,0))
+
+      # Format fields for compatibility
+      tbl <- tbl %>%
+        tidyr::separate(col = NAME, into = c("name", "state"), sep = "Washington") %>%
+        dplyr::mutate(state = "Washington", name = "Washington State")
+
+      # Add labels, column for Census Geography, Type and Year of Data
+      tbl <- tbl %>% label_acs_variables(table, year, acs.type) %>%
+        tidyr::replace_na(list(moe=0)) %>%
+        dplyr::mutate(census_geography = "state", acs_type = acs.type, year = year)
+
+      # Store yearly data into final yearly data for current table - append if a year already exists
+      ifelse(is.null(yearly.data), yearly.data <- tbl, yearly.data <- dplyr::bind_rows(yearly.data, tbl))
+
+    }
+
+    # Store table data into final census data - append if a table set already exists
+    ifelse(is.null(census.data), census.data <- yearly.data, census.data <- dplyr::bind_rows(census.data, yearly.data))
+
+  }
+
+  return(census.data)
+}
 
 #' Add estimate reliability information
 #'
@@ -463,6 +517,8 @@ get_acs_recs <- function(geography, state="Washington", counties = c('King', 'Ki
     dfs <- get_acs_blockgroup(state, counties, table.names, years)
   } else if(geography == 'puma') {
     dfs <- get_acs_puma(state, table.names, years)
+  } else if(geography == 'state') {
+    dfs <- get_acs_state(states=state, table.names, years, acs.type)
   }
 
   dfs<-reliability_calcs(dfs)
