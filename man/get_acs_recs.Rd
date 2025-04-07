@@ -16,7 +16,7 @@ get_acs_recs(
 )
 }
 \arguments{
-\item{geography}{A character string as either 'tract', 'county', 'msa', or 'place'.}
+\item{geography}{A character string as either 'tract', 'county', 'msa', 'place', 'block group', 'puma', or 'state'.}
 
 \item{state}{A character string state name or abbreviation. Defaults to Washington.}
 
@@ -33,23 +33,11 @@ get_acs_recs(
 \item{acs.type}{A character string as either 'acs1', 'acs3' or acs5'.}
 }
 \value{
-a tibble of ACS estimates by selected geography for selected table codes. Includes variable names.
+a data frame of ACS estimates by selected geography for selected table codes. Includes variable names.
 }
 \description{
-Generate ACS estimates for multiple tables by tracts, counties, MSAs, or places for multiple years.
-}
-\examples{
-get_acs_recs(geography = 'county',
-             table.names = c('B03002'),
-             years=c(2017,2019),
-             acs.type = 'acs1')
-
-get_acs_recs(geography = 'county',
-             table.names = c("C17002"),
-             counties=c("Kitsap"),
-             years=c(2019),
-             acs.type = 'acs5')
-
+Generate ACS estimates for multiple tables by tracts, counties, MSAs, or places
+for multiple years using data.table for improved performance.
 }
 \author{
 Craig Helmann

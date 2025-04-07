@@ -4,12 +4,12 @@
 \alias{label_acs_variables}
 \title{Label ACS variables}
 \usage{
-label_acs_variables(df, table.name, year, acs.type)
+label_acs_variables(dt, table, year, acs.type)
 }
 \arguments{
-\item{df}{dataframe with Census API result}
+\item{dt}{data.table with Census API result}
 
-\item{table.name}{Census table code}
+\item{table}{Census table code}
 
 \item{year}{the year--or last year--of the ACS survey}
 
@@ -19,5 +19,5 @@ label_acs_variables(df, table.name, year, acs.type)
 dataframe with labels appended
 }
 \description{
-Helper function to provide variable labels and concept--i.e. topic--alongside codes
+Helper function for \code{\link{get_acs_single}} to provide variable labels and concept--i.e. topic--alongside codes
 }

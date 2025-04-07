@@ -2,12 +2,12 @@
 % Please edit documentation in R/get-acs-recs.R
 \name{reliability_calcs}
 \alias{reliability_calcs}
-\title{Add estimate reliability information}
+\title{Add estimate reliability metrics}
 \usage{
-reliability_calcs(dfs, moe = "moe", estimate = "estimate")
+reliability_calcs(df, moe = "moe", estimate = "estimate")
 }
 \arguments{
-\item{dfs}{data frames already retrieved from the api, or created by a user}
+\item{df}{dataframe or data.table already retrieved from the api, or created by a user}
 
 \item{moe}{character name of the column that has contains margin of error estimates}
 
@@ -17,8 +17,10 @@ reliability_calcs(dfs, moe = "moe", estimate = "estimate")
 the data frames with new columns for se, cv, and reliability
 }
 \description{
-After gathering data, add reliability information using moe and estimate
+Add coefficient of variation (cv) and relative reliability rating to estimates
+Census ACS uses 90 percent confidence interval, i.e. z score 1.645
+http://aws-linux/mediawiki/index.php/Understanding_Error_and_Determining_Statistical_Significance
 }
 \author{
-Suzanne
+Suzanne Childress
 }
