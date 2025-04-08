@@ -21,7 +21,7 @@ acs_varsearch <- function(regex, year=NULL){
     x <- tidycensus::load_variables(acs_year, survey) %>% setDT() %>%
       .[grepl(regex, name, ignore.case=TRUE)|
           grepl(regex, label, ignore.case=TRUE)|
-          grepl(regex, concept, ignore.case=TRUE)] %>% unique()
+            grepl(regex, concept, ignore.case=TRUE)] %>% unique()
     return(x)
   }
   acstypes <- paste0("acs5", c("","/subject","/profile","/cprofile")) %>%
@@ -230,7 +230,7 @@ get_acs_single <- function(params) {
         psrccensus:::format_acs("County")
 
       # Region total for PSRC counties
-      if (identical(counties, c("King", "Kitsap", "Pierce", "Snohomish"))) {
+      if(identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061'))) {
         dt <- add_regional_acs(dt)
       }
 
