@@ -1,35 +1,8 @@
+utils::globalVariables(c("GEOID","estimate","moe","variable","state","cv","reliability","estimate","moe"))
+
 #' @importFrom magrittr %<>% %>%
 #' @rawNamespace import(data.table, except = c(month, year))
 NULL
-
-#' Search published ACS variables
-#'
-#' Identify desired tables by examining prefix of relevant variable codes
-#' Includes primary, subject and profile tables
-#' @param regex search term
-#' @param year optionally restrict search to a specific year
-#' @return data.table of filtered variable codes and attributes
-#' @author Michael Jensen
-#'
-#' @importFrom lubridate now month year
-#' @export
-acs_varsearch <- function(regex, year=NULL){
-  name <- label <- concept <- NULL
-  acs_year <- if(is.null(year)){year(now() - months(18))}else{year}
-
-  pull_varlist <- function(survey){
-    x <- tidycensus::load_variables(acs_year, survey) %>% setDT() %>%
-      .[grepl(regex, name, ignore.case=TRUE)|
-          grepl(regex, label, ignore.case=TRUE)|
-            grepl(regex, concept, ignore.case=TRUE)] %>% unique()
-    return(x)
-  }
-  acstypes <- paste0("acs5", c("","/subject","/profile","/cprofile")) %>%
-    c("acsse", recursive=TRUE)
-  rs <- lapply(acstypes, pull_varlist)
-  rs <- rbindlist(rs, fill=TRUE)
-  return(rs)
-}
 
 #' Add shares to Psrccensus ACS object
 #'
@@ -110,35 +83,10 @@ label_acs_variables <- function(dt, table, year, acs.type){
   labels <- tidycensus::load_variables(year=year, dataset=survey) %>%
     setDT()
   labels <- labels[, .(variable = name, label, concept)] %>% setkey("variable")
-  dt <- merge(dt, labels, by = c("variable"), all.x = TRUE)
+  dt <- setDT(dt) %>% setkey("variable") %>% merge(labels, all.x = TRUE) %>%
+    setcolorder("GEOID")
 
   return(dt)
-}
-
-#' Generate parameter list for all combinations
-#'
-#' Helper function for \code{\link{get_acs_recs}}; creates a list of parameter combinations for all tables and years
-#' @param table.names Vector of table names
-#' @param years Vector of years
-#' @param params Base parameters to include with each combination
-#' @return List of parameter combinations
-create_param_grid <- function(table.names, years, params) {
-  # Create all combinations of tables and years
-  param_grid <- expand.grid(
-    table = table.names,
-    year = years,
-    stringsAsFactors = FALSE
-  )
-
-  # Convert to list of parameter sets
-  param_list <- lapply(1:nrow(param_grid), function(i) {
-    c(list(
-      table = param_grid$table[i],
-      year = param_grid$year[i]
-    ), params)
-  })
-
-  return(param_list)
 }
 
 #' Add regional totals
@@ -151,7 +99,7 @@ add_regional_acs <- function(dt){
   total_dt <- dt[, .(
     sumest = sum(estimate),
     summoe = tidycensus::moe_sum(moe, estimate)
-  ), by = .(variable, state)]
+  ), by = c("variable")]
   setnames(total_dt, c("sumest", "summoe"), c("estimate", "moe"))
   total_dt[, `:=`(GEOID = "REGION", name = "Region", census_geography = "Region")]
 
@@ -160,45 +108,6 @@ add_regional_acs <- function(dt){
 
   return(dtx)
 }
-
-#' Format ACS API return
-#'
-#' Helper function for \code{\link{get_acs_single}}
-#' @param dt data.table with Census API result
-#' @param geography_label one of:
-#' \itemize{
-#' \item method1 - "block group"
-#' \item method2 - "Tract"
-#' \item method3 - "Place"
-#' \item method4 - "County"
-#' \item method5 - "MSA"
-#' \item method6 - "public use microdata area (PUMA)"
-#' \item method7 - "State"
-#' }
-#' @return dt with fields formatted
-format_acs <- function(dt, geography_label) {
-  delimiter <- if(grepl("PUMA", geography_label)){"\\, "}else{"\\; "}
-  cb_geo_order <- c("block group", "tract", "county", "state")
-  pos <- match(tolower(geography_label), cb_geo_order) %>% dplyr::coalesce(3) %>% pmin(3)
-  splitfields <- c("name", cb_geo_order[(pmin(pos, 3) + 1):4])
-
-  # Separate NAME column
-  dt[, (splitfields) := lapply(tstrsplit(NAME, delimiter), trimws)]
-  dt[, NAME := NULL]
-  setcolorder(dt, splitfields, after = 1)
-  dt[, census_geography := geography_label]
-  # Remove county field for subcounty geographies
-  if (pos < 3 & "county" %in% colnames(dt)){
-    dt[, county := NULL]
-  }
-
-  # Replace missing estimate and moe values with zero
-  dt[is.na(estimate), estimate := 0]
-  dt[is.na(moe), moe := 0]
-
-  return(dt)
-}
-
 
 #' Get single ACS table
 #'
@@ -215,101 +124,63 @@ get_acs_single <- function(params) {
   FIPS <- params$FIPS
   place_FIPS <- params$place_FIPS
   acs.type <- params$acs.type
+  api_geo <- geotype_lookup[J(geography), get("api_label")]
 
-  dt <- tryCatch({
+  tryCatch({
     # Geography-specific parameters and processing
-    if (geography == "county") {
-      # County-specific data retrieval
+    if (geography %in% c("county", "tract", "block group")) {
       dt <- tidycensus::get_acs(
         state = state,
-        geography = 'county',
+        geography = api_geo,
         county = counties,
         year = year,
         survey = acs.type,
         table = table) %>% setDT() %>%
-        psrccensus:::format_acs("County")
+        format_cb_summary_tbl(geography, census_type = "acs")
 
       # Region total for PSRC counties
-      if(identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061'))) {
+      if(geography == "county" &
+         identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061'))) {
         dt <- add_regional_acs(dt)
       }
 
     } else if (geography == "msa") {
-      # MSA-specific data retrieval
       dt <- tidycensus::get_acs(
-        geography = "metropolitan statistical area/micropolitan statistical area",
+        geography = api_geo,
         year = year,
         survey = acs.type,
         table = table) %>% setDT()
 
       dt <- dt[GEOID %in% FIPS] %>%
-        format_acs("MSA")
+        format_cb_summary_tbl(geography, census_type = "acs")
 
-    } else if (geography == "place") {
-      # Place-specific data retrieval
+    } else if (geography %in% c("place", "puma", "state")) {
       dt <- tidycensus::get_acs(
         state = state,
-        geography = 'place',
+        geography = api_geo,
         year = year,
         survey = acs.type,
         table = table) %>% setDT()
 
-      # Filter for requested FIPS or PSRC places if unspecified
-      if (is.null(place_FIPS)) {
-        psrc_places <- get_psrc_places(year) %>% sf::st_drop_geometry()
-        place_FIPS <- unique(psrc_places$GEOID)
+      if (geography == "place"){
+        # Filter for requested FIPS or PSRC places if unspecified
+        if (is.null(place_FIPS)) {
+          psrc_places <- get_psrc_places(year) %>% sf::st_drop_geometry()
+          place_FIPS <- unique(psrc_places$GEOID)
+        }
+        dt <- dt[GEOID %in% place_FIPS] %>%
+          format_cb_summary_tbl(geography, census_type = "acs")
+
+        # Update census_geography based on name suffix
+        dt[endsWith(name, "city"), census_geography := "City"]
+        dt[endsWith(name, "CDP"), census_geography := "CDP"]
+
+        # Remove suffixes from name by reference
+        dt[, name := gsub(" (city|CDP)", "", name)]
+
+      }else if (geography == "puma") {
+        dt[, name := gsub("[\\;|\\,]\\s*$", "", name)]
       }
-      dt <- dt[GEOID %in% place_FIPS] %>%
-        format_acs("Place")
-
-      # Update census_geography based on name suffix
-      dt[endsWith(name, "city"), census_geography := "City"]
-      dt[endsWith(name, "CDP"), census_geography := "CDP"]
-
-      # Remove suffixes from name by reference
-      dt[, name := gsub(" (city|CDP)", "", name)]
-
-    } else if (geography == "tract") {
-      # Tract-specific data retrieval
-      dt <- tidycensus::get_acs(
-        state = state,
-        county = counties,
-        geography = 'tract',
-        year = year,
-        survey = "acs5",
-        table = table) %>% setDT() %>%
-        psrccensus:::format_acs("Tract")
-
-    } else if (geography == "block group") {
-      # Block group-specific data retrieval
-      dt <- tidycensus::get_acs(
-        state = state,
-        county = counties,
-        geography = "block group",
-        year = year,
-        survey = "acs5",
-        table = table) %>% setDT() %>%
-        psrccensus:::format_acs("block group")
-
-    } else if (geography == "puma") {
-      # PUMA-specific data retrieval
-      dt <- tidycensus::get_acs(
-        state = state,
-        geography = "public use microdata area",
-        year = year,
-        table = table) %>% setDT() %>%
-        format_acs("public use microdata area (PUMA)")
-
-      dt[, name := gsub("[\\;|\\,]\\s*$", "", name)]
-
-    } else if (geography == "state") {
-      # State-specific data retrieval
-      dt <- tidycensus::get_acs(
-        geography = "state",
-        state = state,
-        year = year,
-        survey = acs.type,
-        table = table) %>% setDT() %>% format_acs("State")
     }
   },
   error = function(e) {
@@ -319,14 +190,16 @@ get_acs_single <- function(params) {
     return(NULL)  # Return NULL for failed requests
   })
 
-  # Add labels
-  dt <- label_acs_variables(dt, table, year, acs.type)
+  if (!is.null(dt)) {
+    # Add labels
+    dt <- label_acs_variables(dt, table, year, acs.type)
 
-  # Add metadata
-  dt[, `:=`(acs_type = acs.type, year = year)]
+    # Add metadata
+    dt[, `:=`(acs_type = acs.type, year = year)]
 
-  # Filter out any regional medians/averages
-  dt <- dt[!(name == "Region" & (grepl("Median", label) | grepl("Average", label)))]
+    # Filter out any regional medians/averages
+    dt <- dt[!(name == "Region" & (grepl("Median", label) | grepl("Average", label)))]
+  }
 
   return(dt)
 }
@@ -381,7 +254,12 @@ get_acs_recs <- function(geography,
   )
 
   # Generate parameter grid for all combinations
-  param_grid <- create_param_grid(table.names, years, base_params)
+  param_grid <- create_param_grid(
+    items = table.names,
+    years = years,
+    params = base_params,
+    item_name = "table"  # Specify the name of the item column
+  )
 
   # Process all table/year combinations
   rs <- lapply(param_grid, get_acs_single)

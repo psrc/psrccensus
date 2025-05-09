@@ -43,13 +43,14 @@ While writing multi-year functions, keep in mind `get_psrc_pums()` downloads and
 library(psrccensus)
 library(magrittr)
 library(dplyr)
+dir <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
 
 # Build a single year function first
 # -- it can include as many individual stat analyses as needed (see list items at end)
 # -- notice `real_dollars()` creates the variable HINCP2020 later used for median statistic
 
 pums_singleyear <- function(dyear, span=1){
-  hh_df <- get_psrc_pums(span, dyear, "h", c("HINCP","AGEP","HRACE","LNGI","SCHL"))
+  hh_df <- get_psrc_pums(span, dyear, "h", c("HINCP","AGEP","HRACE","LNGI","SCHL"), dir=dir)
   hh_df %<>% real_dollars(2020) %>% mutate(
     ed_attain = factor(case_when(grepl("(Bach|Mast|Prof|Doct)", SCHL)  ~ "Bachelor's degree or higher",
                                  !is.na(SCHL)                          ~ "Less than a Bachelor's degree")),

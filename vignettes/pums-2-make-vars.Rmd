@@ -48,8 +48,9 @@ Adding two custom variables with one mutate command:
 library(psrccensus)
 library(magrittr)
 library(dplyr)
+dir <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
 
-pums19_5p <- get_psrc_pums(5, 2019, "p", c("AGEP","SCHL","ESR"))                           # Pull the data; 
+pums19_5p <- get_psrc_pums(5, 2019, "p", c("AGEP","SCHL","ESR"), dir=dir)                  # Pull the data; 
                                                                                            #    rather than pipe the result, use a separate assignment
 pums19_5p %<>% mutate(                                                                     #    so any issues with mutate() don't negate your download
   ed_25up = factor(                                                                        # Use Factor datatype for categorical variables
@@ -75,7 +76,7 @@ Using `labels=FALSE` and `as.character()` for more a complex recode:
 ```{r  mutate using values, message=FALSE, eval=FALSE}
 pvars <- c("AGEP","FOD1P","FOD2P","INDP","ESR")
 ftr_int <- function(x){as.integer(as.character(x))}                                        # Micro-helper conversion function
-pums18_5p <- get_psrc_pums(5, 2018, "p", pvars, labels=FALSE)                              # Labels=FALSE leaves values--but they are still Factors!
+pums18_5p <- get_psrc_pums(5, 2018, "p", pvars, labels=FALSE, dir=dir)                     # Labels=FALSE leaves values--but they are still Factors!
 
 pums18_5p %<>% mutate(
    med_deg = factor(

@@ -2,18 +2,18 @@
 % Please edit documentation in R/get-decennial-recs.R
 \name{add_decennial_share}
 \alias{add_decennial_share}
-\title{Add shares to Psrccensus ACS object}
+\title{Add shares to Decennial Census result}
 \usage{
 add_decennial_share(df)
 }
 \arguments{
-\item{df}{dataframe with Psrccensus Decennial result}
+\item{df}{dataframe with Decennial Census result}
 }
 \value{
-dataframe with additional share and share_moe fields
+dataframe with additional share field
 }
 \description{
-Add shares to Psrccensus ACS object
+Add shares to Decennial Census result
 }
 \author{
 Michael Jensen

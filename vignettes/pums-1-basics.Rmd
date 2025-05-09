@@ -94,12 +94,14 @@ Since PUMS records are sampled rather than comprising a full census, **psrccensu
 As an example, to calculate 2019 median household income for the region you would use the following function calls:
 ```{r median, message=FALSE, warning=FALSE, eval=TRUE}
 library(psrccensus)
+dir <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
 
 x <- get_psrc_pums(span = 5,                     # Denoting ACS 5-year estimates; 1-year also available
                    dyear = 2019,                 # Last data year of span
                    level = "h",                  # Unit of analysis == household ("p" used for person)
-                   vars = c("HINCP","TEN"))      # PUMS household income & housing tenure variables; using tenure later. 
-                                                 #  - You can choose as many variables as you need.
+                   vars = c("HINCP","OWN_RENT"), # PUMS household income & housing tenure variables; using tenure later. 
+                   dir=dir)                      # Using local directory (due to Census FTP restriction)
+
 psrc_pums_median(x, stat_var = "HINCP")          # Median Household income (without regard to tenure)
 ```
 
@@ -108,20 +110,20 @@ To calculate by a subgroup category (here, housing tenure--e.g. own vs. rent), u
 ```{r  median by category, message=FALSE, warning=FALSE, , eval=TRUE}
 psrc_pums_median(x,                              # the assigned result of get_psrc_pums()
                  stat_var = "HINCP",             # Summarizing household income . . .
-                 group_vars = "TEN",             # . . . grouped by housing tenure
+                 group_vars = "OWN_RENT",        # . . . grouped by housing tenure
                  rr=TRUE)                        # w/ optional relative reliability measure
 ```
 
 
 The count function tabulates the number people or households by grouping category, depending on the level you specified in `get_psrc_pums()`. The result represents the population (via weighting), not the survey sample. If you intend to count things other than people or households, such as number of bedrooms, you should use the 'total' function instead, which sums the target variable.
 ```{r count by category, message=FALSE, warning=FALSE, , eval=TRUE}
-psrc_pums_count(x, group_vars=c("COUNTY","TEN"))      # If omitting stat_var argument, group_var must be labeled
+psrc_pums_count(x, group_vars=c("COUNTY","OWN_RENT"))      # If omitting stat_var argument, group_var must be labeled
 ```
 
 
 The summary function provides all four statistics and their margins of error in the same table. 
 ```{r summary by category, message=FALSE, eval=FALSE}
-psrc_pums_summary(x, "HINCP", "TEN") %>% print()
+psrc_pums_summary(x, "HINCP", "OWN_RENT") %>% dplyr::select(-c("DATA_YEAR","COUNTY"))
 ```
 
 Notice the statistical functions leave the data object itself unchanged, so if desired it can be used repeatedly, with various grouping variable combinations (as long as they share the same unit of analysis--i.e. persons or households). As described in [the accompanying article](make-your-own-pums-vars.html#handle-subsets-via-a-universal-variable-the-incl_nafalse-option), the recommended workflow maintains the data object whole (rather than discarding observations specific to one analysis or another).
@@ -139,7 +141,7 @@ There is only a meaningful difference between two estimates if the Z score is gr
 
 The `z_score()` convenience function performs this calculation:
 ```{r z score calculation, message=FALSE, warning=FALSE, , eval=TRUE}
-rs <- psrc_pums_median(x, "HINCP", "TEN")
+rs <- psrc_pums_median(x, "HINCP", "OWN_RENT")
 c1 <- rs[1,(ncol(rs)-1):ncol(rs)]                # First-line estimate and its MOE (as numeric vector)
 c2 <- rs[3,(ncol(rs)-1):ncol(rs)]                # Third-line estimate and its MOE (as numeric vector)
 z_score(c1, c2)                                  # A true difference indicated by score > 1

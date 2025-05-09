@@ -1,7 +1,7 @@
 testthat::test_that('get_deccenial_recs returns expected results', {
   df <- get_decennial_recs(geography = 'county',
                            table_codes = 'PCT013',
-                           year = 2010)
+                           years = 2010)
 
   # default counties are formatted with 'County, Washington'
   testthat::expect_equal(unique(df$NAME), c('King County, Washington', 'Kitsap County, Washington', 'Pierce County, Washington', 'Snohomish County, Washington', 'Region'))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-decennial-recs.R
 \name{get_decennial_recs}
 \alias{get_decennial_recs}
-\title{Decennial Estimates}
+\title{Decennial Census Estimates}
 \usage{
 get_decennial_recs(
   geography,
@@ -11,7 +11,8 @@ get_decennial_recs(
   years,
   variables = NULL,
   table_codes = NULL,
-  fips = NULL
+  fips = NULL,
+  state = "WA"
 )
 }
 \arguments{
@@ -29,13 +30,14 @@ get_decennial_recs(
 the table code will be padded with 0s such as "H001", as opposed to "H1"}
 
 \item{fips}{Character. Single code or vector of either MSA or place fips codes.}
+
+\item{state}{A character string state abbreviation. Defaults to 'WA'.}
 }
 \value{
 a tibble of decennial estimates by selected geography for selected table codes. Includes variable names.
 }
 \description{
 Generate decennial estimates for multiple tables by tracts, counties, MSAs, or places.
-Currently only working for SF1 tables.
 }
 \examples{
 tbl_names <- paste0('PCT020', LETTERS[1:6])
@@ -51,8 +53,8 @@ get_decennial_recs(geography = 'place',
                    fips = c("5363000", "5308850"))
 
 get_decennial_recs(geography = 'msa',
-                   table_codes = c("H001", "P001"),
-                   years = c(2000, 2010),
+                   table_codes = c("H001"),
+                   years = 2010,
                    fips = c('42660', "28420"))
 
 get_decennial_recs(geography = 'block group',

@@ -102,7 +102,7 @@ library(tidyr)
 # getting data by tract
 acs_data <- get_acs_recs(geography ='tract', 
                          table.names = 'B25070', #subject table code
-                         years = c(2021),
+                         years = 2021,
                          acs.type = 'acs5')
 ```
 

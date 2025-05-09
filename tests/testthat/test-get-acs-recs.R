@@ -10,6 +10,6 @@ show_failure(expect_s3_class(get_acs_recs(geography = 'county',
                                           acs.type = 'acs1'), 'data.frame'))
 
 test_that('bad function call throws an error',{expect_error(get_acs_recs(geography='msa',
-                                                            table.names=('RutabagaBoo'),
-                                                            years=2018,
-                                                            acs.type = 'acs1'))})
+                                                              table.names=('RutabagaBoo'),
+                                                              years=2018,
+                                                              acs.type = 'acs1'))})
