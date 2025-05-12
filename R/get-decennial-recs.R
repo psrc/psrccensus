@@ -66,7 +66,6 @@ get_decennial_single <- function(params) {
   tryCatch({
     # Geography-specific parameters and processing
     if (geography %in% c("county", "tract", "block group")) {
-      # County-specific data retrieval
       dt <- tidycensus::get_decennial(
         state = state,
         geography = api_geo,
@@ -88,12 +87,6 @@ get_decennial_single <- function(params) {
         }
 
     } else if (geography == "msa") {
-      # MSA-specific data retrieval
-
-      api_geo <- ifelse(year > 2020,
-                  "metropolitan/micropolitan statistical area",
-                  "metropolitan statistical area/micropolitan statistical area")
-
       dt <- tidycensus::get_decennial(
         geography = api_geo,
         year = year,
@@ -110,7 +103,6 @@ get_decennial_single <- function(params) {
       dt <- format_cb_summary_tbl(dt, geography, census_type = "decennial")
 
     } else if (geography %in% c("place", "puma", "state")) {
-      # Place-specific data retrieval
       dt <- tidycensus::get_decennial(
         state = state,
         geography = api_geo,

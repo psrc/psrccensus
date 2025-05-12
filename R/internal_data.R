@@ -8,6 +8,7 @@ NULL
 # library(magrittr)
 # library(dplyr)
 # library(lubridate)
+# library(data.table)
 #
 # get_tblnames <- function(surveytype){
 #   name <- NULL
@@ -43,9 +44,9 @@ NULL
 # geotype_lookup <- data.table(
 #   geo=c("block group", "tract", "place", "county", "msa", "puma", "state"),
 #   psrc_label=c("block group", "Tract", "Place", "County", "MSA", "public use microdata area (PUMA)", "State"),
-#   api_label=c("block group", "tract", "place", "county", "metropolitan statistical area/micropolitan statistical area", "public use microdata area", "state")
+#   api_label=c("block group", "tract", "place", "county", "cbsa", "public use microdata area", "state")
 # )
 # setkey(geotype_lookup, geo)
-
-#pums_labels_xtra <- psrccensus:::pums_labels_xtra
-#usethis::use_data(acs_tbltypes_lookup, pums_labels_xtra, geotype_lookup, internal=TRUE, overwrite=TRUE) # Makes part of the package; push this to repo
+#
+# pums_labels_xtra <- psrccensus:::pums_labels_xtra
+# usethis::use_data(acs_tbltypes_lookup, pums_labels_xtra, geotype_lookup, internal=TRUE, overwrite=TRUE) # Makes part of the package; push this to repo
