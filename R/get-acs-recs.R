@@ -34,14 +34,14 @@ add_acs_share <- function(df){
 #' @author Suzanne Childress
 #' @return the data frames with new columns for se, cv, and reliability
 #' @export
-reliability_calcs <- function(df, moe = "moe", estimate = "estimate") {
+reliability_calcs <- function(df) {
   is_data_table <- "data.table" %in% class(df)
   # Make sure input is a data.table
   dt <- copy(df) %>% setDT()
 
   # Calculate coefficient of variation and reliability measures by reference
   dt[, `:=`(
-    cv = ifelse(get(..estimate) > 0, get(..moe)/1.645/get(..estimate), NA_real_),
+    cv = ifelse(estimate > 0, moe/1.645/estimate, NA_real_),
     reliability = NA_character_
   )]
 
@@ -99,7 +99,7 @@ add_regional_acs <- function(dt){
   total_dt <- dt[, .(
     sumest = sum(estimate),
     summoe = tidycensus::moe_sum(moe, estimate)
-  ), by = c("variable")]
+  ), by = c("state","variable")]
   setnames(total_dt, c("sumest", "summoe"), c("estimate", "moe"))
   total_dt[, `:=`(GEOID = "REGION", name = "Region", census_geography = "Region")]
 
@@ -115,91 +115,66 @@ add_regional_acs <- function(dt){
 #' @param params list of parameter combinations from \code{\link{create_param_grid}}
 #' @return dt formatted ACS data for a single geography and survey
 get_acs_single <- function(params) {
-  # Extract parameters
-  table <- params$table
-  year <- params$year
-  geography <- params$geography
-  state <- params$state
-  counties <- params$counties
-  FIPS <- params$FIPS
-  place_FIPS <- params$place_FIPS
-  acs.type <- params$acs.type
-  api_geo <- geotype_lookup[J(geography), get("api_label")]
+  api_params <- copy(params)
+
+  # Extract parameters for processing logic
+  geography <- api_params$geo_name
+  is_table  <- api_params$is_table
+  filter_fips <- if(!is.null(api_params$fips)){api_params$fips}else{NULL}
+  data_item <- if(api_params$is_table){api_params$table}else{api_params$variables}
+
+  # Remove unneeded parameters
+  to_remove <- c("geo_name", "is_table", "fips")
+  api_params <- api_params[!names(api_params) %in% to_remove]
 
   tryCatch({
-    # Geography-specific parameters and processing
-    if (geography %in% c("county", "tract", "block group")) {
-      dt <- tidycensus::get_acs(
-        state = state,
-        geography = api_geo,
-        county = counties,
-        year = year,
-        survey = acs.type,
-        table = table) %>% setDT() %>%
-        format_cb_summary_tbl(geography, census_type = "acs")
+    # Make the API call
+    dt <- do.call(tidycensus::get_acs, api_params) %>% setDT()
 
-      # Region total for PSRC counties
-      if(geography == "county" &
-         identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061'))) {
-        dt <- add_regional_acs(dt)
+    # Filter by FIPS for MSA or place
+    if (geography %in% c("msa","place") && !is.null(filter_fips)) {
+      dt <- dt[GEOID %in% filter_fips]
+      if(nrow(dt) == 0) {
+        warning(paste("No data found for FIPS codes:",
+                      paste(filter_fips, collapse = ", ")))
       }
-
-    } else if (geography == "msa") {
-      dt <- tidycensus::get_acs(
-        geography = api_geo,
-        year = year,
-        survey = acs.type,
-        table = table) %>% setDT()
-
-      dt <- dt[GEOID %in% FIPS] %>%
-        format_cb_summary_tbl(geography, census_type = "acs")
-
-    } else if (geography %in% c("place", "puma", "state")) {
-      dt <- tidycensus::get_acs(
-        state = state,
-        geography = api_geo,
-        year = year,
-        survey = acs.type,
-        table = table) %>% setDT()
-
-      if (geography == "place"){
-        # Filter for requested FIPS or PSRC places if unspecified
-        if (is.null(place_FIPS)) {
-          psrc_places <- get_psrc_places(year) %>% sf::st_drop_geometry()
-          place_FIPS <- unique(psrc_places$GEOID)
-        }
-        dt <- dt[GEOID %in% place_FIPS] %>%
-          format_cb_summary_tbl(geography, census_type = "acs")
-
-        # Update census_geography based on name suffix
-        dt[endsWith(name, "city"), census_geography := "City"]
-        dt[endsWith(name, "CDP"), census_geography := "CDP"]
-
-        # Remove suffixes from name by reference
-        dt[, name := gsub(" (city|CDP)", "", name)]
-
-      }else if (geography == "puma") {
-        dt[, name := gsub("[\\;|\\,]\\s*$", "", name)]
+    } else if (geography == "place") {
+      # Filter for requested FIPS or PSRC places if unspecified
+      psrc_places <- get_psrc_places(params$year) %>% sf::st_drop_geometry()
+      place_FIPS <- unique(psrc_places$GEOID)
+      dt <- dt[GEOID %in% place_FIPS]
+      if(nrow(dt) == 0) {
+        warning("No data found for specified places")
       }
+    }
+
+    # Format the result
+    dt <- format_cb_summary_tbl(dt, geography, census_type = "acs")
+
+    # Add region total for PSRC counties
+    if (all(geography == "county" &&
+        identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061')))) {
+      dt <- add_regional_acs(dt)
     }
   },
   error = function(e) {
-    warning(paste("Error retrieving data for table:", table,
-                  "year:", year, "geography:", geography,
+    warning(paste("Error retrieving data for item:", data_item,
+                  "year:", params$year, "geography:", geography,
                   "- Error:", e$message))
-    return(NULL)  # Return NULL for failed requests
+    return(NULL)
   })
 
   if (!is.null(dt)) {
     # Add labels
-    dt <- label_acs_variables(dt, table, year, acs.type)
+    ref_table <- if(!is_table){sub("_.*$", "", data_item)}else{data_item}
+    dt <- label_acs_variables(dt, ref_table, params$year, params$survey)
 
     # Add metadata
-    dt[, `:=`(acs_type = acs.type, year = year)]
-
-    # Filter out any regional medians/averages
-    dt <- dt[!(name == "Region" & (grepl("Median", label) | grepl("Average", label)))]
+    dt[, `:=`(acs_type = params$survey, year = params$year)]
   }
+
+  # # Filter out regional medians/averages  ## Where would these be produced?
+  # dt <- dt[!(GEOID == "Region" & (grepl("Median", label) | grepl("Average", label)))]
 
   return(dt)
 }
@@ -212,7 +187,8 @@ get_acs_single <- function(params) {
 #' @param state A character string state name or abbreviation. Defaults to Washington.
 #' @param geography A character string as either 'tract', 'county', 'msa', 'place', 'block group', 'puma', or 'state'.
 #' @param counties A character string or vector of counties. Defaults to PSRC counties.
-#' @param table.names A character string or vector of Census table codes.
+#' @param table.names A character string or vector of Census table; alternative to individual variable codes
+#' @param variables A character string or vector of individual Census variable codes; alternative to table codes
 #' @param years A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.
 #' @param FIPS Character string for FIPS codes for specific MSA geographies. Defaults to Seattle & Bremerton MSA c("14740","42660")
 #' @param place_FIPS Character string of FIPS codes (with state prefix) for specific Census Places. If NULL, Places within the PSRC Region will be returned.
@@ -226,6 +202,7 @@ get_acs_recs <- function(geography,
                          state="Washington",
                          counties = c('King', 'Kitsap', 'Pierce', 'Snohomish'),
                          table.names,
+                         variables,
                          years,
                          FIPS = c("14740","42660"),
                          place_FIPS=NULL,
@@ -243,22 +220,43 @@ get_acs_recs <- function(geography,
     acs.type <- 'acs5'
   }
 
+  # Either table.names or variables must be provided
+  if (is.null(table.names) && is.null(variables)) {
+    stop("Either table.names or variables must be provided")
+  }
+
+  # Determine which data items to use (table.names or variables)
+  is_table <- !is.null(table.names)
+  data_items <- if (is_table) table.names else variables
+  item_name <- if (is_table) "table" else "variables"
+
   # Create base parameter list
   base_params <- list(
-    geography = geography,
-    state = state,
-    counties = counties,
-    FIPS = FIPS,
-    place_FIPS = place_FIPS,
-    acs.type = acs.type
+    geo_name = geography,
+    geography = geotype_lookup[J(geography), get("api_label")],
+    survey = acs.type,
+    is_table = is_table
   )
 
-  # Generate parameter grid for all combinations
+  # Add geography-specific parameters
+  if (geography != "msa") {
+    base_params$state <- state
+  }
+
+  if (geography %in% c("county", "tract", "block group")) {
+    base_params$county <- counties
+  }
+
+  # Add filtering parameters (not used directly by API but needed for post-processing)
+  if (!is.null(FIPS) | !is.null(place_FIPS)) {
+    base_params$fips <- dplyr::coalesce(FIPS, place_FIPS)
+  }
+
+  # Generate parameter grid for all combinations using the combined function
   param_grid <- create_param_grid(
-    items = table.names,
+    items = data_items,
     years = years,
-    params = base_params,
-    item_name = "table"  # Specify the name of the item column
+    params = base_params
   )
 
   # Process all table/year combinations

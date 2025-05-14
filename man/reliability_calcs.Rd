@@ -4,7 +4,7 @@
 \alias{reliability_calcs}
 \title{Add estimate reliability metrics}
 \usage{
-reliability_calcs(df, moe = "moe", estimate = "estimate")
+reliability_calcs(df)
 }
 \arguments{
 \item{df}{dataframe or data.table already retrieved from the api, or created by a user}

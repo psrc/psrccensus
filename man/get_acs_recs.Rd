@@ -9,6 +9,7 @@ get_acs_recs(
   state = "Washington",
   counties = c("King", "Kitsap", "Pierce", "Snohomish"),
   table.names,
+  variables,
   years,
   FIPS = c("14740", "42660"),
   place_FIPS = NULL,
@@ -22,7 +23,9 @@ get_acs_recs(
 
 \item{counties}{A character string or vector of counties. Defaults to PSRC counties.}
 
-\item{table.names}{A character string or vector of Census table codes.}
+\item{table.names}{A character string or vector of Census table; alternative to individual variable codes}
+
+\item{variables}{A character string or vector of individual Census variable codes; alternative to table codes}
 
 \item{years}{A numeric value or vector of years. An ACS year equal or greater than 2010 to the latest available year.}
 

@@ -4,7 +4,7 @@
 \alias{create_param_grid}
 \title{Generate parameter list for all combinations}
 \usage{
-create_param_grid(items, years, params, item_name = "item")
+create_param_grid(items, years, params)
 }
 \arguments{
 \item{items}{Vector of table or data item names}

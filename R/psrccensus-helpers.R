@@ -13,17 +13,18 @@ NULL
 #' @param params Base parameters to include with each combination
 #' @param item_name character string, i.e. "table" or "data_item"
 #' @return List of parameter combinations
-create_param_grid <- function(items, years, params, item_name = "item") {
+create_param_grid <- function(items, years, params) {
+  # Create all combinations of items and years
   param_grid <- expand.grid(
     stringsAsFactors = FALSE,
     temp_item = items,
     year = years
   )
-  names(param_grid)[1] <- item_name
+  item_name <- ifelse(params$is_table, "table", "variables")
 
   param_list <- lapply(1:nrow(param_grid), function(i) {
     new_params <- params
-    new_params[[item_name]] <- param_grid[[item_name]][i]
+    new_params[[item_name]] <- param_grid$temp_item[i]
     new_params[["year"]] <- param_grid$year[i]
     return(new_params)
   })
@@ -40,7 +41,7 @@ create_param_grid <- function(items, years, params, item_name = "item") {
 #' @return dt with fields formatted
 format_cb_summary_tbl <- function(dt, geography, census_type) {
   geography_label <- geotype_lookup[J(geography), get("psrc_label")]
-  delimiter <- "\\[,;\\s]+"
+  delimiter <- "[\\\\,;]+\\s"
   cb_geo_order <- c("block group", "tract", "county", "state")
   pos <- match(geography, cb_geo_order) %>% dplyr::coalesce(3) %>% pmin(3)
   splitfields <- c("name", cb_geo_order[(pmin(pos, 3) + 1):4])
@@ -53,13 +54,17 @@ format_cb_summary_tbl <- function(dt, geography, census_type) {
     dt[, census_geography := (geography_label)]
     # Adjust state field for MSAs
     if (geography=="msa"){
-      dt[, state := gsub(" Metro Area$", "", state, ignore.case = TRUE)]
+      dt[, state := gsub(" Metro Area$", "", name, ignore.case = TRUE)]
     }
   }
 
-  # Remove county field for subcounty geographies
-  if (pos < 3 & "county" %in% colnames(dt)){
-    dt[, county := NULL]
+  # Place-specific name processing
+  if (geography == "place") {
+    dt[endsWith(name, "city"), census_geography := "City"]
+    dt[endsWith(name, "CDP"), census_geography := "CDP"]
+    dt[, name := gsub(" (city|CDP)", "", name)]
+  } else if (geography == "puma") {
+    dt[, name := gsub("[\\;|\\,]\\s*$", "", name)]
   }
 
   # Census-type specific operations

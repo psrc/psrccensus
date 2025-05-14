@@ -37,7 +37,6 @@ add_regional_decennial <- function(dt){
   total_dt <- dt[, .(sumvalue = sum(value)), by = c("variable")]
   setnames(total_dt, "sumvalue", "value")
 
-  #total_dt[, `:=`(GEOID = "REGION", name = "Region", census_geography = "Region")]
   total_dt[, `:=`(GEOID = "REGION", NAME = "Region")]
 
   # Combine with original data
@@ -52,104 +51,69 @@ add_regional_decennial <- function(dt){
 #' @param params list of parameter combinations from \code{\link{create_param_grid}}
 #' @return dt formatted Decennial Census data for a single geography and year
 get_decennial_single <- function(params) {
-  # Extract parameters
-  data_item <- params$data_item
-  year <- params$year
-  geography <- params$geography
-  state <- params$state
-  counties <- params$counties
-  fips <- params$fips
-  sumfile <- params$sumfile
-  is_table <- params$is_table
-  api_geo <- geotype_lookup[J(geography), get("api_label")]
+  # Extract and prepare API parameters
+  api_params <- copy(params)
+
+  # Extract parameters for processing logic
+  geography <- api_params$geo_name
+  is_table <- api_params$is_table
+  filter_fips <- if("fips" %in% names(api_params)){api_params$fips}else{NULL}
+  data_item <- if(api_params$is_table){api_params$table}else{api_params$variables}
+
+  # Remove unneeded parameters
+  to_remove <- c("geo_name", "is_table", "fips")
+  api_params <- api_params[!names(api_params) %in% to_remove]
 
   tryCatch({
-    # Geography-specific parameters and processing
+    # Make the API call
+    dt <- do.call(tidycensus::get_decennial, api_params) %>% setDT()
+
+    # Filter by FIPS for MSA or place
+    if (geography %in% c("msa","place") && !is.null(filter_fips)) {
+      dt <- dt[GEOID %in% filter_fips]
+      if(nrow(dt) == 0) {
+        warning(paste("No data found for FIPS codes:",
+                      paste(filter_fips, collapse = ", ")))
+      }
+    } else if (geography == "place") {
+      # Filter for requested FIPS or PSRC places if unspecified
+      psrc_places <- get_psrc_places(params$year) %>% sf::st_drop_geometry()
+      place_fips <- unique(psrc_places$GEOID)
+      dt <- dt[GEOID %in% place_fips]
+      if(nrow(dt) == 0) {
+        warning("No data found for specified places")
+      }
+    }
+
+    # Format the result
+    dt <- format_cb_summary_tbl(dt, geography, census_type = "decennial")
+
+    # Add county field based on GEOID for subcounty geographies
     if (geography %in% c("county", "tract", "block group")) {
-      dt <- tidycensus::get_decennial(
-        state = state,
-        geography = api_geo,
-        county = counties,
-        year = year,
-        sumfile = sumfile,
-        if(!is_table){variables = data_item},
-        if(is_table){table= data_item},
-      ) %>% setDT() %>%
-        format_cb_summary_tbl(geography, census_type = "decennial")
-
-      # Add county field based on GEOID
       dt[, county := substr(GEOID, 1, 5)]
+    }
 
-      # Region total for PSRC counties
-      if(geography=="county" &
-         identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061'))) {
-          dt <- add_regional_decennial(dt)
-        }
-
-    } else if (geography == "msa") {
-      dt <- tidycensus::get_decennial(
-        geography = api_geo,
-        year = year,
-        sumfile = sumfile,
-        if(!is_table){variables = data_item},
-        if(is_table){table= data_item},
-      ) %>% setDT()
-
-      # Filter for requested FIPS if specified
-      if (!is.null(fips)) {
-        dt <- dt[GEOID %in% fips]
-      }
-
-      dt <- format_cb_summary_tbl(dt, geography, census_type = "decennial")
-
-    } else if (geography %in% c("place", "puma", "state")) {
-      dt <- tidycensus::get_decennial(
-        state = state,
-        geography = api_geo,
-        year = year,
-        sumfile = sumfile,
-        if(!is_table){variables = data_item},
-        if(is_table){table= data_item},
-      ) %>% setDT()
-
-      if(geography=="place"){
-        # Filter for requested FIPS or PSRC places if needed
-        if (!is.null(fips)) {
-          dt <- dt[GEOID %in% fips]
-        } else if (year > 2010) {
-          psrc_places <- get_psrc_places(year) %>% sf::st_drop_geometry()
-          place_fips <- unique(psrc_places$GEOID)
-          dt <- dt[GEOID %in% place_fips]
-        }
-
-        dt <- format_cb_summary_tbl(dt, geography, census_type = "decennial")
-
-        # Update census_geography based on name suffix
-        dt[endsWith(name, "city"), census_geography := "City"]
-        dt[endsWith(name, "CDP"), census_geography := "CDP"]
-
-        # Remove suffixes from name by reference
-        dt[, name := gsub(" (city|CDP)", "", name)]
-      } else if (geography == "puma") {
-        # Clean up name field by removing trailing separators
-        dt[, name := gsub("[\\;|\\,]\\s*$", "", name)]
-      }
+    # Add region total for PSRC counties
+    if (all(geography == "county" &&
+        identical(unique(dt$GEOID), c('53033', '53035', '53053', '53061')))) {
+      dt <- add_regional_decennial(dt)
     }
   },
   error = function(e) {
     warning(paste("Error retrieving data for item:", data_item,
-                  "year:", year, "geography:", geography,
+                  "year:", params$year, "geography:", geography,
                   "- Error:", e$message))
-    return(NULL)  # Return NULL for failed requests
+    return(NULL)
   })
 
   # Add labels and metadata if data was retrieved successfully
   if (!is.null(dt)) {
-    dt <- label_decennial_variables(dt, year, sumfile)
+    dt <- label_decennial_variables(dt, api_params$year, api_params$sumfile)
 
     # Add metadata
-    dt[, `:=`(year = year)] # Could add , sumfile = sumfile
-    setcolorder(dt, c("GEOID","NAME")) %>% setcolorder("year", before="label")# to match pre-refactored code
+    dt[, `:=`(year = api_params$year)] # Could add , sumfile = sumfile
+
+    setcolorder(dt, c("GEOID","NAME")) %>% setcolorder("year", before="label") # to match pre-refactored code
   }
 
   return(dt)
@@ -223,7 +187,7 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
                                fips = NULL, state = 'WA') {
 
   # Validates geography parameter
-  valid_geographies <- c('county', 'msa', 'place', 'tract', 'block group')
+  valid_geographies <- c('county', 'msa', 'place', 'tract', 'block group', 'puma', 'state')
   if (!(geography %in% valid_geographies)) {
     stop(paste("Invalid geography. Must be one of:", paste(valid_geographies, collapse=", ")))
   }
@@ -240,20 +204,31 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
 
   # Create base parameter list
   base_params <- list(
-    geography = geography,
-    state = state,
-    counties = counties,
-    fips = fips,
+    geo_name = geography,
+    geography = geotype_lookup[J(geography), get("api_label")],
     sumfile = sumfile,
     is_table = is_table
   )
 
-  # Generate parameter grid for all combinations using the combined function
+  # Add geography-specific parameters
+  if (geography != "msa") {
+    base_params$state <- state
+  }
+
+  if (geography %in% c("county", "tract", "block group")) {
+    base_params$county <- counties
+  }
+
+  # Add filtering parameters (not used directly by API but needed for post-processing)
+  if (!is.null(fips)) {
+    base_params$fips <- fips
+  }
+
+  # Generate parameter grid for all combinations
   param_grid <- create_param_grid(
     items = data_items,
     years = years,
-    params = base_params,
-    item_name = "data_item"  # Specify what to name the item column
+    params = base_params
   )
 
   # Process all data_item/year combinations
