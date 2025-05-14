@@ -4,14 +4,14 @@
 \alias{reliability_calcs}
 \title{Add estimate reliability metrics}
 \usage{
-reliability_calcs(df)
+reliability_calcs(df, estimate = "estimate", moe = "moe")
 }
 \arguments{
 \item{df}{dataframe or data.table already retrieved from the api, or created by a user}
 
-\item{moe}{character name of the column that has contains margin of error estimates}
-
 \item{estimate}{character name of the column that has contains data value estimates}
+
+\item{moe}{character name of the column that has contains margin of error estimates}
 }
 \value{
 the data frames with new columns for se, cv, and reliability

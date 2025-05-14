@@ -34,28 +34,24 @@ add_acs_share <- function(df){
 #' @author Suzanne Childress
 #' @return the data frames with new columns for se, cv, and reliability
 #' @export
-reliability_calcs <- function(df) {
-  is_data_table <- "data.table" %in% class(df)
-  # Make sure input is a data.table
-  dt <- copy(df) %>% setDT()
+reliability_calcs <- function(df, estimate = "estimate", moe = "moe") {
+  estimate_sym <- rlang::ensym(estimate)
+  moe_sym <- rlang::ensym(moe)
 
-  # Calculate coefficient of variation and reliability measures by reference
-  dt[, `:=`(
-    cv = ifelse(estimate > 0, moe/1.645/estimate, NA_real_),
-    reliability = NA_character_
-  )]
+  dfx <- dplyr::mutate(df,
+      se = !!moe_sym / 1.645,
+      cv = se / !!estimate_sym,
+      reliability = dplyr::case_when(
+        !!estimate_sym == 0 ~ "estimate is 0, cannot compute",
+        cv <= 0.15 ~ "good",
+        cv > 0.15 & cv <= 0.30 ~ "fair",
+        cv > 0.30 & cv <= 0.50 ~ "use with caution",
+        cv > 0.50 ~ "use with extreme caution",
+        .default = "missing or N/A"
+      )
+    )
 
-  # Set reliability categories based on CV values
-  dt[cv <= 0.12, reliability := "High"]
-  dt[cv > 0.12 & cv <= 0.40, reliability := "Medium"]
-  dt[cv > 0.40, reliability := "Low"]
-  dt[is.na(cv) & estimate == 0, reliability := "N/A"]
-
-  if(!is_data_table){
-    dt <- setDF(dt)
-  }
-
-  return(dt)
+  return(dfx)
 }
 
 #' Label ACS variables
