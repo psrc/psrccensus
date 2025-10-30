@@ -77,29 +77,42 @@ read_pums <- function(target_file, dyear){
 #' @return filtered data.table
 #' @author Michael Jensen
 filter2region <- function(dt, dyear){
-  PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- psrc_pumas <- SERIALNO <- NULL                             # Bind tidycensus::pums_variables variable locally (for documentation, not function)
-  dt %<>% pums_recode_na() %>%
-    .[, colnames(.) %not_in% c("RT","DIVISION","REGION","ST","STATE"), with=FALSE]                 # Drop variables static to our region
+  stopifnot(data.table::is.data.table(dt))
+  dt <- pums_recode_na(data.table::copy(dt))
 
-  if("PUMA" %in% colnames(dt)){                                                                    # For 1yr data or spans with identical geography
-    psrc_pumas <- dplyr::case_when(dyear > 2021 ~c(233,235,253,261),
-                                   dyear > 2011 ~c(115:118),                                       # New decadal PUMA code scheme begins use in year 2012, 2022, etc
-                                   dyear > 2001 ~c(14,10,17,20))
-    dt %<>% .[(as.integer(PUMA) %/% 100) %in% get("psrc_pumas")]                                   # Filter region by code
-  }else{
-    if("PUMA00" %in% colnames(dt)){                                                                # For multiyear data with differing PUMA geographies
-      dt[(as.integer(PUMA00) %/% 100) %in% c(14,10,17,20), PUMA:=PUMA00]                           # Populate new PUMA field for region
-    }
-    if("PUMA10" %in% colnames(dt)){
-      dt[(as.integer(PUMA10) %/% 100) %in% c(115:118), PUMA:=PUMA10]
-    }
-    if("PUMA20" %in% colnames(dt)){
-      dt[(as.integer(PUMA20) %/% 100) %in% c(233,235,253,261), PUMA:=PUMA20]
-    }
-    dt %<>% .[!is.na(PUMA)] %>% .[, which(grepl("^PUMA\\d\\d", colnames(.))):=NULL]                # Filter region & drop limited PUMA fields                                                                       # Filter by dropping empty
+  # Drop variables static to the region (if present)
+  drop <- intersect(names(dt), c("RT","DIVISION","REGION","ST","STATE"))
+  if (length(drop)) dt[, (drop) := NULL]
+
+  # Pick PSRC PUMAs by ACS vintage
+  # New decadal PUMA code scheme begins use in year 2012, 2022, etc
+  psrc_pumas <-
+    if (dyear >= 2022) c(233,235,253,261) else
+      if (dyear >= 2012) 115:118           else
+        if (dyear >= 2002) c(10,13:14,17:20) else
+          stop("Unsupported dyear; expected 2002+.")
+
+  if ("PUMA" %in% names(dt)) {
+    # 1-year data or spans with identical geography
+    dt <- dt[(as.integer(PUMA) %/% 100) %in% psrc_pumas]
+  } else {
+    # Multi-year with differing PUMA geographies → normalize to PUMA
+    if ("PUMA00" %in% names(dt))
+      dt[(as.integer(PUMA00) %/% 100) %in% c(10,13:14,17:20),  PUMA := PUMA00]
+    if ("PUMA10" %in% names(dt))
+      dt[(as.integer(PUMA10) %/% 100) %in% 115:118,            PUMA := PUMA10]
+    if ("PUMA20" %in% names(dt))
+      dt[(as.integer(PUMA20) %/% 100) %in% c(233,235,253,261), PUMA := PUMA20]
+
+    dt <- dt[!is.na(PUMA)]
+
+    # Drop decade-specific PUMA* columns
+    pcols <- grep("^PUMA\\d\\d$", names(dt), value = TRUE)
+    if (length(pcols)) dt[, (pcols) := NULL]
   }
-  dt %<>% setkey(SERIALNO)
-  return(dt)
+
+  data.table::setkey(dt, SERIALNO)
+  dt
 }
 
 #' Fetch ZIP
