@@ -20,7 +20,17 @@ psrc_pums_stat <- function(so, stat_type, stat_var, group_vars, incl_na=TRUE, rr
   count <- share <- COUNTY <- DATA_YEAR <- reliability <- NULL                                     # Bind variables locally (for documentation, not function)
   gv_pat <- paste0("^", group_vars ,"$", collapse="|")
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
-  so %<>% mutate(across(.cols=where(is.numeric) & grep(gv_pat, colnames(.)), factor))              # Convert any numeric grouping variables to factor datatype
+
+  # Convert only numeric group_vars to factor, by name
+  if (!is.null(group_vars) && all(group_vars != "keep_existing")) {
+    numeric_gv <- intersect(
+      group_vars,
+      names(so)[vapply(so, is.numeric, logical(1))]
+    )
+    if (length(numeric_gv) > 0) {
+      so %<>% mutate(across(all_of(numeric_gv), as.factor))
+    }
+  }
   if(all(group_vars!="keep_existing")){so %<>% ungroup()}                                          # "keep_existing" is power-user option for srvyr::combine() groupings;
   if(all(!is.null(group_vars) & group_vars!="keep_existing")){                                     # -- otherwise the package ungroups before and afterward
     if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}                    # Allows users to exclude w/o removing observations from the data object itself
