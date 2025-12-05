@@ -84,7 +84,10 @@ filter2region <- function(dt, dyear){
   PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- psrc_pumas <- SERIALNO <- NULL                             # Bind tidycensus::pums_variables variable locally (for documentation, not function)
   dt %<>% pums_recode_na() %>%
     .[, !(colnames(.) %in% c("RT","DIVISION","REGION","ST")), with=FALSE]                          # Drop variables static to our region
+<<<<<<< HEAD
 >>>>>>> 11ce074 (Switch from 1 to 4 multiracial categories.)
+=======
+>>>>>>> 8e8efde632e4a83833e2192552053eac297c78c1
 
   # Drop variables static to the region (if present)
   drop <- intersect(names(dt), c("RT","DIVISION","REGION","ST","STATE"))
@@ -342,7 +345,7 @@ codes2labels <- function(dt, dyear, vars){
       val_label=c("American Indian or Alaskan Native",
                   "Hispanic or Latino",
                   "Another multirace",
-                  "Multirace incl. white"))) %>%                                                   # PSRC non-overlapping race category (Hispanic as a race)
+                  "Multirace incl. white"))) %>%                                                   # PSRC non-overlapping race category (Hispanic as a race)                                              # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
   recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
