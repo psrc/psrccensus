@@ -77,17 +77,8 @@ read_pums <- function(target_file, dyear){
 #' @return filtered data.table
 #' @author Michael Jensen
 filter2region <- function(dt, dyear){
-<<<<<<< HEAD
   stopifnot(data.table::is.data.table(dt))
   dt <- pums_recode_na(data.table::copy(dt))
-=======
-  PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- psrc_pumas <- SERIALNO <- NULL                             # Bind tidycensus::pums_variables variable locally (for documentation, not function)
-  dt %<>% pums_recode_na() %>%
-    .[, !(colnames(.) %in% c("RT","DIVISION","REGION","ST")), with=FALSE]                          # Drop variables static to our region
-<<<<<<< HEAD
->>>>>>> 11ce074 (Switch from 1 to 4 multiracial categories.)
-=======
->>>>>>> 8e8efde632e4a83833e2192552053eac297c78c1
 
   # Drop variables static to the region (if present)
   drop <- intersect(names(dt), c("RT","DIVISION","REGION","ST","STATE"))
