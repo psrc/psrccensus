@@ -325,11 +325,12 @@ codes2labels <- function(dt, dyear, vars){
     .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
     unique()
   recoder[[2]] <- copy(recoder[[1]]) %>%
-    .[var_code=="RAC1P" & val_max %not_in% c("3","4","5")] %>%
+    .[var_code=="RAC1P" & !val_max %in% c("3","4","5")] %>%
+    .[, val_label:=gsub(" alone", "", gsub("and Other", "or", val_label))] %>%
     rbind(list(
       c(rep("",3)),
       c("I","H","M"),
-      c("American Indian or Alaskan Native alone", "Hispanic or Latino","Multiple Races"))) %>%    # PSRC non-overlapping race category (Hispanic as a race)
+      c("American Indian or Alaskan Native", "Hispanic or Latino", "Multirace"))) %>%              # PSRC non-overlapping race category (Hispanic as a race)
     .[,var_code:="HRACE"]
   recoder[[3]] <- copy(recoder[[2]]) %>% .[, var_code:="PRACE"]
   recoder[[4]] <- copy(recoder[[1]]) %>% .[var_code=="DIS"] %>% .[,var_code:="HDIS"]
