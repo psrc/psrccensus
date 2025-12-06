@@ -81,26 +81,33 @@
 total people by race and ethnicity, as provided in table B03002 by PSRC
 counties. You would use the following function call:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_acs_recs.html">get_acs_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'county'</span>,</span>
-<span>             table.names <span class="op">=</span> <span class="st">'B03002'</span>,</span>
-<span>             years <span class="op">=</span> <span class="fl">2019</span>,</span>
-<span>             acs.type <span class="op">=</span> <span class="st">'acs1'</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 105 × 14</span></span></span>
-<span><span class="co">##    GEOID name       state variable estimate   moe label concept census_geography</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> 53033 King Coun… Wash… B03002_…  2<span style="text-decoration: underline;">252</span>782    <span style="color: #BB0000;">NA</span> Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> 53033 King Coun… Wash… B03002_…  2<span style="text-decoration: underline;">030</span>140    <span style="color: #BB0000;">NA</span> Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> 53033 King Coun… Wash… B03002_…  1<span style="text-decoration: underline;">302</span>544  <span style="text-decoration: underline;">3</span>208 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> 53033 King Coun… Wash… B03002_…   <span style="text-decoration: underline;">147</span>822  <span style="text-decoration: underline;">4</span>678 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> 53033 King Coun… Wash… B03002_…    <span style="text-decoration: underline;">13</span>321  <span style="text-decoration: underline;">1</span>990 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> 53033 King Coun… Wash… B03002_…   <span style="text-decoration: underline;">424</span>590  <span style="text-decoration: underline;">7</span>085 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> 53033 King Coun… Wash… B03002_…    <span style="text-decoration: underline;">15</span>702  <span style="text-decoration: underline;">1</span>831 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> 53033 King Coun… Wash… B03002_…     <span style="text-decoration: underline;">6</span>574  <span style="text-decoration: underline;">3</span>281 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> 53033 King Coun… Wash… B03002_…   <span style="text-decoration: underline;">119</span>587  <span style="text-decoration: underline;">8</span>804 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> 53033 King Coun… Wash… B03002_…     <span style="text-decoration: underline;">2</span>639  <span style="text-decoration: underline;">1</span>744 Esti… HISPAN… County          </span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 95 more rows</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: acs_type &lt;chr&gt;, year &lt;dbl&gt;, se &lt;dbl&gt;, cv &lt;dbl&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   reliability &lt;chr&gt;</span></span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_acs_recs.html">get_acs_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'county'</span>,</span>
+<span>                  table.names <span class="op">=</span> <span class="st">'B03002'</span>,</span>
+<span>                  years <span class="op">=</span> <span class="fl">2019</span>,</span>
+<span>                  acs.type <span class="op">=</span> <span class="st">'acs1'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##    GEOID   variable             name      state estimate moe census_geography</span></span>
+<span><span class="co">## 1  53033 B03002_001      King County Washington  2252782   0           County</span></span>
+<span><span class="co">## 2  53035 B03002_001    Kitsap County Washington   271473   0           County</span></span>
+<span><span class="co">## 3  53053 B03002_001    Pierce County Washington   904980   0           County</span></span>
+<span><span class="co">## 4  53061 B03002_001 Snohomish County Washington   822083   0           County</span></span>
+<span><span class="co">## 5 REGION B03002_001           Region Washington  4251318   0           Region</span></span>
+<span><span class="co">## 6  53033 B03002_002      King County Washington  2030140   0           County</span></span>
+<span><span class="co">##                                       label                           concept</span></span>
+<span><span class="co">## 1                          Estimate!!Total: HISPANIC OR LATINO ORIGIN BY RACE</span></span>
+<span><span class="co">## 2                          Estimate!!Total: HISPANIC OR LATINO ORIGIN BY RACE</span></span>
+<span><span class="co">## 3                          Estimate!!Total: HISPANIC OR LATINO ORIGIN BY RACE</span></span>
+<span><span class="co">## 4                          Estimate!!Total: HISPANIC OR LATINO ORIGIN BY RACE</span></span>
+<span><span class="co">## 5                          Estimate!!Total: HISPANIC OR LATINO ORIGIN BY RACE</span></span>
+<span><span class="co">## 6 Estimate!!Total:!!Not Hispanic or Latino: HISPANIC OR LATINO ORIGIN BY RACE</span></span>
+<span><span class="co">##   acs_type year se cv reliability</span></span>
+<span><span class="co">## 1     acs1 2019  0  0        good</span></span>
+<span><span class="co">## 2     acs1 2019  0  0        good</span></span>
+<span><span class="co">## 3     acs1 2019  0  0        good</span></span>
+<span><span class="co">## 4     acs1 2019  0  0        good</span></span>
+<span><span class="co">## 5     acs1 2019  0  0        good</span></span>
+<span><span class="co">## 6     acs1 2019  0  0        good</span></span></code></pre>
 <div class="section level3">
 <h3 id="default-and-custom-arguments">Default and custom arguments<a class="anchor" aria-label="anchor" href="#default-and-custom-arguments"></a>
 </h3>
@@ -123,17 +130,22 @@ tables operates similarly to the <code><a href="../reference/get_acs_recs.html">
 wanted to retrieve housing units and total population by MSA, you would
 call the following:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_decennial_recs.html">get_decennial_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'msa'</span>,</span>
-<span>                   table_codes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H001"</span>, <span class="st">"P001"</span><span class="op">)</span>,</span>
-<span>                   years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span><span class="op">)</span>,</span>
-<span>                   fips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'42660'</span>, <span class="st">"28420"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 4 × 7</span></span></span>
-<span><span class="co">##   GEOID NAME                                 variable  value  year label concept</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 28420 Kennewick-Pasco-Richland, WA Metro … H001001  9.30<span style="color: #949494;">e</span>4  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 42660 Seattle-Tacoma-Bellevue, WA Metro A… H001001  1.46<span style="color: #949494;">e</span>6  <span style="text-decoration: underline;">2</span>010 Total HOUSIN…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 28420 Kennewick-Pasco-Richland, WA Metro … P001001  2.53<span style="color: #949494;">e</span>5  <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 42660 Seattle-Tacoma-Bellevue, WA Metro A… P001001  3.44<span style="color: #949494;">e</span>6  <span style="text-decoration: underline;">2</span>010 Total TOTAL …</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_decennial_recs.html">get_decennial_recs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'msa'</span>,</span>
+<span>                        table_codes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H001"</span>, <span class="st">"P001"</span><span class="op">)</span>,</span>
+<span>                        years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span><span class="op">)</span>,</span>
+<span>                        fips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'42660'</span>, <span class="st">"28420"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   GEOID                                    NAME variable   value year label</span></span>
+<span><span class="co">## 1 28420 Kennewick-Pasco-Richland, WA Metro Area  H001001   93041 2010 Total</span></span>
+<span><span class="co">## 2 42660  Seattle-Tacoma-Bellevue, WA Metro Area  H001001 1463295 2010 Total</span></span>
+<span><span class="co">## 3 28420 Kennewick-Pasco-Richland, WA Metro Area  P001001  253340 2010 Total</span></span>
+<span><span class="co">## 4 42660  Seattle-Tacoma-Bellevue, WA Metro Area  P001001 3439809 2010 Total</span></span>
+<span><span class="co">##            concept</span></span>
+<span><span class="co">## 1    HOUSING UNITS</span></span>
+<span><span class="co">## 2    HOUSING UNITS</span></span>
+<span><span class="co">## 3 TOTAL POPULATION</span></span>
+<span><span class="co">## 4 TOTAL POPULATION</span></span></code></pre>
 <p>Note: the table names are padded with 0s, so you call “H001” as
 opposed to “H1” as you would in Elmer. Only SF1 tables are currently
 implemented.</p>
@@ -149,7 +161,7 @@ implemented.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -1,0 +1,206 @@
+# Package index
+
+## All functions
+
+- [`acs_tbltypes_lookup`](https://psrc.github.io/psrccensus/reference/acs_tbltypes_lookup.md)
+  : steps for internal acs table lookup
+
+- [`acs_varsearch()`](https://psrc.github.io/psrccensus/reference/acs_varsearch.md)
+  : Search published ACS variables
+
+- [`add_acs_share()`](https://psrc.github.io/psrccensus/reference/add_acs_share.md)
+  : Add shares to Psrccensus ACS object
+
+- [`add_county()`](https://psrc.github.io/psrccensus/reference/add_county.md)
+  : Add County Name to PUMS API Result
+
+- [`add_decennial_share()`](https://psrc.github.io/psrccensus/reference/add_decennial_share.md)
+  : Add shares to Decennial Census result
+
+- [`add_regional_acs()`](https://psrc.github.io/psrccensus/reference/add_regional_acs.md)
+  : Add regional totals
+
+- [`add_regional_decennial()`](https://psrc.github.io/psrccensus/reference/add_regional_decennial.md)
+  : Add regional totals
+
+- [`adjust_dollars()`](https://psrc.github.io/psrccensus/reference/adjust_dollars.md)
+  : Dollar variable adjustment for PUMS
+
+- [`apply_splits()`](https://psrc.github.io/psrccensus/reference/apply_splits.md)
+  : Internal helper to apply splits in \`use_geography_splits\` or
+  \`census_to_customgeo\`
+
+- [`census_to_customgeo()`](https://psrc.github.io/psrccensus/reference/census_to_customgeo.md)
+  : Function to flexibly convert psrccensus estimates to any regional sf
+  geography
+
+- [`census_to_rgs()`](https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.md)
+  [`census_to_rgc()`](https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.md)
+  [`census_to_mic()`](https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.md)
+  [`census_to_taz()`](https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.md)
+  [`census_to_hct()`](https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.md)
+  [`census_to_juris()`](https://psrc.github.io/psrccensus/reference/census_to_psrcgeo.md)
+  : Translate psrccensus data to planning geographies
+
+- [`codes2labels()`](https://psrc.github.io/psrccensus/reference/codes2labels.md)
+  : Swap variable codes for labels
+
+- [`create_param_grid()`](https://psrc.github.io/psrccensus/reference/create_param_grid.md)
+  : Generate parameter list for all combinations
+
+- [`decennial_varsearch()`](https://psrc.github.io/psrccensus/reference/decennial_varsearch.md)
+  : Search Decennial Census variables
+
+- [`ensure_datatypes()`](https://psrc.github.io/psrccensus/reference/ensure_datatypes.md)
+  : Confirm correct datatypes for group variables and weights
+
+- [`fetch_ftp()`](https://psrc.github.io/psrccensus/reference/fetch_ftp.md)
+  : Fetch FTP
+
+- [`fetch_zip()`](https://psrc.github.io/psrccensus/reference/fetch_zip.md)
+  : Fetch ZIP
+
+- [`filter2region()`](https://psrc.github.io/psrccensus/reference/filter2region.md)
+  : Filter PUMS to Region
+
+- [`format_cb_summary_tbl()`](https://psrc.github.io/psrccensus/reference/format_cb_summary_tbl.md)
+  : Format Census API return
+
+- [`format_estimates()`](https://psrc.github.io/psrccensus/reference/format_estimates.md)
+  : Format Estimates
+
+- [`get_acs_recs()`](https://psrc.github.io/psrccensus/reference/get_acs_recs.md)
+  : ACS Estimates
+
+- [`get_acs_single()`](https://psrc.github.io/psrccensus/reference/get_acs_single.md)
+  : Get single ACS table
+
+- [`get_decennial_recs()`](https://psrc.github.io/psrccensus/reference/get_decennial_recs.md)
+  : Decennial Census Estimates
+
+- [`get_decennial_single()`](https://psrc.github.io/psrccensus/reference/get_decennial_single.md)
+  : Get single Decennial Census table
+
+- [`get_psrc_places()`](https://psrc.github.io/psrccensus/reference/get_psrc_places.md)
+  : Retrieve set of Census Places within the PSRC region
+
+- [`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md)
+  : Retrieve and assemble PUMS data
+
+- [`group_recs()`](https://psrc.github.io/psrccensus/reference/group_recs.md)
+  : Group ACS or Census Data
+
+- [`identify_censusgeo()`](https://psrc.github.io/psrccensus/reference/identify_censusgeo.md)
+  : Helper to ascertain census geography from psrccensus table
+
+- [`label_acs_variables()`](https://psrc.github.io/psrccensus/reference/label_acs_variables.md)
+  : Label ACS variables
+
+- [`label_decennial_variables()`](https://psrc.github.io/psrccensus/reference/label_decennial_variables.md)
+  : Label Decennial variables
+
+- [`pce_deflator()`](https://psrc.github.io/psrccensus/reference/pce_deflator.md)
+  : Retrieve annual Personal Consumption Expenditures deflator ratio
+
+- [`psrccensus-package`](https://psrc.github.io/psrccensus/reference/psrccensus.md)
+  [`psrccensus`](https://psrc.github.io/psrccensus/reference/psrccensus.md)
+  : psrccensus: A package for easy compilation of census estimates for
+  the Puget Sound Region.
+
+- [`psrc_bincome()`](https://psrc.github.io/psrccensus/reference/psrc_bincome.md)
+  : PSRC standard broad income groupings
+
+- [`psrc_bin_age()`](https://psrc.github.io/psrccensus/reference/psrc_bin_age.md)
+  : PSRC standard age groupings
+
+- [`psrc_bin_povratio()`](https://psrc.github.io/psrccensus/reference/psrc_bin_povratio.md)
+  : PSRC income to poverty ratio groupings
+
+- [`psrc_bin_ybl()`](https://psrc.github.io/psrccensus/reference/psrc_bin_ybl.md)
+  : ACS year structure built groupings
+
+- [`psrc_ed_attain()`](https://psrc.github.io/psrccensus/reference/psrc_ed_attain.md)
+  : PSRC educational attainment groupings
+
+- [`psrc_lum_jobsector()`](https://psrc.github.io/psrccensus/reference/psrc_lum_jobsector.md)
+  : PSRC Land Use Modeling employment sector
+
+- [`psrc_lum_occupation()`](https://psrc.github.io/psrccensus/reference/psrc_lum_occupation.md)
+  : PSRC Modeling Occupation variable
+
+- [`psrc_mi_jobsector()`](https://psrc.github.io/psrccensus/reference/psrc_mi_jobsector.md)
+  : PSRC manufacturing-industrial category
+
+- [`psrc_own_rent()`](https://psrc.github.io/psrccensus/reference/psrc_own_rent.md)
+  : PSRC tenure groupings
+
+- [`psrc_pums_stat()`](https://psrc.github.io/psrccensus/reference/psrc_pums_stat.md)
+  : Generic call for PUMS summary statistics
+
+- [`psrc_socp2()`](https://psrc.github.io/psrccensus/reference/psrc_socp2.md)
+  : 2-digit SOC variable
+
+- [`psrc_socp3()`](https://psrc.github.io/psrccensus/reference/psrc_socp3.md)
+  : 3-digit SOC variable
+
+- [`psrc_socp5()`](https://psrc.github.io/psrccensus/reference/psrc_socp5.md)
+  : 5-digit SOC variable
+
+- [`psrc_standard_jobsector()`](https://psrc.github.io/psrccensus/reference/psrc_standard_jobsector.md)
+  : PSRC Standard Published products employment sector
+
+- [`pull_varlist()`](https://psrc.github.io/psrccensus/reference/pull_varlist.md)
+  :
+
+  Helper function to `acs_varsearch` and `decennial_varsearch`
+
+- [`pums_api_gofer()`](https://psrc.github.io/psrccensus/reference/pums_api_gofer.md)
+  : PUMS API go-fer
+
+- [`pums_bulk_stat()`](https://psrc.github.io/psrccensus/reference/pums_bulk_stat.md)
+  : PUMS bulk summary statistics
+
+- [`pums_ftp_gofer()`](https://psrc.github.io/psrccensus/reference/pums_ftp_gofer.md)
+  : PUMS ftp go-fer
+
+- [`pums_recode_na()`](https://psrc.github.io/psrccensus/reference/pums_recode_na.md)
+  : NA recode for PUMS
+
+- [`psrc_pums_count()`](https://psrc.github.io/psrccensus/reference/pums_stat.md)
+  [`psrc_pums_sum()`](https://psrc.github.io/psrccensus/reference/pums_stat.md)
+  [`psrc_pums_median()`](https://psrc.github.io/psrccensus/reference/pums_stat.md)
+  [`psrc_pums_mean()`](https://psrc.github.io/psrccensus/reference/pums_stat.md)
+  [`psrc_pums_summary()`](https://psrc.github.io/psrccensus/reference/pums_stat.md)
+  : PUMS summary statistics
+
+- [`pums_varsearch()`](https://psrc.github.io/psrccensus/reference/pums_varsearch.md)
+  : Search PUMS variable definitions
+
+- [`read_pums()`](https://psrc.github.io/psrccensus/reference/read_pums.md)
+  : Read PUMS csv
+
+- [`real_dollars()`](https://psrc.github.io/psrccensus/reference/real_dollars.md)
+  : PUMS inflation adjustment to a year other than the survey year
+
+- [`reliability_calcs()`](https://psrc.github.io/psrccensus/reference/reliability_calcs.md)
+  : Add estimate reliability metrics
+
+- [`testInteger()`](https://psrc.github.io/psrccensus/reference/testInteger.md)
+  : Helper to ascertain datatype of variable
+
+- [`test_df_for_conversion()`](https://psrc.github.io/psrccensus/reference/test_df_for_conversion.md)
+  : Helper to warn if input table doesn't meet criteria for geographic
+  conversion
+
+- [`use_geography_splits()`](https://psrc.github.io/psrccensus/reference/use_geography_splits.md)
+  : Helper to translate psrccensus estimates to planning geographies
+
+- [`verify_custom_geo()`](https://psrc.github.io/psrccensus/reference/verify_custom_geo.md)
+  : Helper to verify custom geometry input meets criteria for geographic
+  conversion
+
+- [`write_pums_rds()`](https://psrc.github.io/psrccensus/reference/write_pums_rds.md)
+  : Save PUMS data for offline access
+
+- [`z_score()`](https://psrc.github.io/psrccensus/reference/z_score.md)
+  : Z Score

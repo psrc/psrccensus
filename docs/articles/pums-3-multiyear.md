@@ -1,0 +1,99 @@
+# PUMS 3: Script multiyear functions
+
+## Time: the next dimension
+
+Now that you’ve learned to calculate single-survey results from the PUMS
+microdata, what’s to stop you from calculating trends across multiple
+surveys? As it turns out, there are a few potholes in that road to
+avoid.
+
+### Hint \#1 - Be mindful of span
+
+This item relates to confidence levels: the Census Bureau strongly
+advises against drawing comparisons from surveys with overlapping spans
+(e.g. 2015-19 & 2016-20 5yr data), since identical observations are
+present in both surveys, which means you may underestimate change or
+overestimate certainty. 5-year data are best if 5-year intervals answer
+the need; to get annual trends, you’ll need to use the 1yr data (which
+involves more uncertainty). Remember to use Z-scores to determine
+whether trend values can be considered statistically distinct.
+
+### Hint \#2 - Compare data dictionaries
+
+Although they may seem consistent at first blush, many PUMS variable
+codes, values, and labels have changed during the course of the program.
+If you plan to compare data across multiple surveys, you’ll either want
+to confirm the variables of interest have remained consistent, or write
+your code to handle the differences among them. In some cases, the way
+data were reported–or the way the question was asked–might preclude
+accurate multi-year comparisons at your desired level of detail.
+
+### Hint \#3 - Use real dollar variables
+
+Due to inflation, the value of a dollar declines over time; to achieve a
+true multi-year comparison of price or income variables, these must be
+adjusted to real terms–i.e., adjusted to reflect a common reference year
+dollar value. This involves multiplying by a ratio (known as a
+‘deflator’) of the relevant annual values of a price index, generally
+the Personal Consumption Expenditures (PCE) Index, as it is updated to
+remain valid across years. Prior to running the statistical functions,
+use the **psrccensus** function
+[`real_dollars()`](https://psrc.github.io/psrccensus/reference/real_dollars.md)
+on your survey data object to create real versions of your monetary
+variables. This leaves the original variables intact; the real versions
+will be suffixed with the reference year you specify (i.e., if
+converting HINCP in the 2015 survey to 2020 values, the new variable
+will be HINCP2020). Note you will need a [St. Louis Federal Reserve
+(FRED) API
+key](http://sboysel.github.io/fredr/articles/fredr.html#authentication).
+
+### Hint \#4 - Minimize downloads
+
+While writing multi-year functions, keep in mind
+[`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md)
+downloads and combines all possible variables before returning those you
+requested, so it’s efficient to group operations on the same survey
+(year/span) rather than to call
+[`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md)
+separately for each desired measure. We recommend combining your data
+retrieval, manipulation and summarization operations for a single year
+into a function, which you can then apply across multiple surveys. This
+approach requires only as many downloads as you have surveys–resulting
+in faster operations and lower demand on memory.
+
+### Example
+
+``` r
+library(psrccensus)
+library(magrittr)
+library(dplyr)
+dir <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
+
+# Build a single year function first
+# -- it can include as many individual stat analyses as needed (see list items at end)
+# -- notice `real_dollars()` creates the variable HINCP2020 later used for median statistic
+
+pums_singleyear <- function(dyear, span=1){
+  hh_df <- get_psrc_pums(span, dyear, "h", c("HINCP","AGEP","HRACE","LNGI","SCHL"), dir=dir)
+  hh_df %<>% real_dollars(2020) %>% mutate(
+    ed_attain = factor(case_when(grepl("(Bach|Mast|Prof|Doct)", SCHL)  ~ "Bachelor's degree or higher",
+                                 !is.na(SCHL)                          ~ "Less than a Bachelor's degree")),
+    lmtd_engl = factor(case_when(grepl("^No one", LNGI) ~ "Limited English proficiency",
+                                 !is.na(LNGI)           ~ "English proficient")))
+  dvars <- c("HRACE","lmtd_engl","ed_attain") %>% as.list()
+  singleyr_rs <- list()
+  singleyr_rs[[1]] <- pums_bulk_stat(hh_df, "count", group_var_list=dvars, incl_na=FALSE)
+  singleyr_rs[[2]] <- pums_bulk_stat(hh_df, "median", "HINCP2020", dvars, incl_na=FALSE)
+# singleyr_rs[[3]] <- ...
+  return(singleyr_rs)
+}
+
+# Multiyear function runs the single-year function across years and combines results
+pums_multiyear <- function(dyears){
+  multiyear_rs <- lapply(dyears, pums_singleyear) %>% lapply(as.vector) %>% 
+    do.call(rbind, .) %>% as.data.frame() %>% lapply(data.table::rbindlist)
+  return(multiyear_rs)
+}
+
+x <- pums_multiyear(2015:2019)
+```

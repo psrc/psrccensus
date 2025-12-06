@@ -1,0 +1,84 @@
+# PUMS 4: Download optimization
+
+## Under the hood: sources for PUMS microdata
+
+By default, the
+[`psrccensus::get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md)
+function downloads microdata for the entire state from the Census FTP
+site. Because each call to
+[`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md)
+can retrieve variables from the household and person datasets, it
+downloads both–which can take around a minute for 5-yr surveys,
+depending on the internet connection. (An earlier build pulled only
+requested variables via the Census API, but package authors found it
+slower than the FTP approach, and subject to unexplained, almost daily
+downtimes after 5pm Eastern time.)
+
+## Strategies to minimize downloads
+
+One way to minimize download time is to reduce separate calls to
+[`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md),
+requesting all variables you need for a given span-year-level
+combination in one set. This also reduces memory loads. Related
+efficiency hints include [batching multiyear analysis by year rather
+than by
+variable](https://psrc.github.io/psrccensus/articles/pums-3-multiyear.html#hint-4---minimize-downloads)
+and summarizing with the [`incl_na=FALSE`
+option](https://psrc.github.io/psrccensus/articles/pums-2-make-vars.html#handle-subsets-via-a-universal-variable-the-incl_nafalse-option)
+instead of creating multiple filtered objects.
+
+## Shift to local files using `dir=`
+
+You can also skip the download altogether by loading prepared household
+and person tables stored locally. This shortcut is activated by
+specifying the directory in which to find the data in the `dir=`
+argument to
+[`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md).
+The data must be stored as gzip-compressed .rds files with a specific
+naming convention–concatenated data year, level, and span;
+e.g. “2022h1.gz” or “2017p5.gz” (for PSRC staff, these files already
+exist on the network; see the PSRC Data wiki entry,
+“Working_with_PUMS_data”.)
+
+### Create the local file
+
+``` make
+library(data.table)
+library(magrittr)
+dir <- "your/desired/storage/directory/path" # Specify your storage directory
+ 
+write_pums_rds(2023, dir) # Save local .rds files for a single year (2023)
+
+lapply(2005:2023, write_pums_rds) # Save local .rds files for a range
+# Function exclude combos that don't exist (e.g. 2005 5-yr; 2020 1-yr)
+```
+
+### Utilize the local file option
+
+Once the prepared files are in place–i.e. both the household file and
+the person file for a given year & span–it is straightforward to
+reference the directory location in the `get_psrc_pums(dir=)` call:
+
+``` using
+library(psrccensus)
+pums_rds <- "your/desired/storage/directory/path"
+
+my_data <- get_psrc_pums(5, 2022, "p", c("HINCP", "SOC2"), dir = pums_rds)
+```
+
+### Use cases and considerations
+
+Loading from these files can improve speed significantly, so you may
+want to consider it if you are working with PUMS a lot or are building a
+server-hosted app that involves calling
+[`get_psrc_pums()`](https://psrc.github.io/psrccensus/reference/get_psrc_pums.md).
+The downside is the required file management, e.g. when the Census
+Bureau releases a new dataset, you’ll need to be sure the corresponding
+.gz file is created before the option will work for that data year.
+
+To increase speed for a server-hosted app, you may want to consider
+going a step farther and carry through all the potential statistical
+analyses, so the app will draw from stored summary results rather than
+call any `psrccensus` functions itself. Although this involves an
+upfront investment of thought, time, and data processing, it will pay
+off in dramatically lower response times for app users.
