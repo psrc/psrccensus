@@ -11,7 +11,6 @@ NULL
 #' @param items Vector of table or data item names
 #' @param years Vector of years
 #' @param params Base parameters to include with each combination
-#' @param item_name character string, i.e. "table" or "data_item"
 #' @return List of parameter combinations
 create_param_grid <- function(items, years, params) {
   # Create all combinations of items and years

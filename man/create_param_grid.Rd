@@ -12,8 +12,6 @@ create_param_grid(items, years, params)
 \item{years}{Vector of years}
 
 \item{params}{Base parameters to include with each combination}
-
-\item{item_name}{character string, i.e. "table" or "data_item"}
 }
 \value{
 List of parameter combinations

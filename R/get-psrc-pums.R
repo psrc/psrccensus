@@ -2,7 +2,7 @@
 #' @rawNamespace import(data.table, except = c(month, year))
 NULL
 
-globalVariables(c(":=", "!!", ".", "enquos"))
+globalVariables(c(":=", "!!", ".", "enquos","se"))
 
 `%not_in%` <- Negate(`%in%`)
 
@@ -77,6 +77,7 @@ read_pums <- function(target_file, dyear){
 #' @return filtered data.table
 #' @author Michael Jensen
 filter2region <- function(dt, dyear){
+  PUMA <- PUMA00 <- PUMA10 <- PUMA20 <- SERIALNO <- NULL
   stopifnot(data.table::is.data.table(dt))
   dt <- pums_recode_na(data.table::copy(dt))
 
