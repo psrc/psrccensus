@@ -69,11 +69,30 @@ get_decennial_single <- function(params) {
     dt <- do.call(tidycensus::get_decennial, api_params) %>% setDT()
 
     # Filter by FIPS for MSA or place
-    if (geography %in% c("msa","place") && !is.null(filter_fips)) {
+    if (geography == "msa" && !is.null(filter_fips)) {
       dt <- dt[GEOID %in% filter_fips]
       if(nrow(dt) == 0) {
         warning(paste("No data found for FIPS codes:",
                       paste(filter_fips, collapse = ", ")))
+      }
+    } else if (geography == "place" && !is.null(filter_fips)) {
+      # Place GEOIDs are state-prefixed (typically 7 digits, e.g. 5363000).
+      # If 5-digit CBSA codes are supplied by mistake, ignore them and fall back.
+      filter_fips_chr <- as.character(filter_fips)
+      if (all(nchar(filter_fips_chr) >= 7)) {
+        dt <- dt[GEOID %in% filter_fips_chr]
+        if(nrow(dt) == 0) {
+          warning(paste("No data found for FIPS codes:",
+                        paste(filter_fips_chr, collapse = ", ")))
+        }
+      } else {
+        warning("`fips` for `geography = 'place'` should be state-prefixed place GEOIDs (e.g., 5363000). Ignoring `fips` and returning PSRC-region places.")
+        psrc_places <- get_psrc_places(params$year) %>% sf::st_drop_geometry()
+        place_fips <- unique(psrc_places$GEOID)
+        dt <- dt[GEOID %in% place_fips]
+        if(nrow(dt) == 0) {
+          warning("No data found for specified places")
+        }
       }
     } else if (geography == "place") {
       # Filter for requested FIPS or PSRC places if unspecified
@@ -150,7 +169,8 @@ add_decennial_share <- function(df){
 #' @param variables A character string or vector of Census variables
 #' @param years Numeric or a vector of numeric years. A decennial year or years equal or greater than 2000.
 #' @param sumfile A character string for which summary file to use such as "sf1" or "dp"
-#' @param fips Character. Single code or vector of either MSA or place fips codes.
+#' @param fips Character. For `geography = 'msa'`, provide 5-digit CBSA codes (e.g. 42660).
+#'             For `geography = 'place'`, provide state-prefixed place GEOIDs (typically 7 digits, e.g. 5363000).
 #' @param state A character string state abbreviation. Defaults to 'WA'.
 #'
 #' @author Christy Lam
@@ -221,7 +241,15 @@ get_decennial_recs <- function(geography, counties = c('King', 'Kitsap', 'Pierce
 
   # Add filtering parameters (not used directly by API but needed for post-processing)
   if (!is.null(fips)) {
-    base_params$fips <- fips
+    fips_chr <- as.character(fips)
+    if (geography == "msa" && any(nchar(fips_chr) >= 7)) {
+      warning("`fips` for `geography = 'msa'` should be 5-digit CBSA codes (e.g., 42660).")
+      base_params$fips <- fips_chr
+    } else if (geography == "place" && any(nchar(fips_chr) < 7)) {
+      warning("`fips` for `geography = 'place'` should be state-prefixed place GEOIDs (e.g., 5363000). Ignoring `fips`.")
+    } else {
+      base_params$fips <- fips_chr
+    }
   }
 
   # Generate parameter grid for all combinations

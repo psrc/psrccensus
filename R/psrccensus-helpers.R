@@ -59,9 +59,11 @@ format_cb_summary_tbl <- function(dt, geography, census_type) {
 
   # Place-specific name processing
   if (geography == "place") {
-    dt[endsWith(name, "city"), census_geography := "City"]
-    dt[endsWith(name, "CDP"), census_geography := "CDP"]
-    dt[, name := gsub(" (city|CDP)", "", name)]
+    if ("name" %in% names(dt)) {
+      dt[endsWith(name, "city"), census_geography := "City"]
+      dt[endsWith(name, "CDP"), census_geography := "CDP"]
+      dt[, name := gsub(" (city|CDP)", "", name)]
+    }
   } else if (geography == "puma") {
     dt[, name := gsub("[\\;|\\,]\\s*$", "", name)]
   }
