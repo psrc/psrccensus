@@ -116,7 +116,7 @@ get_acs_single <- function(params) {
   # Extract parameters for processing logic
   geography <- api_params$geo_name
   is_table  <- api_params$is_table
-  filter_fips <- if(!is.null(api_params$fips)){api_params$fips}else{NULL}
+  filter_fips <- if ("fips" %in% names(api_params)) api_params$fips else NULL
   data_item <- if(api_params$is_table){api_params$table}else{api_params$variables}
 
   # Remove unneeded parameters
@@ -244,8 +244,18 @@ get_acs_recs <- function(geography,
   }
 
   # Add filtering parameters (not used directly by API but needed for post-processing)
-  if (!is.null(FIPS) | !is.null(place_FIPS)) {
-    base_params$fips <- dplyr::coalesce(FIPS, place_FIPS)
+  # NOTE: FIPS defaults are for MSA, and should not be applied to Place.
+  default_msa_fips <- c("14740", "42660")
+  if (geography == "msa" && !is.null(FIPS)) {
+    base_params$fips <- FIPS
+  }
+  if (geography == "place") {
+    if (!is.null(place_FIPS)) {
+      base_params$fips <- place_FIPS
+    } else if (!is.null(FIPS) && !identical(FIPS, default_msa_fips)) {
+      warning("`FIPS` is deprecated for `geography = 'place'`; use `place_FIPS` (state-prefixed place GEOIDs).")
+      base_params$fips <- FIPS
+    }
   }
 
   # Generate parameter grid for all combinations using the combined function
