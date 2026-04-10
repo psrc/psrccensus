@@ -188,14 +188,55 @@ pums_bulk_stat <- function(so, stat_type, stat_var=NULL, group_var_list, incl_na
 #'
 #' Stat to determine if two estimates are different
 #'
-#' @param x numeric vector, first estimate and corresponding MOE to compare
-#' @param y numeric vector, second estimate and corresponding MOE to compare
-#' @return Z score; if larger than 1, difference is significant
+#' @param x numeric vector of length 2, or a two-column matrix/data frame,
+#'   containing the first estimate and corresponding MOE to compare
+#' @param y numeric vector of length 2, or a two-column matrix/data frame,
+#'   containing the second estimate and corresponding MOE to compare
+#' @return Z score; if larger than 1, difference is significant. Returns a
+#'   numeric vector when `x` and `y` contain multiple estimate/MOE pairs.
 #' @author Michael Jensen
 #'
 #' @export
 z_score <- function(x, y){
-  z <- abs(x[1] - y[1]) / sqrt(x[2]^2 - y[2]^2)
+  unpack_input <- function(value, arg_name) {
+    err_msg <- paste0(
+      arg_name,
+      " must be a numeric vector of length 2 or a 2-column matrix/data.frame."
+    )
+
+    if (is.matrix(value)) {
+      if (ncol(value) != 2) {
+        stop(err_msg, call. = FALSE)
+      }
+      est <- value[, 1]
+      moe <- value[, 2]
+    } else if (is.data.frame(value)) {
+      if (ncol(value) != 2) {
+        stop(err_msg, call. = FALSE)
+      }
+      est <- value[[1]]
+      moe <- value[[2]]
+    } else {
+      if (!is.numeric(value) || length(value) != 2) {
+        stop(err_msg, call. = FALSE)
+      }
+      est <- value[1]
+      moe <- value[2]
+    }
+    if (!is.numeric(est) || !is.numeric(moe)) {
+      stop(err_msg, call. = FALSE)
+    }
+    list(est = est, moe = moe)
+  }
+
+  x_vals <- unpack_input(x, "x")
+  y_vals <- unpack_input(y, "y")
+
+  if (length(x_vals$est) != length(y_vals$est)) {
+    stop("x and y must contain the same number of estimate/MOE pairs.", call. = FALSE)
+  }
+
+  z <- abs(x_vals$est - y_vals$est) / sqrt(x_vals$moe^2 + y_vals$moe^2)
   return(z)
 }
 

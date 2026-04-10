@@ -7,12 +7,15 @@
 z_score(x, y)
 }
 \arguments{
-\item{x}{numeric vector, first estimate and corresponding MOE to compare}
+\item{x}{numeric vector of length 2, or a two-column matrix/data frame,
+containing the first estimate and corresponding MOE to compare}
 
-\item{y}{numeric vector, second estimate and corresponding MOE to compare}
+\item{y}{numeric vector of length 2, or a two-column matrix/data frame,
+containing the second estimate and corresponding MOE to compare}
 }
 \value{
-Z score; if larger than 1, difference is significant
+Z score; if larger than 1, difference is significant. Returns a
+  numeric vector when `x` and `y` contain multiple estimate/MOE pairs.
 }
 \description{
 Stat to determine if two estimates are different
