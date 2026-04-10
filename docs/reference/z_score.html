@@ -56,16 +56,19 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>numeric vector, first estimate and corresponding MOE to compare</p></dd>
+<dd><p>numeric vector of length 2, or a two-column matrix/data frame,
+containing the first estimate and corresponding MOE to compare</p></dd>
 
 
 <dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
-<dd><p>numeric vector, second estimate and corresponding MOE to compare</p></dd>
+<dd><p>numeric vector of length 2, or a two-column matrix/data frame,
+containing the second estimate and corresponding MOE to compare</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Z score; if larger than 1, difference is significant</p>
+    <p>Z score; if larger than 1, difference is significant. Returns a
+  numeric vector when `x` and `y` contain multiple estimate/MOE pairs.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

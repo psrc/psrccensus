@@ -318,10 +318,8 @@ convenience function performs this calculation:
 
 ``` r
 rs <- psrc_pums_median(x, "HINCP", "OWN_RENT")
-c1 <- rs[1,(ncol(rs)-1):ncol(rs)]                # First-line estimate and its MOE (as numeric vector)
-c2 <- rs[3,(ncol(rs)-1):ncol(rs)]                # Third-line estimate and its MOE (as numeric vector)
-z_score(c1, c2)                                  # A true difference indicated by score > 1
-#>    HINCP_median HINCP_median_moe
-#>           <num>            <num>
-#> 1:           NA               NA
+c1 <- as.numeric(rs[1, c("HINCP_median", "HINCP_median_moe")])
+c2 <- as.numeric(rs[3, c("HINCP_median", "HINCP_median_moe")])
+z_score(c1, c2)                     # Returns one z-score per row pair
+#> [1] 24.00415
 ```

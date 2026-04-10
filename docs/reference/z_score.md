@@ -12,15 +12,18 @@ z_score(x, y)
 
 - x:
 
-  numeric vector, first estimate and corresponding MOE to compare
+  numeric vector of length 2, or a two-column matrix/data frame,
+  containing the first estimate and corresponding MOE to compare
 
 - y:
 
-  numeric vector, second estimate and corresponding MOE to compare
+  numeric vector of length 2, or a two-column matrix/data frame,
+  containing the second estimate and corresponding MOE to compare
 
 ## Value
 
-Z score; if larger than 1, difference is significant
+Z score; if larger than 1, difference is significant. Returns a numeric
+vector when \`x\` and \`y\` contain multiple estimate/MOE pairs.
 
 ## Author
 

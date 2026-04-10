@@ -37,17 +37,17 @@ pums_varsearch("internet")
 #> 3:                                                             Other Internet service
 #> 4:                                                         Satellite Internet service
 #> 5:                                                             Access to the Internet
-#>                                 years
-#>                                <char>
-#> 1:                     2017,2018,2019
-#> 2: 2017,2018,2019,2021,2022,2023,2020
-#> 3: 2017,2018,2019,2021,2022,2023,2020
-#> 4: 2017,2018,2019,2021,2022,2023,2020
-#> 5:                2021,2022,2023,2020
+#>                                      years
+#>                                     <char>
+#> 1:                          2017,2018,2019
+#> 2: 2017,2018,2019,2021,2022,2023,2024,2020
+#> 3: 2017,2018,2019,2021,2022,2023,2024,2020
+#> 4: 2017,2018,2019,2021,2022,2023,2024,2020
+#> 5:                2021,2022,2023,2024,2020
 
 # Entry for specific variable, 'Employment Status Recode'
 pums_varsearch("^ESR$")
-#>    var_code                var_label                              years
-#>      <char>                   <char>                             <char>
-#> 1:      ESR Employment status recode 2017,2018,2019,2021,2022,2023,2020
+#>    var_code                var_label                                   years
+#>      <char>                   <char>                                  <char>
+#> 1:      ESR Employment status recode 2017,2018,2019,2021,2022,2023,2024,2020
 ```

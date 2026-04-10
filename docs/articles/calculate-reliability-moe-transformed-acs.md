@@ -119,25 +119,19 @@ error.
 
 #### Read in Libraries
 
-``` r
-library(psrccensus)
-library(tidycensus)
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
-library(tidyr)
-#> 
-#> Attaching package: 'tidyr'
-#> The following object is masked from 'package:magrittr':
-#> 
-#>     extract
-```
+    #> 
+    #> Attaching package: 'dplyr'
+    #> The following objects are masked from 'package:stats':
+    #> 
+    #>     filter, lag
+    #> The following objects are masked from 'package:base':
+    #> 
+    #>     intersect, setdiff, setequal, union
+    #> 
+    #> Attaching package: 'tidyr'
+    #> The following object is masked from 'package:magrittr':
+    #> 
+    #>     extract
 
 #### Get the data from the ACS api via psrccensus
 
@@ -151,9 +145,9 @@ library(tidyr)
 # getting data by tract
 acs_data <- get_acs_recs(geography ='tract', 
                          table.names = 'B25070', #subject table code
-                         years = 2021,
+                         years = 2022,
                          acs.type = 'acs5')
-#> Getting data from the 2017-2021 5-year ACS
+#> Getting data from the 2018-2022 5-year ACS
 ```
 
 #### Add a grouping
@@ -184,11 +178,9 @@ The moe_sum uses tidycensus.
 
 # use the moe_sum function from tidycensus
 acs_data_group <- acs_data %>% 
-  dplyr::group_by(GEOID, rent_burden_group)%>%
   dplyr::summarise(estimate=sum(estimate), 
-                   moe=tidycensus::moe_sum(estimate=estimate, moe=moe))
-#> `summarise()` has grouped output by 'GEOID'. You can override using the
-#> `.groups` argument.
+                   moe=tidycensus::moe_sum(estimate=estimate, moe=moe),
+                   .by = c(GEOID, rent_burden_group))
 ```
 
 #### Data wrangling
@@ -196,13 +188,13 @@ acs_data_group <- acs_data %>%
 ``` r
 # pivot data to calculate percentage by census tract, calculate estimates
 
-acs_data_group<- acs_data_group%>%   
+acs_data_group<- acs_data_group %>%   
   pivot_wider(names_from = rent_burden_group, values_from = c(estimate,moe))%>%
   rename('estimate_cost_burdened'='estimate_Cost Burdened (More than 30 percent)',
          'moe_cost_burdened'= 'moe_Cost Burdened (More than 30 percent)')
 
 # weight averages for population & calculating percentage/share of population per tract instead of integer
-acs_data_group<-  acs_data_group%>%
+acs_data_group<-  acs_data_group %>%
   mutate(estimate_new_total=(estimate_Total-`estimate_Not computed`))%>%
   mutate(estimate_perc_cost_burdened=((estimate_cost_burdened/estimate_new_total)))
 ```
@@ -218,7 +210,7 @@ moe_prop is applied when you are finding the shares.
 
 ``` r
 #calculate moes
-acs_data_group<- acs_data_group%>%
+acs_data_group <- acs_data_group %>%
   rowwise()%>%
   mutate(moe_new_total=moe_sum(estimate=c(estimate_Total, `estimate_Not computed`), 
                                moe=c(moe_Total,`moe_Not computed`)))%>%
@@ -236,15 +228,15 @@ acs_data_final<-reliability_calcs(acs_data_final, estimate='estimate_perc_cost_b
 
 head(acs_data_final%>%select(GEOID, estimate_perc_cost_burdened, reliability))
 #> # A tibble: 6 × 3
-#> # Rowwise:  GEOID
+#> # Rowwise: 
 #>   GEOID       estimate_perc_cost_burdened reliability     
 #>   <chr>                             <dbl> <chr>           
-#> 1 53033000101                       0.298 fair            
-#> 2 53033000102                       0.325 fair            
-#> 3 53033000201                       0.339 fair            
-#> 4 53033000202                       0.241 use with caution
-#> 5 53033000300                       0.313 use with caution
-#> 6 53033000402                       0.292 fair
+#> 1 53033000101                       0.267 fair            
+#> 2 53033000102                       0.322 fair            
+#> 3 53033000201                       0.357 fair            
+#> 4 53033000202                       0.226 use with caution
+#> 5 53033000300                       0.401 fair            
+#> 6 53033000402                       0.315 fair
 ```
 
 Now the data is ready to be joined to the tract map, if desired.

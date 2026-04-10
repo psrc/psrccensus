@@ -14,8 +14,8 @@ commands while maintaining the associated weights and structure (see
 [its vignette](http://gdfe.co/srvyr/)). We recommend using the
 [`mutate()`](https://dplyr.tidyverse.org/reference/mutate.html) command,
 in combination with
-[`case_when()`](https://dplyr.tidyverse.org/reference/case_when.html) or
-[`ifelse()`](https://rdrr.io/r/base/ifelse.html) to define a variable
+[`case_when()`](https://dplyr.tidyverse.org/reference/case-and-replace-when.html)
+or [`ifelse()`](https://rdrr.io/r/base/ifelse.html) to define a variable
 that directly captures the needs of your analysis, so **psrccensus** can
 deliver your intended statistics–and especially, the associated margin
 of error–rather than attempting to re-aggregate these from summary
