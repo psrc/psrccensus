@@ -29,7 +29,8 @@ get_decennial_recs(
 \item{table_codes}{A character string or vector of Census table codes,
 the table code will be padded with 0s such as "H001", as opposed to "H1"}
 
-\item{fips}{Character. Single code or vector of either MSA or place fips codes.}
+\item{fips}{Character. For `geography = 'msa'`, provide 5-digit CBSA codes (e.g. 42660).
+For `geography = 'place'`, provide state-prefixed place GEOIDs (typically 7 digits, e.g. 5363000).}
 
 \item{state}{A character string state abbreviation. Defaults to 'WA'.}
 }

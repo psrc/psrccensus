@@ -49,7 +49,9 @@ get_decennial_recs(
 
 - fips:
 
-  Character. Single code or vector of either MSA or place fips codes.
+  Character. For \`geography = 'msa'\`, provide 5-digit CBSA codes (e.g.
+  42660). For \`geography = 'place'\`, provide state-prefixed place
+  GEOIDs (typically 7 digits, e.g. 5363000).
 
 - state:
 
@@ -978,7 +980,6 @@ get_decennial_recs(geography = 'place',
 #> Using Census Summary File 1
 #> Using FIPS code '53' for state 'WA'
 #> Using Census Summary File 1
-#> Warning: Error retrieving data for item: PCT013 year: 2010 geography: place - Error: Object 'name' not found. Perhaps you intended [NAME]
 #>      GEOID                     NAME  variable  value year
 #> 1  5308850  Burien city, Washington PCT013001  33013 2010
 #> 2  5363000 Seattle city, Washington PCT013001 583735 2010

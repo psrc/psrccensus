@@ -90,7 +90,8 @@ the table code will be padded with 0s such as "H001", as opposed to "H1"</p></dd
 
 
 <dt id="arg-fips">fips<a class="anchor" aria-label="anchor" href="#arg-fips"></a></dt>
-<dd><p>Character. Single code or vector of either MSA or place fips codes.</p></dd>
+<dd><p>Character. For `geography = 'msa'`, provide 5-digit CBSA codes (e.g. 42660).
+For `geography = 'place'`, provide state-prefixed place GEOIDs (typically 7 digits, e.g. 5363000).</p></dd>
 
 
 <dt id="arg-state">state<a class="anchor" aria-label="anchor" href="#arg-state"></a></dt>
@@ -1019,7 +1020,6 @@ the table code will be padded with 0s such as "H001", as opposed to "H1"</p></dd
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using FIPS code '53' for state 'WA'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using Census Summary File 1</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Error retrieving data for item: PCT013 year: 2010 geography: place - Error: Object 'name' not found. Perhaps you intended [NAME]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      GEOID                     NAME  variable  value year</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  5308850  Burien city, Washington PCT013001  33013 2010</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  5363000 Seattle city, Washington PCT013001 583735 2010</span>
