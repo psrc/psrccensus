@@ -48,10 +48,13 @@ pums_recode_na <- function(dt){
 #' @return unzipped table
 #' @author Michael Jensen
 read_pums <- function(target_file, dyear){
-  var_code <- var_label <- data_type <- NULL                                                       # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  var_code <- data_type <- recode <- val_min <- val_max <- NULL                                   # Bind tidycensus::pums_variables variable locally (for documentation, not function)
+  pv <- tidycensus::pums_variables %>% setDT()
   ddyear <- if(dyear>2016){dyear}else{2017}                                                        # To filter data dictionary; 2017 is earliest available
-  type_lookup <- tidycensus::pums_variables %>% setDT() %>% .[year==ddyear] %>%
+  if(!ddyear %in% pv$year){ddyear <- max(pv$year, na.rm=TRUE)}
+  type_lookup <- pv %>% .[year==ddyear] %>%
     .[, .(data_type=min(data_type)), by=var_code] %>% unique()                                     # Create datatype correspondence from data dictionary
+  recode_types <- pv %>% .[recode==TRUE & val_min==val_max & year==ddyear, var_code] %>% unique()
   num_types <- copy(type_lookup) %>% .[data_type=="num", var_code] %>% paste()
   chr_types <- copy(type_lookup) %>% .[data_type=="chr", var_code] %>% paste()                     # For dyears in the dictionary, datatype from the dictionary
   if(dyear<2017){
@@ -61,6 +64,8 @@ read_pums <- function(target_file, dyear){
     chr_types <- colnames(var_codes) %>% .[. %not_in% num_types]                                   # For dyears before the dictionary, keep known numbers as numbers
     num_types <- colnames(var_codes) %>% .[. %not_in% chr_types]                                   # Reflect back so as not to specify variables that don't exist in that year
   }
+  chr_types %<>% c(recode_types) %>% unique()
+  num_types <- num_types[num_types %not_in% chr_types]
   col_typelist <- list(character = chr_types, numeric = num_types)
   dt <- suppressWarnings(                                                                          # fread warns when colClasses items aren't present; OK to use combined list
     data.table::fread(target_file, sep=",", stringsAsFactors=FALSE, colClasses=col_typelist)       # The room where it happens; reads the file with correct datatypes
@@ -127,8 +132,28 @@ filter2region <- function(dt, dyear){
 #' @author Michael Jensen
 fetch_zip <- function(zip_filepath, target_file, dyear){
   options(download.file.method="libcurl", url.method="libcurl", timeout=300)
-  temp1 <- tempfile()
-  curl::curl_download(zip_filepath, temp1, quiet=FALSE)
+  temp1 <- tempfile(fileext=".zip")
+  dl_ok <- FALSE
+  dl_err <- NULL
+  for(i in 1:3){
+    unlink(temp1)
+    dl_ok <- tryCatch({
+      curl::curl_download(zip_filepath, temp1, quiet=FALSE)
+      TRUE
+    }, error=function(e){
+      dl_err <<- conditionMessage(e)
+      FALSE
+    })
+    if(dl_ok){break}
+  }
+  if(!dl_ok){
+    dl_ok <- tryCatch({
+      utils::download.file(zip_filepath, temp1, mode="wb", quiet=FALSE)
+      TRUE
+    }, error=function(e){
+      stop(dl_err, "\nFallback download.file failed: ", conditionMessage(e))
+    })
+  }
   temp2 <- utils::unzip(temp1, target_file, exdir=tempdir())
   dt <- read_pums(temp2, dyear)
   unlink(temp1)
@@ -320,9 +345,11 @@ add_county <- function(dt){
 #' @author Michael Jensen
 codes2labels <- function(dt, dyear, vars){
   recode <- val_min <- val_max <- var_code <- val_label <- i.val_label <- NULL                     # Bind variables locally (for documentation, not function)
+  pv <- tidycensus::pums_variables %>% setDT()
   ddyear  <- if(dyear>2016){dyear}else{2017}                                                       # Temporary - until 2005-15 lookup is ready
+  if(!ddyear %in% pv$year){ddyear <- max(pv$year, na.rm=TRUE)}
   recoder <- list()
-  recoder[[1]] <- tidycensus::pums_variables %>% setDT() %>%                                       # Get the value-label correspondence for any/all factor variables
+  recoder[[1]] <- pv %>%                                                                           # Get the value-label correspondence for any/all factor variables
     .[recode==TRUE & val_min==val_max & year==ddyear, .(var_code, val_max, val_label)] %>%
     unique()
   recoder[[2]] <- copy(recoder[[1]]) %>%
@@ -347,6 +374,7 @@ codes2labels <- function(dt, dyear, vars){
   recode_vars <- recoder$var_code %>% unique()
   if(nrow(recoder)>0){
     for (v in recode_vars){
+      dt[, (v):=as.character(get(v))]
       setkeyv(dt, v)
       dt[recoder[var_code==v], (v):=as.factor(i.val_label)]                                        # The room where it happens; group_vars to label (from value) if relevant/available
     }
